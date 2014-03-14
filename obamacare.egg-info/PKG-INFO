@@ -1,0 +1,37 @@
+Metadata-Version: 1.1
+Name: obamacare
+Version: 0.0
+Summary: obamacare
+Home-page: UNKNOWN
+Author: UNKNOWN
+Author-email: UNKNOWN
+License: UNKNOWN
+Description: obamacare README
+        ==================
+        
+        Getting Started
+        ---------------
+        
+        - cd <directory containing this file>
+        
+        - $venv/bin/python setup.py develop
+        
+        - $venv/bin/initialize_obamacare_db development.ini
+        
+        - $venv/bin/pserve development.ini
+        
+        
+        Open ports 2200, 3000, 80 5656, 5650
+        
+        
+        0.0
+        ---
+        
+        -  Initial version
+        
+Keywords: web wsgi bfg pylons pyramid
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Framework :: Pyramid
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Application
