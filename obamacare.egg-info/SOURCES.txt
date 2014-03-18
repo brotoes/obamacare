@@ -2,13 +2,11 @@ CHANGES.txt
 MANIFEST.in
 README.txt
 development.ini
-log.txt
 production.ini
 setup.cfg
 setup.py
 obamacare/__init__.py
 obamacare/models.py
-obamacare/security.py
 obamacare/tests.py
 obamacare/views.py
 obamacare.egg-info/PKG-INFO
@@ -29,6 +27,4 @@ obamacare/static/pylons.css
 obamacare/static/pyramid-small.png
 obamacare/static/pyramid.png
 obamacare/static/transparent.gif
-obamacare/templates/landing.pt
-obamacare/templates/login.pt
 obamacare/templates/mytemplate.pt

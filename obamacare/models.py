@@ -29,6 +29,7 @@ Base = declarative_base()
 
 class RootFactory(object):
     __acl__ = [ (Allow, 'group:a', 'view'),
+		(Allow, 'group:d', 'view'),
                 (Allow, 'group:a', 'admin') ]
     def __init__(self, request):
         print ('root fac', self.__acl__)

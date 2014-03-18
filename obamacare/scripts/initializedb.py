@@ -55,10 +55,10 @@ def main(argv=sys.argv):
             DBSession.flush()
         except IntegrityError:
             DBSession.rollback()
-       
+        
     with transaction.manager:
+
         admin = DBSession.query(Person).filter_by(email='admin@obamacare.com').first()
-       
         DBSession.add(User('admin', 'password', 'a', datetime.date(2014, 03, 06), admin.person_id))
         try:
             DBSession.flush()
