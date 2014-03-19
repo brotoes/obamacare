@@ -265,14 +265,24 @@ body h1, body h2, body h3, body h4, body h5, body h6
   padding-top: 10px;
 }
 
-#middle
+#toolbar
 {
   width: 100%;
-  height: 100px;
+  height: auto;
   background: url(middlebg.png) repeat-x;
   border-top: 2px solid #fff;
   border-bottom: 2px solid #b2b2b2;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
+.toolitem{
+  width:auto;
+  height: 40px%;
+  padding:10px;
+  border-right: 2px solid #b2b2b2
+}
+
+
 
 .app-welcome
 {

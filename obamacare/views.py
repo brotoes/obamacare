@@ -21,23 +21,38 @@ from .models import (
     DBSession,
     MyModel,
     Person,
+    User,
     )
 from .security import(
     authenticate,
+    getRole,
 
 )
+
+import pdb
 
 @view_config(route_name='landing', renderer='templates/landing.pt', permission='view')
 def landing_view(request):
     print("landing view")
     print ('auth user', authenticated_userid(request))
     try:
-        user = DBSession.query(Person).first()
+        user = DBSession.query(User).filter(User.user_name==authenticated_userid(request)).first()
+        person = DBSession.query(Person).filter(Person.person_id==user.person_id).first()
+
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    role = getRole(user.user_name, request)[0].split(':')[1].strip()   
+    users = role == 'a'
+    reports = role == 'a'
+    new = role!='p'
 
+    return {'new': new, 'users':users, 'reports':reports, 
+    'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
+    'logged_in': authenticated_userid(request) }
 
-    return {'project': 'obamacare', 'name': user.first_name+' ' +user.last_name, 'logged_in': authenticated_userid(request) }
+@view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
+def user_profile(request):
+    return 
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -81,11 +96,12 @@ def logout(request):
 
 @view_config(route_name='home', renderer='templates/mytemplate.pt')
 def my_view(request):
+    
     try:
         one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    return {'one': one, 'project': 'obamacare'}
+    return {'one': one, 'project': 'obamacare', 'logged_in': authenticated_userid(request)!=None}
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

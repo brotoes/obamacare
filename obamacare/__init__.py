@@ -24,10 +24,6 @@ def main(global_config, **settings):
         parser = ConfigParser.ConfigParser()
         parser.readfp(open(os.path.expanduser(sqlalchemy_url[1].strip()[2:])))
         settings['sqlalchemy.url'] = parser.get('main', 'db.url')
-        print 'sqlalchemy.url=%s' % settings['sqlalchemy.url']
-        print 'breaking'
-        pdb.set_trace()
-
 
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
@@ -45,6 +41,7 @@ def main(global_config, **settings):
    
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('landing', '/')
+    config.add_route('user_profile', '/profile')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_route('home', '/help')
