@@ -45,6 +45,8 @@ def main(global_config, **settings):
     config.add_route('user_profile', '/profile')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
-    config.add_route('home', '/help')
+    config.add_route('home', '/home') #changed from /help to /home. yes?
+    config.add_route('record', '/record/{id}')
+    config.add_route('image', '/image/{id}')
     config.scan()
     return config.make_wsgi_app()
