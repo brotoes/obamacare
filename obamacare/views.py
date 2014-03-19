@@ -96,19 +96,27 @@ def logout(request):
 
 @view_config(route_name='record', renderer='templates/view_record.pt')
 def record(request):
-    pass
+    rec_id = request.matchdict['id']
+    if (rec_id == 'new'):
+        return Response("Create new record")
+    else:
+        return Response("Record ID: " + rec_id)
 
 @view_config(route_name='image')
 def image(request):
-    pass
+    rec_id = request.matchdict['id']
+    if (rec_id == 'new'):
+        return Response("Create new image")
+    else:
+        return Response("Image ID: " + rec_id)
 
 @view_config(route_name='user', renderer='templates/user_page.pt')
 def user(request):
-    pass
+    return Response ("WIP")
 
-@view_config(route_name='get_user')
-def get_user(request):
-    pass
+@view_config(route_name='get')
+def get(request):
+    return Response ("WIP")
 
 @view_config(route_name='home', renderer='templates/mytemplate.pt')
 def my_view(request):
