@@ -52,7 +52,7 @@ def landing_view(request):
 
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
-    return 
+    return None
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -94,9 +94,24 @@ def logout(request):
     return HTTPFound(location = request.route_url('landing'),
                      headers = headers)
 
+@view_config(route_name='record', renderer='templates/view_record.pt')
+def record(request):
+    pass
+
+@view_config(route_name='image')
+def image(request):
+    pass
+
+@view_config(route_name='user', renderer='templates/user_page.pt')
+def user(request):
+    pass
+
+@view_config(route_name='get_user')
+def get_user(request):
+    pass
+
 @view_config(route_name='home', renderer='templates/mytemplate.pt')
 def my_view(request):
-    
     try:
         one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
     except DBAPIError:
@@ -118,6 +133,3 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
-
-
-
