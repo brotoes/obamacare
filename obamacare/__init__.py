@@ -38,14 +38,12 @@ def main(global_config, **settings):
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
    
-    config.include('pyramid_chameleon')
-   
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('landing', '/')
     config.add_route('user_profile', '/profile')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
-    config.add_route('home', '/home') #changed from /help to /home. yes?
+    config.add_route('help', '/help') #this is a fake page :P It's from the scaffold I just use it for reference 
     config.add_route('record', '/record/{id}')
     config.add_route('image', '/image/{id}')
     config.add_route('get', '/get/{type}')

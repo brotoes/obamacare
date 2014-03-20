@@ -52,7 +52,19 @@ def landing_view(request):
 
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
-    return None
+    print ('auth user', authenticated_userid(request))
+    try:
+        user = DBSession.query(User).filter(User.user_name==authenticated_userid(request)).first()
+        person = DBSession.query(Person).filter(Person.person_id==user.person_id).first()
+
+    except DBAPIError:
+        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    role = getRole(user.user_name, request)[0].split(':')[1].strip()   
+    users = role == 'a'
+    reports = role == 'a'
+    new = role!='p'
+    pdb.set_trace()
+    return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request)}
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -94,32 +106,9 @@ def logout(request):
     return HTTPFound(location = request.route_url('landing'),
                      headers = headers)
 
-@view_config(route_name='record', renderer='templates/view_record.pt')
-def record(request):
-    rec_id = request.matchdict['id']
-    if (rec_id == 'new'):
-        return Response("Create new record")
-    else:
-        return Response("Record ID: " + rec_id)
-
-@view_config(route_name='image')
-def image(request):
-    rec_id = request.matchdict['id']
-    if (rec_id == 'new'):
-        return Response("Create new image")
-    else:
-        return Response("Image ID: " + rec_id)
-
-@view_config(route_name='user', renderer='templates/user_page.pt')
-def user(request):
-    return Response ("WIP")
-
-@view_config(route_name='get')
-def get(request):
-    return Response ("WIP")
-
-@view_config(route_name='home', renderer='templates/mytemplate.pt')
+@view_config(route_name='help', renderer='templates/mytemplate.pt')
 def my_view(request):
+    
     try:
         one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
     except DBAPIError:
@@ -141,3 +130,6 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
+
+
+
