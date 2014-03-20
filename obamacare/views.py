@@ -54,7 +54,19 @@ def landing_view(request):
 
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
-    return Response(request.url)
+    print ('auth user', authenticated_userid(request))
+    try:
+        user = DBSession.query(User).filter(User.user_name==authenticated_userid(request)).first()
+        person = DBSession.query(Person).filter(Person.person_id==user.person_id).first()
+
+    except DBAPIError:
+        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    role = getRole(user.user_name, request)[0].split(':')[1].strip()   
+    users = role == 'a'
+    reports = role == 'a'
+    new = role!='p'
+    pdb.set_trace()
+    return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request)}
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -157,3 +169,6 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
+
+
+
