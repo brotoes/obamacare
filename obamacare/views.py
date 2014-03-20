@@ -30,6 +30,8 @@ from .security import(
 )
 
 import pdb
+from utilities import *
+from json import loads
 
 @view_config(route_name='landing', renderer='templates/landing.pt', permission='view')
 def landing_view(request):
@@ -52,7 +54,7 @@ def landing_view(request):
 
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
-    return None
+    return Response(request.url)
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -116,7 +118,21 @@ def user(request):
 
 @view_config(route_name='get')
 def get(request):
-    return Response ("WIP")
+    get_type = request.matchdict['type']
+    if get_type == 'users':
+        resp  = '{\n'
+        resp += '    "userids": [\n'
+        resp += '                 58,\n'
+        resp += '                 59,\n'
+        resp += '                 60,\n'
+        resp += '                 61\n'
+        resp += '               ]\n'
+        resp += '}'
+        resp = clean(resp)
+        return Response(resp)
+    else:
+        return HTTPNotFound()
+    
 
 @view_config(route_name='home', renderer='templates/mytemplate.pt')
 def my_view(request):
