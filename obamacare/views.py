@@ -222,7 +222,28 @@ def image(request):
 
 @view_config(route_name='user', renderer='templates/user_page.pt')
 def user(request):
-    return Response ("WIP")
+    uname = request.matchdict['user_name']
+    user_rec = DBSession.query(
+                        User
+                    ).filter(
+                        User.user_name==uname
+                    ).first()
+    person = DBSession.query(
+                        Person
+                    ).filter(
+                        Person.person_id==user_rec.person_id
+                    ).first()
+    resp  = 'fname: ' + person.first_name + '</br>'
+    resp += 'lname: ' + person.last_name + '</br>'
+    resp += 'email: ' + person.email + '</br>'
+
+    keys = dict(
+        fname = person.first_name,
+        lname = person.last_name,
+        email = person.email
+    )
+
+    return Response(resp)
 
 @view_config(route_name='get', renderer='json')
 def get(request):

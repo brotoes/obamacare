@@ -47,7 +47,7 @@ def main(global_config, **settings):
     config.add_route('record', '/record/{id}')
     config.add_route('image', '/image/{id}')
     config.add_route('get', '/get/{type}')
-    config.add_route('user', '/user/{user}')
+    config.add_route('user', '/user/{user_name}')
     config.add_route('home', '/home')
     config.scan()
     return config.make_wsgi_app()
