@@ -36,7 +36,7 @@ from json import loads
 @view_config(route_name='landing', renderer='templates/landing.pt', permission='view')
 def landing_view(request):
     print("landing view")
-    print ('auth user', authenticated_userid(request))
+    #print ('auth user', authenticated_userid(request))
     try:
         user = DBSession.query(User).filter(User.user_name==authenticated_userid(request)).first()
         person = DBSession.query(Person).filter(Person.person_id==user.person_id).first()
@@ -54,25 +54,68 @@ def landing_view(request):
 
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
-    print ('auth user', authenticated_userid(request))
+    #print ('auth user', authenticated_userid(request))
     try:
         user = DBSession.query(User).filter(User.user_name==authenticated_userid(request)).first()
         person = DBSession.query(Person).filter(Person.person_id==user.person_id).first()
-
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     role = getRole(user.user_name, request)[0].split(':')[1].strip()   
     users = role == 'a'
     reports = role == 'a'
     new = role!='p'
-    pdb.set_trace()
+    #pdb.set_trace()
+
+    #update database
+    if (request.POST.items() != []):
+        try:
+            post = request.POST
+            fname = post['fname']
+            lname = post['lname']
+            address = post['address']
+            email = post['email']
+            phone = post['phone']
+
+            password = []
+            password.append(post['existing'])
+            password.append(post['newpass'])
+            password.append(post['newconfirm'])
+            
+            if fname != '':
+                person.first_name = fname
+            if lname != '':
+                person.last_name = lname
+            if address != '':
+                person.address = address
+            if email != '':
+                person.email = email
+            if phone != '':
+                person.phone = phone
+            
+            full_fields = [x for x in password if x != '']
+            if len(full_fields) > 0:
+                if len(full_fields) == 3:
+                    if (password[0] == user.password and
+                        password[1] == password[2] and
+                        len(password[1]) >= 6):
+                        user.password = password[1]
+                    else:
+                        print "TODO: Error message: fields must match"
+                else:
+                    print "TODO: Error message: empty pass fields"
+                     
+
+
+        except DBAPIError:
+            return Response(conn_err_msg, content_type='text/plain', status_int=500)
+
     return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request)}
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
 def login(request):
     print("login")
-    print ('auth user', authenticated_userid(request))
+    #print ('auth user', authenticated_userid(request))
     login_url = request.route_url('login')
     referrer = request.url
     if referrer == login_url:
@@ -128,20 +171,17 @@ def image(request):
 def user(request):
     return Response ("WIP")
 
-@view_config(route_name='get')
+@view_config(route_name='get', renderer='json')
 def get(request):
     get_type = request.matchdict['type']
     if get_type == 'users':
-        resp  = '{\n'
-        resp += '    "userids": [\n'
-        resp += '                 58,\n'
-        resp += '                 59,\n'
-        resp += '                 60,\n'
-        resp += '                 61\n'
-        resp += '               ]\n'
-        resp += '}'
-        resp = clean(resp)
-        return Response(resp)
+        return {
+            'userid':[
+                        58,
+                        59,
+                        60
+                     ]
+            }
     else:
         return HTTPNotFound()
     
