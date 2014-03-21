@@ -36,7 +36,7 @@ from json import loads
 
 @view_config(route_name='landing', renderer='templates/landing.pt', permission='view')
 def landing_view(request):
-    print("landing view")
+    #print("landing view")
     #print ('auth user', authenticated_userid(request))
     try:
         user = DBSession.query(User).filter(User.user_name==authenticated_userid(request)).first()
@@ -55,7 +55,8 @@ def landing_view(request):
 
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def home_view(request):
-    print("home view")
+    #print("home view")
+    return Response("empty")
     
 
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
@@ -169,6 +170,7 @@ def record(request):
                    ).filter(
                          RadiologyRecord.record_id==rec_id
                    ).first()
+
         resp += 'TODO: thumb url'
         resp += '</br>'
         resp += 'TODO: reg url'

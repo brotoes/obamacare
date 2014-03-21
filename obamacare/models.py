@@ -34,7 +34,7 @@ class RootFactory(object):
         (Allow, 'group:p', 'view'),
         (Allow, 'group:r', 'view') ]
     def __init__(self, request):
-        print ('root fac', self.__acl__)
+        #print ('root fac', self.__acl__)
         pass
 
 class MyModel(Base):
