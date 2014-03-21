@@ -22,6 +22,7 @@ from .models import (
     MyModel,
     Person,
     User,
+    RadiologyRecord
     )
 from .security import(
     authenticate,
@@ -52,6 +53,11 @@ def landing_view(request):
     'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
     'logged_in': authenticated_userid(request) }
 
+@view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
+def home_view(request):
+    print("home view")
+    
+
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
     #print ('auth user', authenticated_userid(request))
@@ -64,17 +70,16 @@ def user_profile(request):
     users = role == 'a'
     reports = role == 'a'
     new = role!='p'
-    #pdb.set_trace()
 
     #update database
     if (request.POST.items() != []):
         try:
             post = request.POST
-            fname = post['fname']
-            lname = post['lname']
-            address = post['address']
-            email = post['email']
-            phone = post['phone']
+            fname = clean(post['fname'])
+            lname = clean(post['lname'])
+            address = clean(post['address'])
+            email = clean(post['email'])
+            phone = format_phone(post['phone'])
 
             password = []
             password.append(post['existing'])
@@ -90,7 +95,10 @@ def user_profile(request):
             if email != '':
                 person.email = email
             if phone != '':
-                person.phone = phone
+                if phone != 'BAD FORMAT':
+                    person.phone = phone
+                else:
+                    print "TODO: ERROR MESSAGE: BAD PHONE FORMAT"
             
             full_fields = [x for x in password if x != '']
             if len(full_fields) > 0:
@@ -104,8 +112,6 @@ def user_profile(request):
                 else:
                     print "TODO: Error message: empty pass fields"
                      
-
-
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
@@ -157,7 +163,54 @@ def record(request):
     if (rec_id == 'new'):
         return Response("Create new record")
     else:
-        return Response("Record ID: " + rec_id)
+        resp = ''
+        record = DBSession.query(
+                         RadiologyRecord
+                   ).filter(
+                         RadiologyRecord.record_id==rec_id
+                   ).first()
+        resp += 'TODO: thumb url'
+        resp += '</br>'
+        resp += 'TODO: reg url'
+        resp += '</br>'
+        resp += 'TODO: full url'
+        resp += '</br>'
+        resp += str(record.record_id)
+        resp += '</br>'
+        resp += str(record.patient_id)
+        resp += '</br>'
+        resp += str(record.doctor_id)
+        resp += '</br>'
+        resp += str(record.radiologist_id)
+        resp += '</br>'
+        resp += record.test_type
+        resp += '</br>'
+        resp += str(record.prescribing_date)
+        resp += '</br>'
+        resp += str(record.test_date)
+        resp += '</br>'
+        resp += record.diagnosis
+        resp += '</br>'
+        resp += record.description
+        resp += '</br>'
+
+        #Until the template is finished, I'll return a string, not this.
+        keys = dict(
+            thumburl = None,
+            regurl = None,
+            fullurl = None,
+            recid = record.record_id,
+            pid = record.patient_id,
+            did = record.doctor_id,
+            rid = record.radiologist_id,
+            ttype = record.test_type,
+            pdate = record.prescribing_date,
+            tdate = record.test_date,
+            diag = record.diagnosis,
+            descr = record.description,
+            )
+
+        return Response(resp)
 
 @view_config(route_name='image')
 def image(request):
