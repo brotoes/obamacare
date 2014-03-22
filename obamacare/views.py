@@ -83,9 +83,9 @@ def user_profile(request):
             phone = format_phone(post['phone'])
 
             password = []
-            password.append(post['existing'])
-            password.append(post['newpass'])
-            password.append(post['newconfirm'])
+            password.append(clean(post['existing']))
+            password.append(clean(post['newpass']))
+            password.append(clean(post['newconfirm']))
             
             if fname != '':
                 person.first_name = fname
