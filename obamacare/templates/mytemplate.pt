@@ -7,8 +7,6 @@
   <meta name="description" content="medical records storage and relation web application" />
   <link rel="shortcut icon" href="${request.static_url('obamacare:static/favicon.ico')}" />
   <link rel="stylesheet" href="${request.static_url('obamacare:static/pylons.css')}" type="text/css" media="screen" charset="utf-8" />
-  <link rel="stylesheet" href="http://static.pylonsproject.org/fonts/nobile/stylesheet.css" media="screen" />
-  <link rel="stylesheet" href="http://static.pylonsproject.org/fonts/neuton/stylesheet.css" media="screen" />
   <!--[if lte IE 6]>
   <link rel="stylesheet" href="${request.static_url('obamacare:static/ie6.css')}" type="text/css" media="screen" charset="utf-8" />
   <![endif]-->

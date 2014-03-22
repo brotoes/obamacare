@@ -34,8 +34,8 @@ import pdb
 from utilities import *
 from json import loads
 
-@view_config(route_name='landing', renderer='templates/landing.pt', permission='view')
-def landing_view(request):
+@view_config(route_name='home', renderer='templates/user_page.pt', permission='view')
+def user_home(request):
     #print("landing view")
     #print ('auth user', authenticated_userid(request))
     try:
@@ -53,11 +53,10 @@ def landing_view(request):
     'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
     'logged_in': authenticated_userid(request) }
 
-@view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
-def home_view(request):
-    #print("home view")
-    return Response("empty")
-    
+@view_config(route_name='landing', permission='view')
+def landing(request):
+    return HTTPFound(location=request.route_url('home'))
+
 
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
