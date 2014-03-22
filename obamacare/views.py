@@ -79,9 +79,13 @@ def user_home(request):
                     (42, 33, 'John', 'Wilson', '2014-05-09'))}
 """
     return {'new': new, 'users':users, 'reports':reports, 
+    return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
+    'data':((10, 15, 'john', 'wilson', '2014-03-16'),('42', 33, 'john', 'wilson', '2014-05-09')), 
+    'new': new, 'users':users, 'reports':reports, 
     'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
     'logged_in': authenticated_userid(request) }
 """
+
 
 @view_config(route_name='landing', permission='view')
 def landing(request):
@@ -179,6 +183,7 @@ def login(request):
         came_from = came_from,
         login = login,
         password = password,
+        logged_in = authenticated_userid(request)
         )
 
 @view_config(route_name='logout')
