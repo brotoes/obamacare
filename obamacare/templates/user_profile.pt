@@ -6,13 +6,13 @@
     <div metal:use-macro="load: master.pt">
       <div metal:fill-slot="content">
       	<div class="content">
-	        <div class="align-left">
+	        <div class="align-left" style="padding:70px;">
 						<form method="POST" action="profile">
 							<table style='margin: 0 auto;	'>
 								<tr>
 									<td colspan="2"><h1>Edit Profile</h1></td>
 								</tr>
-								<tr>
+									<tr>
 									<td>
 								First Name: </td>  			 <td><input type="text" name="fname"/></td>
 								</tr>
