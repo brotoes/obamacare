@@ -35,7 +35,7 @@ import pdb
 from utilities import *
 from json import loads
 
-@view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
+@view_config(route_name='home', renderer='templates/user_page.pt', permission='view')
 def user_home(request):
     #print("landing view")
     #print ('auth user', authenticated_userid(request))
@@ -76,16 +76,13 @@ def user_home(request):
                        'doctor',
                        'date'),
             'data':((10, 15, 'John', 'Wilson', '2014-03-16'),
-                    (42, 33, 'John', 'Wilson', '2014-05-09'))}
-"""
-    return {'new': new, 'users':users, 'reports':reports, 
-    return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
-    'data':((10, 15, 'john', 'wilson', '2014-03-16'),('42', 33, 'john', 'wilson', '2014-05-09')), 
-    'new': new, 'users':users, 'reports':reports, 
-    'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
-    'logged_in': authenticated_userid(request) }
-"""
-
+                    (42, 33, 'John', 'Wilson', '2014-05-09')),
+            'logged_in': authenticated_userid(request),
+            'project': 'obamacare',
+            'name': person.first_name + ' ' + person.last_name,
+            'new': new,
+            'users': users,
+            'reports': reports}
 
 @view_config(route_name='landing', permission='view')
 def landing(request):
@@ -283,7 +280,6 @@ def image(request):
                     resp = img.regular_size
             else:    
                 resp = img.regular_size
-                resp = 'default: regular_size'
             return Response(resp)
         else:
             return Response('null')
