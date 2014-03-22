@@ -1,0 +1,34 @@
+/home/sheil/env/local/lib/python2.7/site-packages/pkg_resources.py:1054: UserWarning: /home/sheil/.python-eggs is writable by group/others and vulnerable to attack when used with get_resource_filename. Consider a more secure location (set with .set_extraction_path or the PYTHON_EGG_CACHE environment variable).
+  warnings.warn(msg, UserWarning)
+2014-03-09 14:59:47,493 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
+2014-03-09 14:59:47,493 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] ()
+2014-03-09 14:59:47,493 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] SELECT CAST('test unicode returns' AS VARCHAR(60)) AS anon_1
+2014-03-09 14:59:47,494 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] ()
+2014-03-09 14:59:47,494 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] BEGIN (implicit)
+2014-03-09 14:59:47,496 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] SELECT models.id AS models_id, models.name AS models_name, models.value AS models_value 
+FROM models 
+WHERE models.name = ?
+ LIMIT ? OFFSET ?
+2014-03-09 14:59:47,496 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] ('one', 1, 0)
+2014-03-09 14:59:47,630 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] ROLLBACK
+Starting subprocess with file monitor
+^C caught in monitor process
+/home/sheil/env/local/lib/python2.7/site-packages/pkg_resources.py:1054: UserWarning: /home/sheil/.python-eggs is writable by group/others and vulnerable to attack when used with get_resource_filename. Consider a more secure location (set with .set_extraction_path or the PYTHON_EGG_CACHE environment variable).
+  warnings.warn(msg, UserWarning)
+2014-03-09 15:00:05,892 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
+2014-03-09 15:00:05,892 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] ()
+2014-03-09 15:00:05,893 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] SELECT CAST('test unicode returns' AS VARCHAR(60)) AS anon_1
+2014-03-09 15:00:05,893 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] ()
+2014-03-09 15:00:05,894 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] BEGIN (implicit)
+2014-03-09 15:00:05,896 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] SELECT models.id AS models_id, models.name AS models_name, models.value AS models_value 
+FROM models 
+WHERE models.name = ?
+ LIMIT ? OFFSET ?
+2014-03-09 15:00:05,896 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] ('one', 1, 0)
+2014-03-09 15:00:06,088 INFO  [sqlalchemy.engine.base.Engine][Dummy-2] ROLLBACK
+Starting subprocess with file monitor
+^C caught in monitor process
+/home/sheil/env/local/lib/python2.7/site-packages/pkg_resources.py:1054: UserWarning: /home/sheil/.python-eggs is writable by group/others and vulnerable to attack when used with get_resource_filename. Consider a more secure location (set with .set_extraction_path or the PYTHON_EGG_CACHE environment variable).
+  warnings.warn(msg, UserWarning)
+Starting subprocess with file monitor
+^C caught in monitor process

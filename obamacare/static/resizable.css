@@ -1,0 +1,44 @@
+
+table {
+	width: 100%;
+	overflow-x: hidden;
+	
+	margin: 0 auto;
+	white-space:nowrap;
+	border-collapse: collapse;
+
+}
+
+th {
+	border-right: 4px solid #b2b2b2;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color:#fff;
+	border-bottom: 1px outset;
+	font-size: 15px;
+}
+tr{
+	border-bottom: 2px solid #000;
+	
+}
+tr:hover{
+	background-color: #b2b2b2;
+}
+td {
+ 	
+	border-right: 1px solid #b2b2b2;
+font-size: 12		px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-left: 15px;
+	
+}
+
+.even_zebra{
+	background-color: #eee;
+}
+.odd_zebra{	
+	background-color: #fff;
+}
+
+img { border:0px; }

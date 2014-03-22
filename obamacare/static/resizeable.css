@@ -1,0 +1,20 @@
+
+table {
+	
+	overflow: hidden;
+	border: 2px solid #bbb;
+	background-color: red;
+}
+
+th {
+	color: #000;
+	background-color: #bbb;
+	border: 1px outset;
+}
+
+td {
+ 	color: #000;
+	background-color: #eee;
+}
+
+img { border:0px; }
