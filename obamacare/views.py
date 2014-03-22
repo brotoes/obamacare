@@ -53,6 +53,7 @@ def user_home(request):
     'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
     'logged_in': authenticated_userid(request) }
 
+
 @view_config(route_name='landing', permission='view')
 def landing(request):
     return HTTPFound(location=request.route_url('home'))
@@ -82,9 +83,9 @@ def user_profile(request):
             phone = format_phone(post['phone'])
 
             password = []
-            password.append(clean(post['existing']))
-            password.append(clean(post['newpass']))
-            password.append(clean(post['newconfirm']))
+            password.append(post['existing'])
+            password.append(post['newpass'])
+            password.append(post['newconfirm'])
             
             if fname != '':
                 person.first_name = fname
@@ -149,6 +150,7 @@ def login(request):
         came_from = came_from,
         login = login,
         password = password,
+        logged_in = authenticated_userid(request)
         )
 
 @view_config(route_name='logout')

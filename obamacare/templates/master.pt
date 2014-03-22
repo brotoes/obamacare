@@ -16,7 +16,9 @@
 <body> 
 	<div>
 		<div id='header'>
-			<div metal:use-macro="load: toolbar.pt"></div>
+			<div tal:condition="logged_in"> 
+				<div metal:use-macro="load: toolbar.pt"></div>
+			</div>
 		</div>
 		
 		<div id='content'>
