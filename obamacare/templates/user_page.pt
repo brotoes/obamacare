@@ -2,10 +2,32 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
        xmlns:tal="http://xml.zope.org/namespaces/tal"
        xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <head>
+      
+    	 <link rel="stylesheet" href="${request.static_url('obamacare:static/style.css')}" type="text/css" media="screen" charset="utf-8" />
+      	<link rel="stylesheet" href="${request.static_url('obamacare:static/resizable.css')}" type="text/css" media="screen" charset="utf-8" />
+
+      	<script type='text/javascript' src="${request.static_url('obamacare:static/resizable.js')}"></script>
+
+   </head>
+    
+       
  
 	<div metal:use-macro="load: master.pt">
      	<div metal:fill-slot="content">
-      		<div class="content">
+      		<div class="content" >
+      			
+				<table id='table1' class='resizable' style='margin: 0 auto;'>
+				<tr tal:condition="headers">
+					<th tal:repeat="head range(len(headers))" tal:content="headers[repeat.head.index]">
+					</th>
+				</tr>
+				<tr tal:repeat="row range(len(data))">
+					<td tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td>
+				</tr>
+
+			</table>
+
       		</div>
       	</div>
 	</div>
