@@ -147,7 +147,9 @@ def user_profile(request):
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
-    return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request)}
+    return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request),
+            'fname':person.first_name, 'lname':person.last_name, 'address':person.address, 'email':person.email,
+            'phone':person.phone,}
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
