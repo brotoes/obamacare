@@ -3,6 +3,7 @@ import ConfigParser, os
 import sys
 import transaction
 import datetime
+import random
 
 from sqlalchemy import engine_from_config
 
@@ -20,6 +21,7 @@ from ..models import (
     FamilyDoctor,
     Role,
     Base,
+    RadiologyRecord,
     )
 
 
@@ -36,7 +38,7 @@ def gen_people():
         ('geroge', 'washington', 'r', 'admin'), ('lisa', 'brigs', 'pd', 'wilson'),
         ('newton', 'bitches!', 'pdr', 'admin'), ('frodo', 'baggins', 'dr', 'admin'), 
         ('Thomas', 'O\'Conner', 'p', 'thomas'), ('Kevin', 'Pain', 'd', 'kevin'),
-        ('Devon', 'Milkman', 'p', 'r', 'devin'), ('Peter', 'Andrews', 'p', 'peter'),
+        ('Devon', 'Milkman', 'r', 'devin'), ('Peter', 'Andrews', 'p', 'peter'),
         ('Amy', 'Smith', 'p', 'amy'), ('Jason' , 'Gerogegino', 'p', 'jason'),
         ('James', 'Davidson', 'p', 'james')
         )
@@ -65,7 +67,34 @@ def gen_people():
             new_user = User(per[0], 'password', per[2][0], datetime.date(2014, 03, 06), new_person.person_id)
             DBSession.add(new_user)
             transaction.manager.commit()
-          
+def gen_randDate():
+    return "2014-03-16"
+
+def gen_records():
+    test_types = ['invasive', 'scary', 'painful', 'harmles...really', 'smelly', 'chronic', 'geo physical',
+                'exothemeric', 'deadly', 'doctor gibberish']
+    diags = ['death', 'mild stench', 'chronic fever', 'successful', 'ordinary', 'normal' ,'typical', 'usual',
+            'unhealthy', 'too tall for tests', 'too short for tests', 'too FAT!', 'IT\'s an ALIEN!!']
+    descr = "I couldn't come up with more than one..."
+
+    doctors = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='d').all()
+    radis = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='r').all()
+    patients  = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='p').all()
+
+    num_records = 500
+    with transaction.manager:
+        for i in range(0,num_records):
+            # pat, doc, radi, ttype, p_date, t_date, diag, descr, record_id=None):
+            DBSession.add(RadiologyRecord(
+                patients[random.randrange(len(patients))][0].person_id, 
+                doctors[random.randrange(len(doctors))][0].person_id, 
+                radis[random.randrange(len(radis))][0].person_id,
+                test_types[random.randrange(len(test_types))],
+                gen_randDate(),
+                gen_randDate(),
+                diags[random.randrange(len(diags))],  
+                descr[random.randrange(len(descr))]))
+        transaction.manager.commit()
 
 def main(argv=sys.argv):
     if len(argv) != 2:
@@ -96,6 +125,7 @@ def main(argv=sys.argv):
                 DBSession.rollback()
     
     gen_people()
+    gen_records()
     """ with transaction.manager:
         DBSession.add(Person('admin', 'obamacare', 'not reall an address', 'admin@obamacare.com', '7804929400', 0))            
         try:  

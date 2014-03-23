@@ -1,6 +1,7 @@
 from pyramid.response import Response
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy import or_
 
 from pyramid.view import (
     view_config,
@@ -27,7 +28,6 @@ from .models import (
 from .security import(
     authenticate,
     getRole,
-
 )
 
 import pdb
@@ -49,37 +49,21 @@ def user_home(request):
     reports = role == 'a'
     new = role!='p'
 
-    return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
-    'data':(
-        (10, 102, 'john', 'wilson', '2014-03-16'),
-        (58, 145, 'john', 'wilson', '2014-03-16'),
-        (10, 215, 'john', 'wilson', '2014-03-16'),
-        (26, 15224, 'john', 'wilson', '2014-03-16'),
-        (10, 1245, 'john', 'wilson', '2014-03-16'),
-        (10, 844, 'john', 'wilson', '2014-03-16'),
-        (13, 46, 'john', 'wilson', '2014-03-16'),
-        (10, 32, 'john', 'wilson', '2014-03-16'),
-        (18, 135, 'john', 'wilson', '2014-03-16'),
-        (35, 22, 'john', 'wilson', '2014-03-16'),
-        (32, 52, 'john', 'wilson', '2014-03-16'),
-        (78, 32, 'john', 'wilson', '2014-03-16'),
-        (10, 15, 'john', 'wilson', '2014-03-16'),
-         (10, 102, 'john', 'wilson', '2014-03-16'),
-        (58, 145, 'john', 'wilson', '2014-03-16'),
-        (10, 215, 'john', 'wilson', '2014-03-16'),
-        (26, 15224, 'john', 'wilson', '2014-03-16'),
-        (10, 1245, 'john', 'wilson', '2014-03-16'),
-        (10, 844, 'john', 'wilson', '2014-03-16'),
-        (13, 46, 'john', 'wilson', '2014-03-16'),
-        (10, 32, 'john', 'wilson', '2014-03-16'),
-        (18, 135, 'john', 'wilson', '2014-03-16'),
-        (35, 22, 'john', 'wilson', '2014-03-16'),
-        (32, 52, 'john', 'wilson', '2014-03-16'),
-        (78, 32, 'john', 'wilson', '2014-03-16'),
-        (10, 15, 'john', 'wilson', '2014-03-16'),
-        (25, 15, 'john', 'wilson', '2014-03-16'),
-        (10, 15, 'john', 'wilson', '2014-03-16'),
-        (4999, 33, 'john', 'wilson', '2014-05-09')), 
+    # I will add some more back end stuff that will show all records belonging to the signed in user
+    records = DBSession.query(RadiologyRecord).filter(or_(RadiologyRecord.patient_id==person.person_id,
+        RadiologyRecord.doctor_id==person.person_id, RadiologyRecord.radiologist_id==person.person_id)).all()
+    data = []
+    for rec in records:
+        pait = get_person(rec.patient_id)
+        doc = get_person(rec.doctor_id)
+        radi = get_person(rec.radiologist_id)
+        data.append(
+            (rec.record_id, 222, pait.last_name +", "+ pait.first_name, 
+                doc.last_name +", "+doc.first_name,
+            radi.first_name +", " + radi.last_name, rec.prescribing_date))
+
+    return {'headers': ('record id', 'image', 'patient', 'doctor', 'Radiologist','date'), 
+    'data':data, 
     'new': new, 'users':users, 'reports':reports, 
     'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
     'logged_in': authenticated_userid(request) }
