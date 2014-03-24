@@ -1,6 +1,7 @@
 from pyramid.response import Response
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy import or_
 
 from pyramid.view import (
     view_config,
@@ -34,6 +35,7 @@ from .security import(
 import pdb
 from utilities import *
 from json import loads
+import random
 
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
@@ -70,14 +72,36 @@ def user_home(request):
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
-    return {'headers':('record_id',
+    # I added some more back end stuff that will show all records belonging to the signed in user
+    # This is the type of thing that should probably be in the queuys oh i mean queries thing.
+    records = DBSession.query(RadiologyRecord).filter(or_(RadiologyRecord.patient_id==person.person_id,
+        RadiologyRecord.doctor_id==person.person_id, RadiologyRecord.radiologist_id==person.person_id)).all()
+    images = DBSession.query(PacsImage).all()    
+    data = []
+    for rec in records:
+        pait = get_person(rec.patient_id)
+        doc = get_person(rec.doctor_id)
+        radi = get_person(rec.radiologist_id)
+        data.append(
+            (rec.record_id, images[random.randrange(len(images))].image_id, pait.last_name +", "+ pait.first_name, 
+                doc.last_name +", "+doc.first_name,
+            radi.first_name +", " + radi.last_name, rec.prescribing_date))
+
+    return {'headers': ('record id', 'image', 'patient', 'doctor', 'Radiologist','date'), 
+    'data':data, 
+    'new': new, 'users':users, 'reports':reports, 
+    'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
+    'logged_in': authenticated_userid(request) }
+
+    # When you add new return values we need to keep the old ones too or templates will break
+"""    return {'headers':('record_id',
                        'image',
                        'patient',
                        'doctor',
                        'date'),
             'data':((10, 15, 'John', 'Wilson', '2014-03-16'),
                     (42, 33, 'John', 'Wilson', '2014-05-09'))}
-"""
+
     return {'new': new, 'users':users, 'reports':reports, 
     return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
     'data':((10, 15, 'john', 'wilson', '2014-03-16'),('42', 33, 'john', 'wilson', '2014-05-09')), 
@@ -85,12 +109,6 @@ def user_home(request):
     'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
     'logged_in': authenticated_userid(request) }
 """
-
-
-@view_config(route_name='landing', permission='view')
-def landing(request):
-    return HTTPFound(location=request.route_url('home'))
-
 
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
@@ -149,7 +167,11 @@ def user_profile(request):
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
-    return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request)}
+    #return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request)}
+    # Return "real" data
+    return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request),
+            'fname':person.first_name, 'lname':person.last_name, 'address':person.address, 'email':person.email,
+            'phone':person.phone,}
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -329,7 +351,10 @@ def get(request):
             }
     else:
         return HTTPNotFound()
-    
+
+@view_config(route_name='landing', permission='view')
+def landing(request):
+    return HTTPFound(location=request.route_url('home'))
 
 @view_config(route_name='help', renderer='templates/mytemplate.pt')
 def my_view(request):

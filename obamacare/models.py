@@ -143,11 +143,20 @@ class RadiologyRecord(Base):
 
 class PacsImage(Base):
     __tablename__ = 'pacs_images'
-    record_id = Column(Integer, primary_key=True, nullable=False)
+    # image_id NEEDS to be the first column as then sqlalchemy will set autoinc on it
     image_id = Column(Integer, primary_key=True)
+    record_id = Column(Integer, primary_key=True, nullable=False)
+    
     thumbnail = Column(BLOB)
     regular_size = Column(BLOB)
     full_size = Column(BLOB)
+
+    def __init__(self, rec_id, thumb, reg, full, img_id=None):
+        self.record_id = rec_id
+        self.image_id = img_id
+        self.thumbnail = thumb
+        self.regular_size = reg
+        self.full_size=full
 
 
 

@@ -22,8 +22,11 @@ from ..models import (
     Role,
     Base,
     RadiologyRecord,
+    PacsImage,
     )
 
+from PIL import Image
+from StringIO import StringIO
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -67,6 +70,36 @@ def gen_people():
             new_user = User(per[0], 'password', per[2][0], datetime.date(2014, 03, 06), new_person.person_id)
             DBSession.add(new_user)
             transaction.manager.commit()
+
+def gen_images():
+    #pdb.set_trace()
+    path = os.path.expanduser("initimages/")
+    files = os.listdir(path)
+    for f in files:
+        try:
+            img = open(path+f, "r")
+            #img = Image.open(path+f) 
+            #img.load()
+            timg = Image.open(img)
+            timg_stream = StringIO()
+            timg_stream.seek(0)
+            timg.save(timg_stream, format="JPEG")
+            #img.thumbnail = timg_stream.getvalue()
+            #thumb = img.copy().thumbnail((50,50))
+            #med = img.copy()
+           # pdb.set_trace()
+        except:
+            print 'failed to load image from \'%s\'' % (path+f)
+            raise
+            continue
+        with transaction.manager:
+            records = DBSession.query(RadiologyRecord).all()
+            img.seek(0)
+            DBSession.add(PacsImage(records[random.randrange(len(records))].record_id, timg_stream.getvalue(), img.read(), img.read()))
+
+    print path
+
+
 def gen_randDate():
     return "2014-03-16"
 
@@ -81,7 +114,7 @@ def gen_records():
     radis = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='r').all()
     patients  = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='p').all()
 
-    num_records = 500
+    num_records = 100
     with transaction.manager:
         for i in range(0,num_records):
             # pat, doc, radi, ttype, p_date, t_date, diag, descr, record_id=None):
@@ -109,7 +142,7 @@ def main(argv=sys.argv):
         parser.readfp(open(os.path.expanduser(sqlalchemy_url[1].strip()[2:])))
         settings['sqlalchemy.url'] = parser.get('main', 'db.url')
 
-    engine = engine_from_config(settings, 'sqlalchemy.')
+    engine = engine_from_config(settings, 'sqlalchemy.',)
     DBSession.configure(bind=engine)
 
     Base.metadata.drop_all(engine)  
@@ -126,6 +159,7 @@ def main(argv=sys.argv):
     
     gen_people()
     gen_records()
+    gen_images()
     """ with transaction.manager:
         DBSession.add(Person('admin', 'obamacare', 'not reall an address', 'admin@obamacare.com', '7804929400', 0))            
         try:  
