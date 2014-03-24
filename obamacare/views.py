@@ -1,7 +1,6 @@
 from pyramid.response import Response
 
 from sqlalchemy.exc import DBAPIError
-from sqlalchemy import or_
 
 from pyramid.view import (
     view_config,
@@ -23,18 +22,20 @@ from .models import (
     MyModel,
     Person,
     User,
-    RadiologyRecord
+    RadiologyRecord,
+    PacsImage
     )
 from .security import(
     authenticate,
     getRole,
+
 )
 
 import pdb
 from utilities import *
 from json import loads
 
-@view_config(route_name='home', renderer='templates/user_page.pt', permission='view')
+@view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
     #print("landing view")
     #print ('auth user', authenticated_userid(request))
@@ -49,24 +50,41 @@ def user_home(request):
     reports = role == 'a'
     new = role!='p'
 
-    # I will add some more back end stuff that will show all records belonging to the signed in user
-    records = DBSession.query(RadiologyRecord).filter(or_(RadiologyRecord.patient_id==person.person_id,
-        RadiologyRecord.doctor_id==person.person_id, RadiologyRecord.radiologist_id==person.person_id)).all()
-    data = []
-    for rec in records:
-        pait = get_person(rec.patient_id)
-        doc = get_person(rec.doctor_id)
-        radi = get_person(rec.radiologist_id)
-        data.append(
-            (rec.record_id, 222, pait.last_name +", "+ pait.first_name, 
-                doc.last_name +", "+doc.first_name,
-            radi.first_name +", " + radi.last_name, rec.prescribing_date))
+    get = request.GET
 
-    return {'headers': ('record id', 'image', 'patient', 'doctor', 'Radiologist','date'), 
-    'data':data, 
+    if get.items() != []:
+        search_filter = clean(get['filter'])
+        start = clean(get['start'])
+        end = clean(get['end'])
+
+        try:
+            records = DBSession.query(
+                            RadiologyRecord
+                        ).filter(
+                            RadiologyRecord.test_date >= start and
+                            RadiologyRecord.test_date <= end and
+                            (search_filter.upper in
+                            RadiologyRecord.diagnosis.upper or
+                             search_filter.upper in
+                             RadiologyRecord.description.upper))
+        except DBAPIError:
+            return Response(conn_err_msg, content_type='text/plain', status_int=500)
+
+    return {'headers':('record_id',
+                       'image',
+                       'patient',
+                       'doctor',
+                       'date'),
+            'data':((10, 15, 'John', 'Wilson', '2014-03-16'),
+                    (42, 33, 'John', 'Wilson', '2014-05-09'))}
+"""
+    return {'new': new, 'users':users, 'reports':reports, 
+    return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
+    'data':((10, 15, 'john', 'wilson', '2014-03-16'),('42', 33, 'john', 'wilson', '2014-05-09')), 
     'new': new, 'users':users, 'reports':reports, 
     'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
     'logged_in': authenticated_userid(request) }
+"""
 
 
 @view_config(route_name='landing', permission='view')
@@ -98,9 +116,9 @@ def user_profile(request):
             phone = format_phone(post['phone'])
 
             password = []
-            password.append(post['existing'])
-            password.append(post['newpass'])
-            password.append(post['newconfirm'])
+            password.append(clean(post['existing']))
+            password.append(clean(post['newpass']))
+            password.append(clean(post['newconfirm']))
             
             if fname != '':
                 person.first_name = fname
@@ -131,9 +149,7 @@ def user_profile(request):
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
-    return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request),
-            'fname':person.first_name, 'lname':person.last_name, 'address':person.address, 'email':person.email,
-            'phone':person.phone,}
+    return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request)}
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -183,17 +199,27 @@ def record(request):
         return Response("Create new record")
     else:
         resp = ''
-        record = DBSession.query(
-                         RadiologyRecord
-                   ).filter(
-                         RadiologyRecord.record_id==rec_id
-                   ).first()
+        try:
+            record = DBSession.query(
+                             RadiologyRecord
+                       ).filter(
+                             RadiologyRecord.record_id==rec_id
+                       ).first()
+            img = DBSession.query(
+                             PacsImage
+                       ).filter(
+                             PacsImage.record_id==rec_id
+                       ).first()
+        except DBAPIError:
+            return Response(conn_err_msg, content_type='text/plain', status_int=500)
+            
 
-        resp += 'TODO: thumb url'
-        resp += '</br>'
-        resp += 'TODO: reg url'
-        resp += '</br>'
-        resp += 'TODO: full url'
+        if img != None:
+            imgurl = str(request.route_url('image', id=img.image_id))
+        else:
+            imgurl = 'No Image'
+
+        resp += imgurl
         resp += '</br>'
         resp += str(record.record_id)
         resp += '</br>'
@@ -216,9 +242,7 @@ def record(request):
 
         #Until the template is finished, I'll return a string, not this.
         keys = dict(
-            thumburl = None,
-            regurl = None,
-            fullurl = None,
+            imgurl = imgurl,
             recid = record.record_id,
             pid = record.patient_id,
             did = record.doctor_id,
@@ -234,28 +258,55 @@ def record(request):
 
 @view_config(route_name='image')
 def image(request):
-    rec_id = request.matchdict['id']
-    if (rec_id == 'new'):
+    img_id = request.matchdict['id']
+    if (img_id == 'new'):
         return Response("Create new image")
     else:
-        return Response("Image ID: " + rec_id)
+        try:
+            img = DBSession.query(
+                            PacsImage
+                       ).filter(
+                            PacsImage.image_id==img_id
+                       ).first()
+        except DBAPIError:
+            return Response(conn_err_msg, content_type='text/plain', status_int=500)
+        if img != None:
+            if 'size' in request.GET:
+                size = request.GET['size']
+                if size == 't':
+                    resp = img.thumbnail
+                elif size == 'r':
+                    resp = img.regular_size
+                elif size == 'f':
+                    resp = img.full_size
+                else:
+                    resp = img.regular_size
+            else:    
+                resp = img.regular_size
+                resp = 'default: regular_size'
+            return Response(resp)
+        else:
+            return Response('null')
 
 @view_config(route_name='user', renderer='templates/user_page.pt')
 def user(request):
     uname = request.matchdict['user_name']
-    user_rec = DBSession.query(
-                        User
-                    ).filter(
-                        User.user_name==uname
-                    ).first()
-    person = DBSession.query(
-                        Person
-                    ).filter(
-                        Person.person_id==user_rec.person_id
-                    ).first()
+    try:
+        user_rec = DBSession.query(
+                            User
+                        ).filter(
+                            User.user_name==uname
+                        ).first()
+        person = DBSession.query(
+                            Person
+                        ).filter(
+                            Person.person_id==user_rec.person_id
+                        ).first()
+    except DBAPIError:                    
+        return Response(conn_err_msg, content_type='text/plain', status_int=500)
     resp  = 'fname: ' + person.first_name + '</br>'
     resp += 'lname: ' + person.last_name + '</br>'
-    resp += 'email: ' + person.email + '</br>'
+    resp += 'email: ' + person.email
 
     keys = dict(
         fname = person.first_name,
