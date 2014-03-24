@@ -18,13 +18,18 @@
       		<div class="content" >
       			
 				<table id='table1' class='resizable' style='margin: 0 auto;'>
-				<tr tal:condition="headers">
+				<thead><tr tal:condition="headers">
 					<th tal:repeat="head range(len(headers))" tal:content="headers[repeat.head.index]">
 					</th>
-				</tr>
-				<tr tal:repeat="row range(len(data))">
-					<td tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td>
-				</tr>
+				</tr></thead>
+				<tbody>
+					
+					<tr tal:repeat="row range(len(data))" tal:attributes="class 'even_zebra' if repeat.row.even else 'odd_zebra'">
+						<td tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td>
+						
+					</tr>
+
+				</tbody>
 
 			</table>
 

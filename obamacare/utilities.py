@@ -1,3 +1,24 @@
+import pdb
+import sys
+import transaction
+import datetime
+import random
+
+from sqlalchemy import engine_from_config
+
+from sqlalchemy.exc import IntegrityError
+from pyramid.paster import (
+    get_appsettings,
+    setup_logging,
+    )
+
+from .models import (
+    DBSession,
+    User,
+    Person,
+)
+
+
 """
 Function takes a string and cleans it by performing the following:
 -First, it strips the string to remove excess whitespace
@@ -27,3 +48,10 @@ def format_phone(phone):
         return ''.join(phone)
     else:
         return 'BAD FORMAT'
+
+def get_person(person_id):
+    if not person_id:
+        return None
+    person = DBSession.query(Person).filter(Person.person_id==person_id).first()
+    return person
+
