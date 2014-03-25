@@ -56,6 +56,8 @@ def format_phone(phone):
 
 def format_date(date):
     if date == None:
+        return None
+
     date = [x for x in date if x in digits]
 
     if len(date) != 8:
