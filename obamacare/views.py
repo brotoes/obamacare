@@ -278,37 +278,72 @@ def record(request):
 
         return Response(resp)
 
+#TODO: Permissions
 @view_config(route_name='image')
 def image(request):
     img_id = request.matchdict['id']
     if (img_id == 'new'):
         return Response("Create new image")
-    else:
-        try:
-            img = DBSession.query(
-                            PacsImage
-                       ).filter(
-                            PacsImage.image_id==img_id
-                       ).first()
-        except DBAPIError:
-            return Response(conn_err_msg, content_type='text/plain', status_int=500)
-        if img != None:
-            if 'size' in request.GET:
-                size = request.GET['size']
-                if size == 't':
-                    resp = img.thumbnail
-                elif size == 'r':
-                    resp = img.regular_size
-                elif size == 'f':
-                    resp = img.full_size
-                else:
-                    resp = img.regular_size
-            else:    
+    
+
+    # TODO: no db stuff in views
+    # TODO: only return images user is allowed to see
+    try:
+        img = DBSession.query(PacsImage).filter(PacsImage.image_id==img_id).first()
+    except DBAPIError:
+        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+
+    if not img:
+        return Response('Image Not Found')
+   
+    if 'size' in request.GET:
+        size = request.GET['size']
+    else: 
+        size = "r"
+
+    if size == 't':
+        resp = img.thumbnail
+    elif size == 'f':
+        resp = img.full_size
+    else:   
+        resp = img.regular_size
+
+    return Response(body=resp,  content_type='image/jpeg')
+
+    # Method 2
+    #response = Response(content_type='application/jpg')
+    #response.app_iter = img.thumbnail  
+
+    """
+    img_id = request.matchdict['id']
+    if (img_id == 'new'):
+        return Response("Create new image")
+   
+    try:
+        # TODO: no db stuff in views
+        img = DBSession.query(PacsImage).filter(PacsImage.image_id==img_id).first()
+    except DBAPIError:
+        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+
+    if img:
+        if 'size' in request.GET:
+            size = "r"
+            size = request.GET['size']
+            if size == 't':
+                resp = img.thumbnail
+            elif size == 'r':
                 resp = img.regular_size
-                resp = 'default: regular_size'
-            return Response(resp)
-        else:
-            return Response('null')
+            elif size == 'f':
+                resp = img.full_size
+            else:
+                resp = img.regular_size
+        else:    
+            resp = img.regular_size
+            #resp = 'default: regular_size'
+        return Response(resp)
+    else:
+        return Response('Image Not Found')
+    """
 
 @view_config(route_name='user', renderer='templates/user_page.pt')
 def user(request):

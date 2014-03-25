@@ -26,7 +26,8 @@ from ..models import (
     )
 
 from PIL import Image
-from StringIO import StringIO
+
+from ..utilities import jpeg_toBinary
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -77,25 +78,26 @@ def gen_images():
     files = os.listdir(path)
     for f in files:
         try:
-            img = open(path+f, "r")
-            #img = Image.open(path+f) 
-            #img.load()
-            timg = Image.open(img)
-            timg_stream = StringIO()
-            timg_stream.seek(0)
-            timg.save(timg_stream, format="JPEG")
-            #img.thumbnail = timg_stream.getvalue()
-            #thumb = img.copy().thumbnail((50,50))
-            #med = img.copy()
-           # pdb.set_trace()
+            fd = open(path+f, "r")
+            img = Image.open(fd)
+            thumb = img.copy()
+            reg = img.copy()
+
+            thumb.thumbnail((60,60), Image.ANTIALIAS)
+            reg.thumbnail((200,200), Image.ANTIALIAS)
+
+            img.thumbnail = jpeg_toBinary(thumb)
+            img.regular_size = jpeg_toBinary(reg)
+            img.full_size = jpeg_toBinary(img)
+
         except:
             print 'failed to load image from \'%s\'' % (path+f)
-            raise
             continue
         with transaction.manager:
             records = DBSession.query(RadiologyRecord).all()
             img.seek(0)
-            DBSession.add(PacsImage(records[random.randrange(len(records))].record_id, timg_stream.getvalue(), img.read(), img.read()))
+            DBSession.add(PacsImage(records[random.randrange(len(records))].record_id, 
+                img.thumbnail, img.regular_size, img.full_size))
 
     print path
 

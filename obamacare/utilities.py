@@ -18,6 +18,9 @@ from .models import (
     Person,
 )
 
+from StringIO import StringIO
+from PIL import Image
+
 
 """
 Function takes a string and cleans it by performing the following:
@@ -49,9 +52,21 @@ def format_phone(phone):
     else:
         return 'BAD FORMAT'
 
+# jpeg  to convert what we read in from an image in binary for the db
+def jpeg_toBinary(img):
+    img_stream = StringIO()
+    img_stream.seek(0)
+    img.save(img_stream, format="JPEG")
+
+    return img_stream.getvalue()
+
+
+# This was where I started queries so we can probably move this
 def get_person(person_id):
     if not person_id:
         return None
     person = DBSession.query(Person).filter(Person.person_id==person_id).first()
     return person
+
+
 
