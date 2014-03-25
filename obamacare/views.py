@@ -46,7 +46,7 @@ def user_home(request):
     #print ('auth user', authenticated_userid(request))
     user = get_loggedin(request)
     person = get_person(user.person_id)
-    if not uid:
+    if not user:
         return HTTPForbidden
 
     role = getRole(user.user_name, request)[0].split(':')[1].strip()   
@@ -70,23 +70,30 @@ def user_home(request):
     records = get_records(request, start, end, search_filter)
 
     data = []
-    for i in records:
+    for rec in records:
+        pait = get_person(rec.patient_id)
+        doc = get_person(rec.doctor_id)
+        radi = get_person(rec.radiologist_id)
         data.append((
-                     i.record_id,
-                     i.patient_id,
-                     i.doctor_id,
-                     i.radiologist_id,
-                     i.test_type,
-                     i.prescribing_date,
-                     i.test_date,
-                     i.diagnosis,
-                     i.description
-                     ))
+            rec.record_id,
+            format_name(pait.first_name, pait.last_name),
+            format_name(doc.first_name, doc.last_name),
+            format_name(radi.first_name, radi.last_name),
+            rec.test_type,
+            rec.prescribing_date,
+            rec.test_date,
+            rec.diagnosis,
+        ))
+    keys = dict(
+       headers= ('record_id', 'patient_id','doctor_id', 'radiologist_id','test type',
+                'prescription date', 'test date', 'diagnosis'),
+        data=data, 
+        name= format_name(person.first_name, person.last_name),
+    )
+    return getModules(request, keys)
 
-    return {'headers':('record_id',
-                       'patient_id',
-                       'doctor_id',
-                       'radiologist_id',
+    # the old return stuff that shouldn't be used as it is ugly.
+    """  return {'headers':('record_id', 'patient_id','doctor_id', 'radiologist_id',
                        'test type',
                        'prescription date',
                        'test date',
@@ -98,13 +105,14 @@ def user_home(request):
             'users': users,
             'reports': reports,
             'project': 'obamacare'}
-"""
+
     return {'new': new, 'users':users, 'reports':reports, 
     return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
     'data':((10, 15, 'john', 'wilson', '2014-03-16'),('42', 33, 'john', 'wilson', '2014-05-09')), 
     'new': new, 'users':users, 'reports':reports, 
     'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
     'logged_in': authenticated_userid(request) }
+
 """
 
 
@@ -233,19 +241,13 @@ def user_profile(request):
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
     
-    return {
-        'fname': person.first_name,
-        'lname': person.last_name,
-        'address': person.address,
-        'email': person.email,
-        'phone': person.phone,
-        'logged_in': user.user_name,
-        'new': new,
-        'reports': reports,
-        'users': users
-           }
+    keys = dict(
+         fname = person.first_name, lname = person.last_name, 
+         address = person.address, email = person.email,
+         phone =person.phone
+    )
 
-    #return  getModules(request, keys)
+    return  getModules(request, keys)
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
