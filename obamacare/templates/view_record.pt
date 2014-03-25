@@ -15,38 +15,22 @@
 									<tr>
 									<td>
 								
-								First Name:</td>  			 <td><input type="text" name="fname" value="${fname}"/></td>
+								First Name:</td>  			 <td><input type="text" name="fname" value="${}"/></td>
 								</tr>
 								<tr>
-									<td>Last Name: </td> 		<td><input type="text" name="lname" value="${lname}"/></td>
+									<td>Last Name: </td> 		<td><input type="text" name="lname" value="${}"/></td>
 								</tr>
 								<tr>
 									<td>
-										Address: 		</td> 		<td><input type="text" name="address" value="${address}"/></td>
+										Address: 		</td> 		<td><input type="text" name="address" value="${}"/></td>
 									</tr>
 								<tr>
-									<td>Email:</td> 				<td> <input type="text" name="email" value="${email}"/></td>
+									<td>Email:</td> 				<td> <input type="text" name="email" value="${}"/></td>
 								</tr>
 								<tr>
-									<td>Phone:</td> 				<td> <input type="text" name="phone" value="${phone}"/></td>
+									<td>Phone:</td> 				<td> <input type="text" name="phone" value="${}"/></td>
 								</tr>
-								<tr>
-									<td colspan="2">Change Password:</td>
-								</tr>
-								<tr>
-									<td>Current:</td> 				<td><input type="text" name="existing"/></td>
-								</tr>
-								<tr>
-									<td>New:</td> 				<td><input type="text" name="newpass"/></td>
-								</tr>
-								<tr>
-									<td>Confirm</td> 				<td><input type="text" name="newconfirm"/></td>
-								</tr>
-								<tr>
-									<td colspan="2">
-											<input type="submit" value="Submit"/>
-									</td>
-								</tr>
+								
 								</table>
 							
 							
