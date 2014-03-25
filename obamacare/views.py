@@ -60,65 +60,56 @@ def user_home(request):
 
     get = request.GET
 
+    
+    if uid == 'admin':
+        results =  DBSession.query(RadiologyRecord)
+    else:
+        results = DBSession.query(RadiologyRecord).filter(or_(RadiologyRecord.patient_id==person.person_id,
+            RadiologyRecord.doctor_id==person.person_id, RadiologyRecord.radiologist_id==person.person_id))
+
+    images = DBSession.query(PacsImage).all() 
     if get.items() != []:
+        print ("\n\ngot filters\n\n")
         search_filter = clean(get['filter'])
         start = clean(get['start'])
         end = clean(get['end'])
 
         try:
+            if search_filter:
+                print("filtering")
+                results = results.filter(or_(RadiologyRecord.diagnosis.contains(search_filter), 
+                    RadiologyRecord.description.contains(search_filter)))       
             # this query should be looked at..
-            records = DBSession.query(RadiologyRecord).filter(
+            """records.filter(
                 RadiologyRecord.test_date >= start and
                 RadiologyRecord.test_date <= end and
                 (search_filter.upper in
                 RadiologyRecord.diagnosis.upper or
                  search_filter.upper in
-                 RadiologyRecord.description.upper))    
+                 RadiologyRecord.description.upper))"""  
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
     # I added some more back end stuff that will show all records belonging to the signed in user
     # This is the type of thing that should probably be in the queuys oh i mean queries thing.
-    if uid == 'admin':
-        records = DBSession.query(RadiologyRecord).all()
-    else:
-        records = DBSession.query(RadiologyRecord).filter(or_(RadiologyRecord.patient_id==person.person_id,
-            RadiologyRecord.doctor_id==person.person_id, RadiologyRecord.radiologist_id==person.person_id)).all()
-    images = DBSession.query(PacsImage).all()    
+    records = results.all()
     data = []
     for rec in records:
         pait = get_person(rec.patient_id)
         doc = get_person(rec.doctor_id)
         radi = get_person(rec.radiologist_id)
         data.append(
-            (rec.record_id, images[random.randrange(len(images))].image_id, pait.last_name +", "+ pait.first_name, 
-                doc.last_name +", "+doc.first_name,
-                radi.first_name +", " + radi.last_name, rec.prescribing_date))
+            (rec.record_id, images[random.randrange(len(images))].image_id, format_name(pait.first_name, pait.last_name), 
+                format_name(doc.last_name, doc.first_name),
+                format_name(radi.first_name,radi.last_name), rec.prescribing_date))
                         
-
     keys = dict(
         headers=('record id', 'image', 'patient', 'doctor', 'Radiologist','date'),
-        data=data, name= person.first_name+' ' +person.last_name,
+        data=data, name= format_name(person.first_name, person.last_name),
     )
     return getModules(request, keys)
 
-    # When you add new return values we need to keep the old ones too or templates will break
-"""    return {'headers':('record_id',
-                       'image',
-                       'patient',
-                       'doctor',
-                       'date'),
-            'data':((10, 15, 'John', 'Wilson', '2014-03-16'),
-                    (42, 33, 'John', 'Wilson', '2014-05-09'))}
-
-    return {'new': new, 'users':users, 'reports':reports, 
-    return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
-    'data':((10, 15, 'john', 'wilson', '2014-03-16'),('42', 33, 'john', 'wilson', '2014-05-09')), 
-    'new': new, 'users':users, 'reports':reports, 
-    'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
-    'logged_in': authenticated_userid(request) }
-"""
-
+                        
 @view_config(route_name='person_info', renderer='templates/person_profile.pt', permission='view')
 def person_info(request):
     uid = authenticated_userid(request)
@@ -253,33 +244,27 @@ def record(request):
         try:
             record = DBSession.query(RadiologyRecord).filter(
                 RadiologyRecord.record_id==rec_id).first()
-            img = DBSession.query(
+            imgs = DBSession.query(
                              PacsImage
                        ).filter(
                              PacsImage.record_id==rec_id
-                       ).first()
+                       ).all()
+            patient = get_person(record.patient_id)
+            doctor = get_person(record.doctor_id)
+            radi = get_person(record.radiologist_id)
+
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
-            
-
-        if img != None:
-            imgurl = str(request.route_url('image', id=img.image_id))
-        else:
-            imgurl = 'No Image'
-
-
-        #Until the template is finished, I'll return a string, not this.
-        # I've returned the dict as a string so I can see the keys too.
-        # TODO: these should be names and id's 
+    
         keys = dict(
-            imgurl = imgurl,
+            imgs = imgs,
             recid = record.record_id,
             pid = record.patient_id,
-            pname = record.patient_id,
+            pname = format_name(patient.first_name, patient.last_name),
             did = record.doctor_id,
-            dname = record.doctor_id,
+            dname = format_name(doctor.first_name, doctor.last_name),
             rid = record.radiologist_id,
-            rname = record.radiologist_id,
+            rname = format_name(radi.first_name, radi.last_name),
             ttype = record.test_type,
             pdate = record.prescribing_date,
             tdate = record.test_date,
@@ -287,10 +272,7 @@ def record(request):
             descr = record.description,)
         
         return  getModules(request, keys)
-        #    'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request),)
-
-        #return Response(keys.__str__())
-        #return keys
+        
 #TODO: Permissions
 @view_config(route_name='image')
 def image(request):

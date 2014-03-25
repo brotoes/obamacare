@@ -18,15 +18,15 @@
       		<div class="content" >
 
       			<div id="searchpane">
-	      			<form method="POST" action="profile">
+	      			<form method="GET" action="home">
 	      				<table class="searchitem">
 	      					<tbody class="searchitem">
 	      						<tr ckass="searchitem">
 	      						 	<td class="searchitem">Filter: </td><td class="searchitem"><input type="text" name="filter"/> 
 	      							</td>
-	      							<td class="searchitem">Before:</td><td class="searchitem"><input type="text" name="before"/>
+	      							<td class="searchitem">Before:</td><td class="searchitem"><input type="text" name="start"/>
 	      							</td>
-	      							<td class="searchitem">After:</td><td class="searchitem"> <input type="text" name="after"/>
+	      							<td class="searchitem">After:</td><td class="searchitem"> <input type="text" name="end"/>
 	      							</td>
 	      							<td colspan="2" class="searchitem"><input type="submit" value="Search"/>
 	      							</td>

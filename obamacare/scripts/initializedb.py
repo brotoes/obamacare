@@ -39,11 +39,11 @@ def usage(argv):
 def gen_people():
     people =(
         ('john', 'fisher', 'p', 'john'), ('wilson', 'roberts', 'd', 'wilson'), 
-        ('geroge', 'washington', 'r', 'admin'), ('lisa', 'brigs', 'pd', 'wilson'),
+        ('george', 'washington', 'r', 'admin'), ('lisa', 'brigs', 'pd', 'wilson'),
         ('newton', 'bitches!', 'pdr', 'admin'), ('frodo', 'baggins', 'dr', 'admin'), 
         ('Thomas', 'O\'Conner', 'p', 'thomas'), ('Kevin', 'Pain', 'd', 'kevin'),
         ('Devon', 'Milkman', 'r', 'devin'), ('Peter', 'Andrews', 'p', 'peter'),
-        ('Amy', 'Smith', 'p', 'amy'), ('Jason' , 'Gerogegino', 'p', 'jason'),
+        ('Amy', 'Smith', 'p', 'amy'), ('Jason' , 'Georgegino', 'p', 'jason'),
         ('James', 'Davidson', 'p', 'james')
         )
     admin = ('Admin', 'Obamacare', 'a', 'admin')
@@ -61,14 +61,14 @@ def gen_people():
             transaction.manager.commit()
             
         for per in people:
-            new_person = Person(per[3], per[1], 'something happened', str(per[1]) + '@google.com', '7308291258')
+            new_person = Person(per[0], per[1], 'something happened', str(per[1]) + '@google.com', '7308291258')
             email = new_person.email
             DBSession.add(new_person)
             transaction.manager.commit()
 
             new_person= DBSession.query(Person).filter(Person.email==email).first() 
 
-            new_user = User(per[0], 'password', per[2][0], datetime.date(2014, 03, 06), new_person.person_id)
+            new_user = User(per[0].lower(), 'password', per[2][0], datetime.date(2014, 03, 06), new_person.person_id)
             DBSession.add(new_user)
             transaction.manager.commit()
 

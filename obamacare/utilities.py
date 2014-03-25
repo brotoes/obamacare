@@ -52,6 +52,22 @@ def format_phone(phone):
     else:
         return 'BAD FORMAT'
 
+def format_name(first, last):
+    if not first:
+        first = "Unknown"
+    else:
+        first = first[0].upper() + first[1:]
+    first.strip()
+    if not last:
+        last = "Unknown"
+    else:
+        last = last[0].upper() + last[1:]
+    first.strip()
+
+    return last + ", " + first
+   
+
+
 # jpeg  to convert what we read in from an image in binary for the db
 def jpeg_toBinary(img):
     img_stream = StringIO()

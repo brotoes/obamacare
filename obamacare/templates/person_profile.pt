@@ -3,38 +3,31 @@
        xmlns:tal="http://xml.zope.org/namespaces/tal"
        xmlns:metal="http://xml.zope.org/namespaces/metal">
  
-    <div metal:use-macro="load: master.pt">
-      <div metal:fill-slot="content">
+<div metal:use-macro="load: master.pt">
+    <div metal:fill-slot="content">
       	<div class="content">
 	        <div class="align-left">
-						
-							<table style='margin: 0 auto;	'>
-								<tr>
-									<td colspan="2"><h1>${fname}'s Profile</h1></td>
-								</tr>
-									<tr>
-									<td>
-								
-								First Name:</td>  			 <td class="algin-right">${fname}</td>
-								</tr>
-								<tr>
-									<td>Last Name: </td> 		<td><span name="lname"> ${lname}</span></td>
-								</tr>
-								<tr>
-									<td>
-										Address: 		</td> 		<td><span name="address">${address}</span></td>
-									</tr>
-								<tr>
-									<td>Email:</td> 				<td> <span name="email">${email}"</span></td>
-								</tr>
-								<tr>
-									<td>Phone:</td> 				<td> <span name="phone">${phone}"</span></td>
-								</tr>
-								
-								</table>
-					</div>
-				</div>
+				<table style='margin: 0 auto;'>
+					<tr>
+						<td colspan="2"><h1>${fname}'s Profile</h1></td>
+					</tr>
+					<tr>
+						<td>First Name:</td>  		<td class="align-right">${fname}</td>
+					</tr><tr>
+						<td>Last Name: </td> 	<td class="align-right"> ${lname}</td>
+					</tr>
+					<tr>
+						<td>Address: </td> 		<td class="align-right">${address}</td>
+					</tr><tr>
+						<td>Email:</td> 		<td class="align-right">${email}"</td>
+					</tr>
+					<tr>
+						<td>Phone:</td> 	<td class="align-right">${phone}"</td>
+					</tr>
+					
+				</table>
 			</div>
 		</div>
-
+	</div>
+</div>
 </html>
