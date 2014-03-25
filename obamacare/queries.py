@@ -77,3 +77,10 @@ def get_records(request, start=None, end=None, search_filter=None):
                  RadiologyRecord.test_type.like(search_filter)
                  ))
              ).order_by(RadiologyRecord.test_date)
+# TODO: Possible permission check here
+def get_images(record_id):
+    if not record_id:
+        return None
+    images = DBSession.query(PacsImage.image_id).filter(PacsImage.record_id==record_id)
+
+    return images.all()

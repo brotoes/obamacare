@@ -12,24 +12,22 @@ body{
 
 h1{
   font-size: 26px;
+  font-weight:  bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 #header, #footer{
   width: 100%;
   color: #fff;
-  
   text-align: center;
   overflow: hidden;
-
 }
 
 
 #footer{
- 
-  
- 
   background: #000 url(footerbg.png) repeat-x 0 top;
   clear: both;
-   background-color: blue;
+  background-color: blue;
 }
 
 #top{
@@ -51,8 +49,9 @@ h1{
   margin-left: auto;
   padding-top: 15px;
   padding-bottom: 15px;
+  padding-left: 20px;
+  padding-right: 20px;
   background-color: #eee;
- 
 }
 
 .middle{
@@ -67,6 +66,8 @@ h1{
 }
 
 #toolbar{
+  position: relative;
+
   width: 100%;
   padding: 0px;
   background: url(middlebg.png) repeat-x;
@@ -85,6 +86,44 @@ h1{
   border-right: 2px solid #b2b2b2;
  /* background-color: green;*/
    
+}
+#searchpane{
+  width: 100%;
+  margin-left:  auto;
+  margin-right: auto;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 0px;
+  
+}
+.searchitem{
+ border: 0px;
+}
+
+
+table.searchitem {
+  width: auto;
+  overflow-x: hidden;
+  
+  margin: 0 auto;
+  
+  border-collapse: collapse;
+  border: 0px;
+}
+
+tr.searchitem{
+  border: 0px;
+}
+
+td.searchitem {
+  
+  font-size: 14px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 15px;
+
+  border: 0px;
+  
 }
 
 .align-left{

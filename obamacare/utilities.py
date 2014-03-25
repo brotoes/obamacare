@@ -1,3 +1,26 @@
+import pdb
+import sys
+import transaction
+import datetime
+import random
+
+from sqlalchemy import engine_from_config
+
+from sqlalchemy.exc import IntegrityError
+from pyramid.paster import (
+    get_appsettings,
+    setup_logging,
+    )
+
+from .models import (
+    DBSession,
+    User,
+    Person,
+)
+
+from StringIO import StringIO
+from PIL import Image
+
 """
 Function takes a string and cleans it by performing the following:
 -First, it strips the string to remove excess whitespace
@@ -33,11 +56,33 @@ def format_phone(phone):
 
 def format_date(date):
     if date == None:
-        return None
-
     date = [x for x in date if x in digits]
 
     if len(date) != 8:
         return None
     else:
         return date[0:3] + '-' + date[4:5] + '-' + date[6:7]
+
+def format_name(first, last):
+    if not first:
+        first = "Unknown"
+    else:
+        first = first[0].upper() + first[1:]
+    first.strip()
+    if not last:
+        last = "Unknown"
+    else:
+        last = last[0].upper() + last[1:]
+    first.strip()
+
+    return last + ", " + first
+   
+
+
+# jpeg  to convert what we read in from an image in binary for the db
+def jpeg_toBinary(img):
+    img_stream = StringIO()
+    img_stream.seek(0)
+    img.save(img_stream, format="JPEG")
+
+    return img_stream.getvalue()

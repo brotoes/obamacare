@@ -11,7 +11,7 @@
 				<a href="${request.application_url}/profile"> Profile </a>
 			</span>
 			<span tal:condition="new" class="toolitem">
-				<a tal:condition="logged_in" href="${request.application_url}/profile"> New </a>
+				<a href="${request.application_url}/record/new"> New </a>
 			</span>
 			<span tal:condition="reports" class="toolitem">
 				<a href="${request.application_url}/profile"> Reports </a>

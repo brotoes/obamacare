@@ -35,10 +35,12 @@ font-size: 12		px;
 }
 
 .even_zebra{
-	background-color: #eee;
+	background-color: #eee;	
+	cursor: pointer;
 }
 .odd_zebra{	
 	background-color: #fff;
+	cursor: pointer;
 }
 
 img { border:0px; }

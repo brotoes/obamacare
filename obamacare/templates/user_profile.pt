@@ -6,29 +6,30 @@
     <div metal:use-macro="load: master.pt">
       <div metal:fill-slot="content">
       	<div class="content">
-	        <div class="align-left" style="padding:70px;">
+	        <div class="align-left">
 						<form method="POST" action="profile">
-							<table style='margin: 0 auto;	'>
+							<table style='margin: 0 auto;' cellspacing="10">
 								<tr>
 									<td colspan="2"><h1>Edit Profile</h1></td>
 								</tr>
 									<tr>
-									<td>
-								
-								First Name:</td>  			 <td><input type="text" name="fname" value="${fname}"/></td>
+									<td>First Name:</td>		<td class="align-right"><input type="text" name="fname" value="${fname}"/></td>
 								</tr>
 								<tr>
-									<td>Last Name: </td> 		<td><input type="text" name="lname" value="${lname}"/></td>
+									<td>Last Name: </td>		
+									<td class="align-right"><input type="text" name="lname" value="${lname}"/></td>
 								</tr>
 								<tr>
-									<td>
-										Address: 		</td> 		<td><input type="text" name="address" value="${address}"/></td>
-									</tr>
-								<tr>
-									<td>Email:</td> 				<td> <input type="text" name="email" value="${email}"/></td>
+									<td>Address:</td>		
+									<td class="align-right"><input type="text" name="address" value="${address}"/></td>
 								</tr>
 								<tr>
-									<td>Phone:</td> 				<td> <input type="text" name="phone" value="${phone}"/></td>
+									<td>Email:</td>		
+									<td class="align-right"> <input type="text" name="email" value="${email}"/></td>
+								</tr>
+								<tr>
+									<td>Phone:</td>		
+									<td class="align-right"> <input type="text" name="phone" value="${phone}"/></td>
 								</tr>
 								<tr>
 									<td colspan="2">Change Password:</td>
