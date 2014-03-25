@@ -30,21 +30,19 @@ from .security import(
     getRole,
 
 )
-
+from datetime import date
 import pdb
 from utilities import *
+from queries import *
 from json import loads
 
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
     #print("landing view")
     #print ('auth user', authenticated_userid(request))
-    try:
-        user = DBSession.query(User).filter(User.user_name==authenticated_userid(request)).first()
-        person = DBSession.query(Person).filter(Person.person_id==user.person_id).first()
+    user = get_loggedin(request)
+    person = get_person(user.person_id)
 
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
     role = getRole(user.user_name, request)[0].split(':')[1].strip()   
     users = role == 'a'
     reports = role == 'a'
@@ -52,31 +50,48 @@ def user_home(request):
 
     get = request.GET
 
-    if get.items() != []:
-        search_filter = clean(get['filter'])
-        start = clean(get['start'])
-        end = clean(get['end'])
+    search_filter = None
+    start = None
+    end = None
 
-        try:
-            records = DBSession.query(
-                            RadiologyRecord
-                        ).filter(
-                            RadiologyRecord.test_date >= start and
-                            RadiologyRecord.test_date <= end and
-                            (search_filter.upper in
-                            RadiologyRecord.diagnosis.upper or
-                             search_filter.upper in
-                             RadiologyRecord.description.upper))
-        except DBAPIError:
-            return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    if 'f' in get:
+        search_filter = clean(get['f'])
+    if 's' in get:
+        start = clean(get['s'])
+    if 'e' in get:
+        end = clean(get['e'])
+
+    records = get_records(request, start, end, search_filter)
+
+    data = []
+    for i in records:
+        data.append((
+                     i.record_id,
+                     i.patient_id,
+                     i.doctor_id,
+                     i.radiologist_id,
+                     i.test_type,
+                     i.prescribing_date,
+                     i.test_date,
+                     i.diagnosis,
+                     i.description
+                     ))
 
     return {'headers':('record_id',
-                       'image',
-                       'patient',
-                       'doctor',
-                       'date'),
-            'data':((10, 15, 'John', 'Wilson', '2014-03-16'),
-                    (42, 33, 'John', 'Wilson', '2014-05-09'))}
+                       'patient_id',
+                       'doctor_id',
+                       'radiologist_id',
+                       'test type',
+                       'prescription date',
+                       'test date',
+                       'diagnosis',
+                       'description'),
+            'data': data,
+            'logged_in': user.user_name,
+            'new': new,
+            'users': users,
+            'reports': reports,
+            'project': 'obamacare'}
 """
     return {'new': new, 'users':users, 'reports':reports, 
     return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
@@ -148,8 +163,19 @@ def user_profile(request):
                      
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    
+    return {
+        'fname': person.first_name,
+        'lname': person.last_name,
+        'address': person.address,
+        'email': person.email,
+        'phone': person.phone,
+        'logged_in': user.user_name,
+        'new': new,
+        'reports': reports,
+        'users': users
+           }
 
-    return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request)}
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -315,7 +341,7 @@ def user(request):
     )
 
     return Response(resp)
-
+"""
 @view_config(route_name='get', renderer='json')
 def get(request):
     get_type = request.matchdict['type']
@@ -329,7 +355,7 @@ def get(request):
             }
     else:
         return HTTPNotFound()
-    
+""" 
 
 @view_config(route_name='help', renderer='templates/mytemplate.pt')
 def my_view(request):
