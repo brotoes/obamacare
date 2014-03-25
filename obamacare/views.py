@@ -36,7 +36,9 @@ from .security import(
 
 import pdb
 from utilities import *
+from queries import *
 from json import loads
+import json
 import random
 
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
@@ -280,7 +282,6 @@ def image(request):
     if (img_id == 'new'):
         return Response("Create new image")
     
-
     # TODO: no db stuff in views
     # TODO: only return images user is allowed to see
     try:
@@ -309,37 +310,6 @@ def image(request):
     #response = Response(content_type='application/jpg')
     #response.app_iter = img.thumbnail  
 
-    """
-    img_id = request.matchdict['id']
-    if (img_id == 'new'):
-        return Response("Create new image")
-   
-    try:
-        # TODO: no db stuff in views
-        img = DBSession.query(PacsImage).filter(PacsImage.image_id==img_id).first()
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
-
-    if img:
-        if 'size' in request.GET:
-            size = "r"
-            size = request.GET['size']
-            if size == 't':
-                resp = img.thumbnail
-            elif size == 'r':
-                resp = img.regular_size
-            elif size == 'f':
-                resp = img.full_size
-            else:
-                resp = img.regular_size
-        else:    
-            resp = img.regular_size
-            #resp = 'default: regular_size'
-        return Response(resp)
-    else:
-        return Response('Image Not Found')
-    """
-
 @view_config(route_name='user', renderer='templates/user_page.pt')
 def user(request):
     uname = request.matchdict['user_name']
@@ -367,6 +337,17 @@ def user(request):
     )
 
     return Response(resp)
+
+@view_config(route_name="image_list", renderer='json')
+def image_list(request):
+    rec_id = request.matchdict['id']
+    if not rec_id:
+        return None
+    images = get_images(rec_id)
+    if not images:
+        return None
+    print images
+    return images
 
 @view_config(route_name='get', renderer='json')
 def get(request):

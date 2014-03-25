@@ -56,8 +56,10 @@ def main(global_config, **settings):
         # ---> HTML page with the info with p_id=id
 
     config.add_route('image', '/i/{id}') 
-        # ---> JPEG matching id and optionally ?s=[t,r,f] 
-
+        # ---> JPEG matching id and optionally ?s=[t,r,f]
+    config.add_route('image_list', '/images/{id}')
+        # ---> JSON list of images ids that are related by record_id=id
+        
     config.add_route('get', '/get/{type}')
     config.add_route('user', '/user/{user_name}')
    
