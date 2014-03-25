@@ -13,13 +13,17 @@
 									<td colspan="2"><h1>Record: ${recid} </h1></td>
 								</tr>
 								<tr>
-									<td>Patient: </td> 		<td><input type="text" name="lname" value="${pname}" readonly/></td>
+									<td>Patient: </td> 
+									<td><a href="${request.route_url('person_info', id=pid)}"> ${pname} </a></td>	
+
 								</tr>
 								<tr>
-									<td>Doctor:</td> 		<td><input type="text" name="address" value="${dname}" readonly/></td>
+									<td>Doctor:</td>
+									<td><a href="${request.route_url('person_info', id=did)}"> ${dname} </a></td>	
 								</tr>
 								<tr>
-									<td>Radiologist:</td> 				<td> <input type="text" name="email" value="${rname}" readonly/></td>
+									<td>Radiologist:</td>
+									<td><a href="${request.route_url('person_info', id=rid)}"> ${rname} </a></td>	
 								</tr>
 								<tr>
 									<td>Test Type:</td> 				<td> <input type="text" name="phone" value="${ttype}" readonly/></td>

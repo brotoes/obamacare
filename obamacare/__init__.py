@@ -52,7 +52,7 @@ def main(global_config, **settings):
         # ---> HTML page with the user's current records
     config.add_route('record', '/record/{id}')
         # ---> HTML page with the record and image info for rec_id=id
-    #config.add_route('person_info', '/person/{id}')
+    config.add_route('person_info', '/person/{id}')
         # ---> HTML page with the info with p_id=id
 
     config.add_route('image', '/i/{id}') 

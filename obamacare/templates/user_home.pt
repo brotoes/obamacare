@@ -16,7 +16,26 @@
 	<div metal:use-macro="load: master.pt">
      	<div metal:fill-slot="content">
       		<div class="content" >
-      			
+
+      			<div id="searchpane">
+	      			<form method="POST" action="profile">
+	      				<table class="searchitem">
+	      					<tbody class="searchitem">
+	      						<tr ckass="searchitem">
+	      						 	<td class="searchitem">Filter: </td><td class="searchitem"><input type="text" name="filter"/> 
+	      							</td>
+	      							<td class="searchitem">Before:</td><td class="searchitem"><input type="text" name="before"/>
+	      							</td>
+	      							<td class="searchitem">After:</td><td class="searchitem"> <input type="text" name="after"/>
+	      							</td>
+	      							<td colspan="2" class="searchitem"><input type="submit" value="Search"/>
+	      							</td>
+	      						</tr>
+	      					</tbody>
+	      				</table>
+	      				
+	      			</form>
+      			</div>
 				<table id='table1' class='resizable' style='margin: 0 auto;'>
 				<thead><tr tal:condition="headers">
 					<th tal:repeat="head range(len(headers))" tal:content="headers[repeat.head.index]">

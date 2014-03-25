@@ -119,6 +119,25 @@ def user_home(request):
     'logged_in': authenticated_userid(request) }
 """
 
+@view_config(route_name='person_info', renderer='templates/person_profile.pt', permission='view')
+def person_info(request):
+    uid = authenticated_userid(request)
+    if not uid:
+        return HTTPForbidden
+    req_id = request.matchdict['id']
+    if not req_id:
+        return HTTPNotFound()
+    person = get_person(req_id)
+    if not Person:
+        return HTTPNotFound()
+
+    keys = dict(
+        fname = person.first_name, lname = person.last_name, 
+        address = person.address, email = person.email,
+        phone =person.phone
+    )
+    return  getModules(request, keys)
+
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
     #print ('auth user', authenticated_userid(request))
@@ -251,12 +270,15 @@ def record(request):
 
         #Until the template is finished, I'll return a string, not this.
         # I've returned the dict as a string so I can see the keys too.
-        # TODO: these should be names not id's
+        # TODO: these should be names and id's 
         keys = dict(
             imgurl = imgurl,
             recid = record.record_id,
+            pid = record.patient_id,
             pname = record.patient_id,
+            did = record.doctor_id,
             dname = record.doctor_id,
+            rid = record.radiologist_id,
             rname = record.radiologist_id,
             ttype = record.test_type,
             pdate = record.prescribing_date,
