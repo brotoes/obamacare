@@ -22,12 +22,13 @@
 					<th tal:repeat="head range(len(headers))" tal:content="headers[repeat.head.index]">
 					</th>
 				</tr></thead>
-				<tbody>
-					
-					<tr tal:repeat="row range(len(data))" tal:attributes="class 'even_zebra' if repeat.row.even else 'odd_zebra'">
-						<td tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td>
-						
+				
+				<tbody tal:define="row 0; col 0">
+				
+					<tr tal:repeat="row range(len(data))" tal:attributes="class 'even_zebra' if repeat.row.even else 'odd_zebra';onclick 'document.location = \'/record/' + str(data[row][0]) + '\''">
+						<a href="#"><td tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td></a>
 					</tr>
+
 
 				</tbody>
 

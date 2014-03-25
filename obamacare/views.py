@@ -29,7 +29,7 @@ from .models import (
 from .security import(
     authenticate,
     getRole,
-
+    getModules,
 )
 
 import pdb
@@ -86,12 +86,11 @@ def user_home(request):
             (rec.record_id, images[random.randrange(len(images))].image_id, pait.last_name +", "+ pait.first_name, 
                 doc.last_name +", "+doc.first_name,
             radi.first_name +", " + radi.last_name, rec.prescribing_date))
-
-    return {'headers': ('record id', 'image', 'patient', 'doctor', 'Radiologist','date'), 
-    'data':data, 
-    'new': new, 'users':users, 'reports':reports, 
-    'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
-    'logged_in': authenticated_userid(request) }
+    keys = dict(
+        headers=('record id', 'image', 'patient', 'doctor', 'Radiologist','date'),
+        data=data, name= person.first_name+' ' +person.last_name,
+    )
+    return getModules(request, keys)
 
     # When you add new return values we need to keep the old ones too or templates will break
 """    return {'headers':('record_id',
@@ -118,11 +117,7 @@ def user_profile(request):
         person = DBSession.query(Person).filter(Person.person_id==user.person_id).first()
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    role = getRole(user.user_name, request)[0].split(':')[1].strip()   
-    users = role == 'a'
-    reports = role == 'a'
-    new = role!='p'
-
+   
     #update database
     if (request.POST.items() != []):
         try:
@@ -167,11 +162,15 @@ def user_profile(request):
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
-    #return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request)}
-    # Return "real" data
-    return {'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request),
-            'fname':person.first_name, 'lname':person.last_name, 'address':person.address, 'email':person.email,
-            'phone':person.phone,}
+    keys = dict(
+         fname = person.first_name, lname = person.last_name, 
+         address = person.address, email = person.email,
+         phone =person.phone
+         )
+    #return { new = new, users = users, reports':reports, 'logged_in': authenticated_userid(request),
+    #        'fname':person.first_name, 'lname':person.last_name, 'address':person.address, 'email':person.email,
+    #       'phone':person.phone,}
+    return  getModules(request, keys)
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -213,7 +212,7 @@ def logout(request):
     headers = forget(request)
     return HTTPFound(location = request.route_url('landing'),
                      headers = headers)
-
+#TODO: Permissions
 @view_config(route_name='record', renderer='templates/view_record.pt')
 def record(request):
     rec_id = request.matchdict['id']
@@ -241,43 +240,26 @@ def record(request):
         else:
             imgurl = 'No Image'
 
-        resp += imgurl
-        resp += '</br>'
-        resp += str(record.record_id)
-        resp += '</br>'
-        resp += str(record.patient_id)
-        resp += '</br>'
-        resp += str(record.doctor_id)
-        resp += '</br>'
-        resp += str(record.radiologist_id)
-        resp += '</br>'
-        resp += record.test_type
-        resp += '</br>'
-        resp += str(record.prescribing_date)
-        resp += '</br>'
-        resp += str(record.test_date)
-        resp += '</br>'
-        resp += record.diagnosis
-        resp += '</br>'
-        resp += record.description
-        resp += '</br>'
-
         #Until the template is finished, I'll return a string, not this.
+        # I've returned the dict as a string so I can see the keys too.
+        # TODO: these should be names not id's
         keys = dict(
             imgurl = imgurl,
             recid = record.record_id,
-            pid = record.patient_id,
-            did = record.doctor_id,
-            rid = record.radiologist_id,
+            pname = record.patient_id,
+            dname = record.doctor_id,
+            rname = record.radiologist_id,
             ttype = record.test_type,
             pdate = record.prescribing_date,
             tdate = record.test_date,
             diag = record.diagnosis,
-            descr = record.description,
-            )
+            descr = record.description,)
+        
+        return  getModules(request, keys)
+        #    'new': new, 'users':users, 'reports':reports, 'logged_in': authenticated_userid(request),)
 
-        return Response(resp)
-
+        #return Response(keys.__str__())
+        #return keys
 #TODO: Permissions
 @view_config(route_name='image')
 def image(request):

@@ -24,6 +24,30 @@ def getRole(username, request):
 
 	return ['group:'+user.role]
 
+# returns a dict of the logged in user's modules for use with templating
+# such wow..
+def getModules(request, keys=None):
+	if not keys:
+		keys = {}
+	user = authenticated_userid(request)
+	if not user:
+		return keys
+	keys['logged_in'] = user
+
+	role = getRole(user, request)[0].split(':')[1].strip()   
+	# Give admins acces to the user management module
+	users = role == 'a'	
+	# Give admins acces to the reports module
+	reports = role == 'a'
+	# Give everyone but patients access to the new module
+	new = role!='p'
+
+	keys['users'] = users
+	keys['new'] = new
+	keys['reports'] = reports
+
+	return keys
+
 
 def authenticate(user_name, password):
 	try:
