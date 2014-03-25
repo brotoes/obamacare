@@ -296,8 +296,8 @@ def image(request):
     if not img:
         return Response('Image Not Found')
    
-    if 'size' in request.GET:
-        size = request.GET['size']
+    if 's' in request.GET:
+        size = request.GET['s']
     else: 
         size = "r"
 

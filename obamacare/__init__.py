@@ -45,7 +45,7 @@ def main(global_config, **settings):
     config.add_route('logout', '/logout')
     config.add_route('help', '/help') #this is a fake page :P It's from the scaffold I just use it for reference 
     config.add_route('record', '/record/{id}')
-    config.add_route('image', '/image/{id}')
+    config.add_route('image', '/i/{id}')
     config.add_route('get', '/get/{type}')
     config.add_route('user', '/user/{user_name}')
     config.add_route('home', '/home')
