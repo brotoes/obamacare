@@ -12,24 +12,22 @@ body{
 
 h1{
   font-size: 26px;
+  font-weight:  bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 #header, #footer{
   width: 100%;
   color: #fff;
-  
   text-align: center;
   overflow: hidden;
-
 }
 
 
 #footer{
- 
-  
- 
   background: #000 url(footerbg.png) repeat-x 0 top;
   clear: both;
-   background-color: blue;
+  background-color: blue;
 }
 
 #top{
@@ -52,7 +50,6 @@ h1{
   padding-top: 15px;
   padding-bottom: 15px;
   background-color: #eee;
- 
 }
 
 .middle{

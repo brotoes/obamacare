@@ -18,6 +18,8 @@ from pyramid.httpexceptions import (
     HTTPFound,
     HTTPNotFound,
     )
+from pyramid.renderers import render_to_response
+
 from .models import (
     DBSession,
     MyModel,
@@ -41,8 +43,12 @@ import random
 def user_home(request):
     #print("landing view")
     #print ('auth user', authenticated_userid(request))
+    uid = authenticated_userid(request)
+    if not uid:
+        return HTTPForbidden
+
     try:
-        user = DBSession.query(User).filter(User.user_name==authenticated_userid(request)).first()
+        user = DBSession.query(User).filter(User.user_name==uid).first()
         person = DBSession.query(Person).filter(Person.person_id==user.person_id).first()
 
     except DBAPIError:
@@ -60,22 +66,24 @@ def user_home(request):
         end = clean(get['end'])
 
         try:
-            records = DBSession.query(
-                            RadiologyRecord
-                        ).filter(
-                            RadiologyRecord.test_date >= start and
-                            RadiologyRecord.test_date <= end and
-                            (search_filter.upper in
-                            RadiologyRecord.diagnosis.upper or
-                             search_filter.upper in
-                             RadiologyRecord.description.upper))
+            # this query should be looked at..
+            records = DBSession.query(RadiologyRecord).filter(
+                RadiologyRecord.test_date >= start and
+                RadiologyRecord.test_date <= end and
+                (search_filter.upper in
+                RadiologyRecord.diagnosis.upper or
+                 search_filter.upper in
+                 RadiologyRecord.description.upper))    
         except DBAPIError:
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
     # I added some more back end stuff that will show all records belonging to the signed in user
     # This is the type of thing that should probably be in the queuys oh i mean queries thing.
-    records = DBSession.query(RadiologyRecord).filter(or_(RadiologyRecord.patient_id==person.person_id,
-        RadiologyRecord.doctor_id==person.person_id, RadiologyRecord.radiologist_id==person.person_id)).all()
+    if uid == 'admin':
+        records = DBSession.query(RadiologyRecord).all()
+    else:
+        records = DBSession.query(RadiologyRecord).filter(or_(RadiologyRecord.patient_id==person.person_id,
+            RadiologyRecord.doctor_id==person.person_id, RadiologyRecord.radiologist_id==person.person_id)).all()
     images = DBSession.query(PacsImage).all()    
     data = []
     for rec in records:
@@ -85,7 +93,9 @@ def user_home(request):
         data.append(
             (rec.record_id, images[random.randrange(len(images))].image_id, pait.last_name +", "+ pait.first_name, 
                 doc.last_name +", "+doc.first_name,
-            radi.first_name +", " + radi.last_name, rec.prescribing_date))
+                radi.first_name +", " + radi.last_name, rec.prescribing_date))
+                        
+
     keys = dict(
         headers=('record id', 'image', 'patient', 'doctor', 'Radiologist','date'),
         data=data, name= person.first_name+' ' +person.last_name,
@@ -217,15 +227,13 @@ def logout(request):
 def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
-        return Response("Create new record")
+        return render_to_response('templates/new_record.pt',
+                              getModules(request),request=request)
     else:
         resp = ''
         try:
-            record = DBSession.query(
-                             RadiologyRecord
-                       ).filter(
-                             RadiologyRecord.record_id==rec_id
-                       ).first()
+            record = DBSession.query(RadiologyRecord).filter(
+                RadiologyRecord.record_id==rec_id).first()
             img = DBSession.query(
                              PacsImage
                        ).filter(
@@ -239,6 +247,7 @@ def record(request):
             imgurl = str(request.route_url('image', id=img.image_id))
         else:
             imgurl = 'No Image'
+
 
         #Until the template is finished, I'll return a string, not this.
         # I've returned the dict as a string so I can see the keys too.
