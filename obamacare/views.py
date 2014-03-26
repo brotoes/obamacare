@@ -77,19 +77,26 @@ def user_home(request):
         radi = get_person(rec.radiologist_id)
         data.append((
             rec.record_id,
-            format_name(pait.first_name, pait.last_name),
-            format_name(doc.first_name, doc.last_name),
-            format_name(radi.first_name, radi.last_name),
+            pait.last_name,
+            doc.last_name,
+            radi.last_name,
             rec.test_type,
             rec.prescribing_date,
             rec.test_date,
             rec.diagnosis,
         ))
     keys = dict(
-       headers= ('record_id', 'patient_id','doctor_id', 'radiologist_id','test type',
-                'prescription date', 'test date', 'diagnosis'),
-        data=data, 
-        name= format_name(person.first_name, person.last_name),
+       headers= ('Record ID',
+                 'Patient',
+                 'Doctor',
+                 'Radiologist',
+                 'Test Type',
+                 'Prescription Date',
+                 'Test Date',
+                 'Diagnosis'
+                 ),
+       data=data, 
+       name=format_name(person.first_name, person.last_name),
     )
     return getModules(request, keys)
 
