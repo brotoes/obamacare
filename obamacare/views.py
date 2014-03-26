@@ -44,9 +44,9 @@ import random
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
     #print ('auth user', authenticated_userid(request))
-    user = get_loggedin(request)
+    user = get_user(authenticated_userid(request))
     person = get_person(user.person_id)
-    if not uid:
+    if not user:
         return HTTPForbidden
 
     role = getRole(user.user_name, request)[0].split(':')[1].strip()   
@@ -56,16 +56,16 @@ def user_home(request):
 
     get = request.GET
 
-    search_filter = None
-    start = None
-    end = None
+    search_filter = ''
+    start = ''
+    end = ''
 
-    if 'f' in get:
-        search_filter = clean(get['f'])
-    if 's' in get:
-        start = clean(get['s'])
-    if 'e' in get:
-        end = clean(get['e'])
+    if 'filter' in get:
+        search_filter = clean(get['filter'])
+    if 'start' in get:
+        start = clean(get['start'])
+    if 'end' in get:
+        end = clean(get['end'])
 
     records = get_records(request, start, end, search_filter)
 
@@ -73,31 +73,35 @@ def user_home(request):
     for i in records:
         data.append((
                      i.record_id,
-                     i.patient_id,
-                     i.doctor_id,
-                     i.radiologist_id,
+                     get_person(i.patient_id).last_name,
+                     get_person(i.doctor_id).last_name,
+                     get_person(i.radiologist_id).last_name,
                      i.test_type,
                      i.prescribing_date,
                      i.test_date,
                      i.diagnosis,
-                     i.description
                      ))
 
-    return {'headers':('record_id',
-                       'patient_id',
-                       'doctor_id',
-                       'radiologist_id',
-                       'test type',
-                       'prescription date',
-                       'test date',
-                       'diagnosis',
-                       'description'),
+    return {'headers':(
+                       'Record ID',
+                       'Patient',
+                       'Doctor',
+                       'Radiologist',
+                       'Test',
+                       'Prescription Date',
+                       'Test Date',
+                       'Diagnosis'
+                       ),
             'data': data,
             'logged_in': user.user_name,
             'new': new,
             'users': users,
             'reports': reports,
-            'project': 'obamacare'}
+            'project': 'obamacare',
+            'filter': search_filter,
+            'start': start,
+            'end': end
+            }
 """
     return {'new': new, 'users':users, 'reports':reports, 
     return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
@@ -184,11 +188,16 @@ def person_info(request):
 def user_profile(request):
     #print ('auth user', authenticated_userid(request))
     try:
-        user = DBSession.query(User).filter(User.user_name==authenticated_userid(request)).first()
-        person = DBSession.query(Person).filter(Person.person_id==user.person_id).first()
+        user = get_user(authenticated_userid(request))
+        person = get_person(user.person_id)
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
    
+    role = getRole(user.user_name, request)[0].split(':')[1].strip()   
+    users = role == 'a'
+    reports = role == 'a'
+    new = role!='p'
+    
     #update database
     if (request.POST.items() != []):
         try:
@@ -296,20 +305,11 @@ def record(request):
                               getModules(request),request=request)
     else:
         resp = ''
-        try:
-            record = DBSession.query(RadiologyRecord).filter(
-                RadiologyRecord.record_id==rec_id).first()
-            imgs = DBSession.query(
-                             PacsImage
-                       ).filter(
-                             PacsImage.record_id==rec_id
-                       ).all()
-            patient = get_person(record.patient_id)
-            doctor = get_person(record.doctor_id)
-            radi = get_person(record.radiologist_id)
-
-        except DBAPIError:
-            return Response(conn_err_msg, content_type='text/plain', status_int=500)
+        record = get_record(request, rec_id)
+        imgs = get_images(request, rec_id)
+        patient = get_person(record.patient_id)
+        doctor = get_person(record.doctor_id)
+        radi = get_person(record.radiologist_id)
     
         keys = dict(
             imgs = imgs,
@@ -337,10 +337,7 @@ def image(request):
     
     # TODO: no db stuff in views
     # TODO: only return images user is allowed to see
-    try:
-        img = DBSession.query(PacsImage).filter(PacsImage.image_id==img_id).first()
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    img = get_images(request, get_image)
 
     if not img:
         return Response('Image Not Found')
@@ -367,16 +364,8 @@ def image(request):
 def user(request):
     uname = request.matchdict['user_name']
     try:
-        user_rec = DBSession.query(
-                            User
-                        ).filter(
-                            User.user_name==uname
-                        ).first()
-        person = DBSession.query(
-                            Person
-                        ).filter(
-                            Person.person_id==user_rec.person_id
-                        ).first()
+        user_rec = get_user(uname)
+        person = get_person(user_rec.person_id)
     except DBAPIError:                    
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     resp  = 'fname: ' + person.first_name + '</br>'
@@ -445,6 +434,3 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
-
-
-
