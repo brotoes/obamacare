@@ -187,9 +187,9 @@ def user_profile(request):
     keys = dict(
         displaysuccess = None,
         displayerror = None,
-         fname = person.first_name, lname = person.last_name, 
-         address = person.address, email = person.email,
-         phone =person.phone
+        fname = person.first_name, lname = person.last_name, 
+        address = person.address, email = person.email,
+        phone =person.phone
     )
 
     if error_message != "":
@@ -362,8 +362,8 @@ def report(request):
     start = '0001-01-01'
     end = '9999-12-31'
 
-    if 'f' in get:
-        diag_filter = clean(get['f'])
+    if 'filter' in get:
+        diag_filter = clean(get['filter'])
     if 'start' in get:
         start = clean(get['start'])
     if 'end' in get:
@@ -386,6 +386,8 @@ def report(request):
     
     [append_(item) for item in duplicates if item[0] not in ids]
     keys = dict(
+       displayerror = None,
+       displaysuccess = None,
        headers= (
                  'Patient ID',
                  'Name',
