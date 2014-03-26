@@ -58,15 +58,12 @@ def get_person(person_id):
 #returns a list of all persons
 def get_persons(roles=['d','r','p','a']):
     persons = DBSession.query(
-                        Person,
-                        User
-                    ).select_from(
-                        join(Person, User, User.person_id)
-                    ).filter(
-                        User.role in roles
+                        Person.person_id
                     ).all()
+    
+    
 
-    print persons
+    return persons
 
 def get_user(user_name):
     if not user_name:

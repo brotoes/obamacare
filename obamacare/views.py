@@ -189,55 +189,56 @@ def user_profile(request):
     reports = role == 'a'
     new = role!='p'
     
+    error_message = ""
+
     #update database
     if (request.POST.items() != []):
-        try:
-            post = request.POST
-            fname = clean(post['fname'])
-            lname = clean(post['lname'])
-            address = clean(post['address'])
-            email = clean(post['email'])
-            phone = format_phone(post['phone'])
+        post = request.POST
+        fname = clean(post['fname'])
+        lname = clean(post['lname'])
+        address = clean(post['address'])
+        email = clean(post['email'])
+        phone = format_phone(post['phone'])
 
-            password = []
-            password.append(clean(post['existing']))
-            password.append(clean(post['newpass']))
-            password.append(clean(post['newconfirm']))
-            
-            if fname != '':
-                person.first_name = fname
-            if lname != '':
-                person.last_name = lname
-            if address != '':
-                person.address = address
-            if email != '':
-                person.email = email
-            if phone != '':
-                if phone != 'BAD FORMAT':
-                    person.phone = phone
+        password = []
+        password.append(clean(post['existing']))
+        password.append(clean(post['newpass']))
+        password.append(clean(post['newconfirm']))
+        
+        if fname != '':
+            person.first_name = fname
+        if lname != '':
+            person.last_name = lname
+        if address != '':
+            person.address = address
+        if email != '':
+            person.email = email
+        if phone != '':
+            if phone != 'BAD FORMAT':
+                person.phone = phone
+            else:
+                error_message = "Bad Phone Format"
+        
+        full_fields = [x for x in password if x != '']
+        if len(full_fields) > 0:
+            if len(full_fields) == 3:
+                if (password[0] == user.password and
+                    password[1] == password[2] and
+                    len(password[1]) >= 6):
+                    user.password = password[1]
                 else:
-                    print "TODO: ERROR MESSAGE: BAD PHONE FORMAT"
-            
-            full_fields = [x for x in password if x != '']
-            if len(full_fields) > 0:
-                if len(full_fields) == 3:
-                    if (password[0] == user.password and
-                        password[1] == password[2] and
-                        len(password[1]) >= 6):
-                        user.password = password[1]
-                    else:
-                        print "TODO: Error message: fields must match"
-                else:
-                    print "TODO: Error message: empty pass fields"
+                    error_message = "Password Fields Must Match"
+            else:
+                error_message = "Some Password Fields Empty"
                      
-        except DBAPIError:
-            return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    
     keys = dict(
          fname = person.first_name, lname = person.last_name, 
          address = person.address, email = person.email,
          phone =person.phone
     )
+
+    if error_message != "":
+        keys['displayerror'] = error_message
 
     return  getModules(request, keys)
 
@@ -435,21 +436,19 @@ def people_list(request):
     if 'r' in get:
         role_arg = clean(get['r'])
     roles = role_arg.split(',')
-    """
-    persons = get_persons()
+    
+    persons = get_persons(roles=roles)
 
     data = []
 
     for i in persons:
-        data.append(
+        data.append((
                     i.person_id,
                     format_name(i.first_name, i.last_name),
                     i.email
-                    )
-"""
-    return dict(data=[[1, 'obamacare, admin', 'a@a.com'],
-                      [2, 'fisher, john', 'b@b.com'],
-                      [3, 'roberts wilson', 'c@c.com']],
+                    ))
+    
+    return dict(data=data,
                 headers=('ID',
                          'Name',
                          'Email')) 
