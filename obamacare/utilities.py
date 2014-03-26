@@ -63,7 +63,8 @@ def format_date(date):
     if len(date) != 8:
         return None
     else:
-        return date[0:3] + '-' + date[4:5] + '-' + date[6:7]
+        return ''.join(date[0:3]) + '-' + ''.join(date[4:5]) + \
+        '-' + ''.join(date[6:7])
 
 def format_name(first, last):
     if not first:

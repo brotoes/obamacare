@@ -63,16 +63,20 @@ def user_home(request):
     get = request.GET
 
     search_filter = ''
-    start = ''
-    end = ''
+    start = '0001-01-01'
+    end = '9999-12-31'
 
     if 'filter' in get:
         search_filter = clean(get['filter'])
     if 'start' in get:
-        start = clean(get['start'])
+        temp = format_date(clean(get['start']))
+        if temp != None:
+            start = temp
     if 'end' in get:
-        end = clean(get['end'])
-
+        temp = format_date(clean(get['end']))
+        if temp != None:
+            end = temp
+    
     records = get_records(request, start, end, search_filter)
 
     data = []
@@ -365,9 +369,13 @@ def report(request):
     if 'filter' in get:
         diag_filter = clean(get['filter'])
     if 'start' in get:
-        start = clean(get['start'])
+        temp = format_date(clean(get['start']))
+        if temp != None:
+            start = temp
     if 'end' in get:
-        end = clean(get['end'])
+        temp = format_date(clean(get['end']))
+        if temp != None:
+            end = temp
 
     report = get_report(request, diag_filter, start, end)
     
