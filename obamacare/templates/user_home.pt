@@ -18,7 +18,7 @@
       		<div class="content" >
 
       			<div id="searchpane">
-	      			<form method="GET" action="home">
+	      			<form method="GET" action="">
 	      				<table class="searchitem">
 	      					<tbody class="searchitem">
 	      						<tr ckass="searchitem">
