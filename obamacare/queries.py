@@ -118,24 +118,62 @@ def get_records(request, start=None, end=None, search_filter=None):
                         )
                  )
              ).order_by(RadiologyRecord.test_date)
-# TODO: Permission Check here
+
 def get_image(request, img_id):
     if not img_id:
         return None
-    image = DBSession.query(PacsImage).filter(PacsImage.image_id==img_id)
+    
+    user = get_user(authenticated_userid(request))
+    person = user.person_id
+    role = getRole(user.user_name, request)
+    
+    image = DBSession.query(
+                    PacsImage
+                ).filter(
+                    PacsImage.image_id==img_id
+                ).first()
+    record = DBSession.query(
+                    RadiologyRecord
+                ).filter(
+                    RadiologyRecord.record_id==image.record_id
+                ).first()
 
-    return image.first()
+    authd_persons = []
+    authd_persons.append(record.patient_id)
+    authd_persons.append(record.doctor_id)
+    authd_persons.append(record.radiologist_id)
 
-# TODO: Possible permission check here
+    if 'group:a' in role or person in authd_persons:
+        return image
+    else:
+        return None
+
 def get_images(request, record_id):
     if not record_id:
         return None
 
-    images = DBSession.query(
-            PacsImage.image_id
+    user = get_user(authenticated_userid(request))
+    person = user.person_id
+    role = getRole(user.user_name, request)
+
+    record = DBSession.query(
+            RadiologyRecord
         ).filter(
-            PacsImage.record_id==record_id
-        )
+            RadiologyRecord.record_id==record_id
+        ).first()
 
-    return images.all()
+    authd_persons = []
+    authd_persons.append(record.patient_id)
+    authd_persons.append(record.doctor_id)
+    authd_persons.append(record.radiologist_id)
 
+    if (person in authd_persons or 'group:a' in role):
+        images = DBSession.query(
+                PacsImage.image_id
+            ).filter(
+                PacsImage.record_id==record_id
+            )
+
+        return images.all()
+    else:
+        return None
