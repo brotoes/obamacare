@@ -430,9 +430,11 @@ def report(request):
 
 @view_config(route_name='people_list', permission='view', renderer='json')
 def people_list(request):
-    return [['john', 'doe', 'a@a.com'],
-            ['sample', 'name', 'b@b.com'],
-            ['hello', 'there', 'c@c.com']] 
+    
+
+    return [[1, 'admin', 'obamacare', 'a@a.com'],
+            [2, 'john', 'fisher', 'b@b.com'],
+            [3, 'wilson', 'roberts', 'c@c.com']] 
 
 @view_config(route_name='landing', permission='view')
 def landing(request):
