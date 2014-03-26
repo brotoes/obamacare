@@ -42,4 +42,4 @@ setup(name='obamacare',
       [console_scripts]
       initialize_obamacare_db = obamacare.scripts.initializedb:main
       """,
-      )
+)

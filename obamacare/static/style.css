@@ -16,6 +16,17 @@ h1{
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.relative1 {
+  position: relative;
+}
+.relative2 {
+  position: relative;
+  top: -20px;
+  left: 20px;
+  background-color: white;
+  width: 500px;
+}
+
 #header, #footer{
   width: 100%;
   color: #fff;
