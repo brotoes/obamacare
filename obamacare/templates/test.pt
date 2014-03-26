@@ -1,8 +1,12 @@
  <html xmlns="http://www.w3.org/1999/xhtml"
        xmlns:tal="http://xml.zope.org/namespaces/tal"
        xmlns:metal="http://xml.zope.org/namespaces/metal">
-
-  <body>
-      <div metal:use-macro="load: test2.pt"></div>
-  </body>
+    <div metal:use-macro="load: master.pt">
+     	<div metal:fill-slot="content"> 
+		<div class="relative1">
+			<div class="relative2">
+			</div>
+			<div class="relative2">
+			</div>
+		</div>
 </html>
