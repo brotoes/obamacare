@@ -315,23 +315,18 @@ def logout(request):
 def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
-        return render_to_response('templates/new_record.pt',
-                              getModules(request),request=request)
-<<<<<<< HEAD
+        return render_to_response('templates/new_record.pt', getModules(request),request=request)
 
-    try:
-        record = DBSession.query(RadiologyRecord).filter(
-            RadiologyRecord.record_id==rec_id).first()
-        imgs = DBSession.query(PacsImage).filter(
-            PacsImage.record_id==rec_id).all()
-
+    record = get_record(request, rec_id)
+    if record:
+        imgs = get_images(request, rec_id)
         patient = get_person(record.patient_id)
         doctor = get_person(record.doctor_id)
         radi = get_person(record.radiologist_id)
+    else:
+        return HTTPForbidden()
 
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
-
+      
     keys = dict(
         imgs = imgs,
         recid = record.record_id,
@@ -345,20 +340,8 @@ def record(request):
         pdate = record.prescribing_date,
         tdate = record.test_date,
         diag = record.diagnosis,
-        descr = record.description,)
-=======
-    else:
-        resp = ''
-        record = get_record(request, rec_id)
-        if record:
-            imgs = get_images(request, rec_id)
-            patient = get_person(record.patient_id)
-            doctor = get_person(record.doctor_id)
-            radi = get_person(record.radiologist_id)
-        else:
-            return HTTPForbidden()
->>>>>>> d8fe7b5dd09f6c3fe68edf0ad0bd726a5baef543
-    
+        descr = record.description,
+    )
     return  getModules(request, keys)
         
 #TODO: Permissions
@@ -370,6 +353,9 @@ def image(request):
     
     # TODO: no db stuff in views
     # TODO: only return images user is allowed to see
+    # TODO: This function is supposed to return a single image which is not at all what get images is for
+    # That change has caused all images to stop working :(
+    
     img = get_images(request, get_image)
 
     if not img:
