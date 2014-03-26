@@ -373,6 +373,59 @@ def image_list(request):
    
     return images
 
+#I'm using user_home.pt for testing purposes only; it already renders a table
+@view_config(route_name='report', renderer='templates/user_home.pt')
+def report(request):
+    get = request.GET
+    user = get_user(authenticated_userid(request))
+    person = get_person(user.person_id)
+    if not user:
+        return HTTPForbidden()
+
+    role = getRole(user.user_name, request)[0].split(':')[1].strip()   
+    users = role == 'a'
+    reports = role == 'a'
+    new = role!='p'
+
+    diag_filter = ''
+    start = '0001-01-01'
+    end = '9999-12-31'
+
+    if 'f' in get:
+        diag_filter = clean(get['f'])
+    if 'start' in get:
+        start = clean(get['start'])
+    if 'end' in get:
+        end = clean(get['end'])
+
+    report = get_report(request, diag_filter, start, end)
+    
+    duplicates = []
+    data = []
+    ids = []
+    for i in report:
+        duplicates.append((
+                    i[0].person_id,
+                    format_name(i[0].first_name, i[0].last_name),
+                    i[1].diagnosis
+                    ))
+    def append_(item):
+        print item
+        data.append(item)
+        ids.append(item[0])
+    
+    [append_(item) for item in duplicates if item[0] not in ids]
+    keys = dict(
+       headers= (
+                 'Patient ID',
+                 'Name',
+                 'Diagnosis'
+                 ),
+       data=data, 
+       name=format_name(person.first_name, person.last_name),
+    )
+    return getModules(request, keys)
+
 @view_config(route_name='landing', permission='view')
 def landing(request):
     return HTTPFound(location=request.route_url('home'))

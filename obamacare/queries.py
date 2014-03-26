@@ -9,7 +9,8 @@ from sqlalchemy import (
     engine_from_config,
     or_,
     and_,
-    func
+    func,
+    join
     )
 
 from sqlalchemy.exc import (
@@ -222,3 +223,20 @@ def get_images(request, record_id):
         return images.all()
     else:
         return None
+
+
+def get_report(request, diag_filter, start, end):
+    patients = DBSession.query(
+                        Person,
+                        RadiologyRecord
+                    ).select_from(
+                        join(RadiologyRecord, Person, RadiologyRecord.patient_id)
+                    ).filter(
+                        or_(
+                            RadiologyRecord.test_date.between(start, end),
+                            RadiologyRecord.prescribing_date.between(start, end)
+                           )
+                    ).filter(
+                        RadiologyRecord.diagnosis.contains(diag_filter)
+                    ).all()
+    return patients
