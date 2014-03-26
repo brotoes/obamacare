@@ -42,7 +42,6 @@ def getModules(request, keys=None):
 	# Give everyone but patients access to the new module
 	new = role!='p'
 
-	keys['request'] = request
 	keys['users'] = users
 	keys['new'] = new
 	keys['reports'] = reports

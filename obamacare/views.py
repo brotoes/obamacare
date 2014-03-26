@@ -243,7 +243,7 @@ def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
         return render_to_response('templates/new_record.pt', 
-            getModules(request,  dict(displaysuccess = None,displayerror = None)))
+            getModules(request,  dict(request=request, displaysuccess = None,displayerror = None)))
 
     record = get_record(request, rec_id)
     if record:
