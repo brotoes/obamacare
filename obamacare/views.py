@@ -15,6 +15,7 @@ from pyramid.security import (
     )
 
 from pyramid.httpexceptions import (
+    HTTPForbidden,
     HTTPFound,
     HTTPNotFound,
     )
@@ -47,7 +48,7 @@ def user_home(request):
     user = get_user(authenticated_userid(request))
     person = get_person(user.person_id)
     if not user:
-        return HTTPForbidden
+        return HTTPForbidden()
 
     role = getRole(user.user_name, request)[0].split(':')[1].strip()   
     users = role == 'a'
@@ -109,7 +110,6 @@ def user_home(request):
             'start': start,
             'end': end
             }
-"""
     return {'new': new, 'users':users, 'reports':reports, 
     return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
     'data':((10, 15, 'john', 'wilson', '2014-03-16'),('42', 33, 'john', 'wilson', '2014-05-09')), 
@@ -177,7 +177,7 @@ def landing(request):
 def person_info(request):
     uid = authenticated_userid(request)
     if not uid:
-        return HTTPForbidden
+        return HTTPForbidden()
     req_id = request.matchdict['id']
     if not req_id:
         return HTTPNotFound()
@@ -308,10 +308,13 @@ def record(request):
     else:
         resp = ''
         record = get_record(request, rec_id)
-        imgs = get_images(request, rec_id)
-        patient = get_person(record.patient_id)
-        doctor = get_person(record.doctor_id)
-        radi = get_person(record.radiologist_id)
+        if record:
+            imgs = get_images(request, rec_id)
+            patient = get_person(record.patient_id)
+            doctor = get_person(record.doctor_id)
+            radi = get_person(record.radiologist_id)
+        else:
+            return HTTPForbidden()
     
         keys = dict(
             imgs = imgs,
@@ -387,7 +390,7 @@ def image_list(request):
     rec_id = request.matchdict['id']
     if not rec_id:
         return None
-    images = get_images(rec_id)
+    images = get_images(request, rec_id)
     if not images:
         return None
     print images

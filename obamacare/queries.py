@@ -33,7 +33,11 @@ from .models import (
     Person,
     RadiologyRecord,
     PacsImage
-)
+    )
+
+from .security import (
+    getRole
+    )
 
 from utilities import *
 
@@ -70,7 +74,18 @@ def get_record(request, record_id):
             RadiologyRecord.record_id==record_id
         ).first()
 
-    return record
+    user = get_user(authenticated_userid(request))
+    role = getRole(user.user_name, request)
+    authd = False
+    if role == 'a':
+        authd = True
+    elif record.patient_id == user.person_id:
+        authd = True
+
+    if authd:
+        return record
+    else:
+        return None
 
 def get_records(request, start=None, end=None, search_filter=None):
     if start == None or start == '':
@@ -83,8 +98,8 @@ def get_records(request, start=None, end=None, search_filter=None):
         search_filter = '%' + search_filter + '%'
 
     search_filter = search_filter.replace('*', '%')
-
-    
+    user = get_user(authenticated_userid(request))
+    role = getRole(user.user_name, request)
 
     return DBSession.query(
                  RadiologyRecord
@@ -95,9 +110,14 @@ def get_records(request, start=None, end=None, search_filter=None):
                         RadiologyRecord.diagnosis.like(search_filter),
                         RadiologyRecord.description.like(search_filter),
                         RadiologyRecord.test_type.like(search_filter)
-                    )
+                        ),
+                    or_(
+                        RadiologyRecord.patient_id==user.person_id,
+                        role == 'a'
+                        )
                  )
              ).order_by(RadiologyRecord.test_date)
+
 # TODO: Possible permission check here
 def get_images(request, record_id):
     if not record_id:
