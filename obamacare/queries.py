@@ -123,7 +123,12 @@ def get_records(request, start=None, end=None, search_filter=None):
 def get_images(request, record_id):
     if not record_id:
         return None
-    images = DBSession.query(PacsImage.image_id).filter(PacsImage.record_id==record_id)
+
+    images = DBSession.query(
+            PacsImage.image_id
+        ).filter(
+            PacsImage.record_id==record_id
+        )
 
     return images.all()
 

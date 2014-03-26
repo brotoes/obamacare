@@ -400,24 +400,9 @@ def image_list(request):
     images = get_images(request, rec_id)
     if not images:
         return None
-    print images
+   
+    print images 
     return images
-
-"""
-@view_config(route_name='get', renderer='json')
-def get(request):
-    get_type = request.matchdict['type']
-    if get_type == 'users':
-        return {
-            'userid':[
-                        58,
-                        59,
-                        60
-                     ]
-            }
-    else:
-        return HTTPNotFound()
-""" 
 
 @view_config(route_name='landing', permission='view')
 def landing(request):
