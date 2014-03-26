@@ -21,12 +21,13 @@
 				<div metal:use-macro="load: toolbar.pt"></div>
 			</div>
 		</div>
-		<div tal:condition="displaysuccess" class="display-success" tal:content="displaysuccess">
+		
+		
+		<div id='content'>
+			<div tal:condition="displaysuccess" class="display-success" tal:content="displaysuccess">
 		</div>
 		<div tal:condition="displayerror" class="display-error" tal:content="displayerror">
 		</div>
-		
-		<div id='content'>
 	   		<div metal:define-slot="content"></div>
 	   	</div>
 		
