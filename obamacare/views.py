@@ -428,6 +428,12 @@ def report(request):
     )
     return getModules(request, keys)
 
+@view_config(route_name='people_list', permission='view', renderer='json')
+def people_list(request):
+    return [['john', 'doe', 'a@a.com'],
+            ['sample', 'name', 'b@b.com'],
+            ['hello', 'there', 'c@c.com']] 
+
 @view_config(route_name='landing', permission='view')
 def landing(request):
     return HTTPFound(location=request.route_url('home'))

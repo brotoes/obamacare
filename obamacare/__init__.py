@@ -65,6 +65,10 @@ def main(global_config, **settings):
     #Report Module:
     config.add_route('report', '/report')    
 
+    config.add_route('people_list', '/p')
+
+    config.add_route('add_familydoctor', '/afd/{id}')
+
     config.add_route('TESTING', '/test') #this is a fake page :P It's from the scaffold I just use it for reference 
 
     config.add_route('help', '/help') #this is a fake page :P It's from the scaffold I just use it for reference 
