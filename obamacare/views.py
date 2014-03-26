@@ -404,16 +404,7 @@ def people_list(request):
         role_arg = clean(get['r'])
     roles = role_arg.split(',')
     
-    persons = get_persons(roles=roles)
-
-    data = []
-
-    for i in persons:
-        data.append((
-                    i.person_id,
-                    format_name(i.first_name, i.last_name),
-                    i.email
-                    ))
+    data = get_persons(roles=roles)
     
     return dict(data=data,
                 headers=('ID',

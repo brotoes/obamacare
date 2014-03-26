@@ -55,15 +55,32 @@ def get_person(person_id):
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
-#returns a list of all persons
+#returns a list of all persons in the form
+#[(id, name, email), ...]
 def get_persons(roles=['d','r','p','a']):
     persons = DBSession.query(
-                        Person.person_id
+                        Person.person_id,
+                        Person.first_name,
+                        Person.last_name,
+                        Person.email,
+                        User.role
+                    ).select_from(
+                        join(Person, User, User.person_id)
+                    ).filter(
+                        User.person_id==Person.person_id
+                    ).filter(
+                        User.role.in_(roles)
                     ).all()
     
-    
+    data = []
+    for i in persons:
+        data.append((
+                  i.person_id,
+                  format_name(i.first_name, i.last_name),
+                  i.email
+                     ))
 
-    return persons
+    return data
 
 def get_user(user_name):
     if not user_name:
@@ -250,6 +267,8 @@ def get_report(request, diag_filter, start, end):
                                 RadiologyRecord.test_date.between(start, end),
                                 RadiologyRecord.prescribing_date.between(start, end)
                                )
+                        ).filter(
+                            RadiologyRecord.patient_id==Person.person_id
                         ).filter(
                             RadiologyRecord.diagnosis.contains(diag_filter)
                         ).all()
