@@ -6,9 +6,30 @@
     <div metal:use-macro="load: master.pt">
       <div metal:fill-slot="content">
       	<div class="content">
+	      	<div class="overlay">
+	      		<div id="peoplepicker">
+		      		<table id='table1' class='resizable' style='margin: 0 auto;'>
+						<thead><tr tal:condition="headers">
+							<th tal:repeat="head range(len(headers))" tal:content="headers[repeat.head.index]">
+							</th>
+						</tr></thead>
+						
+						<tbody tal:define="row 0; col 0">
+						
+							<tr tal:repeat="row range(len(data))" tal:attributes="class 'even_zebra' if repeat.row.even else 'odd_zebra';onclick 'document.location = \'/record/' + str(data[row][0]) + '\''">
+								<a href="#"><td tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td></a>
+							</tr>
+
+
+						</tbody>
+
+					</table>
+				</div>
+			</div>
+
 	        <div class="align-left">
 						<form method="POST" action="" accept-charset="utf-8" enctype="multipart/form-data">
-							<table style='margin: 0 auto;	'>
+							<table style='margin: 0 auto;'>
 								<tr>
 									<td colspan="2"><h1>New Record </h1></td>
 								</tr>

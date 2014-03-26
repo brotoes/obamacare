@@ -399,7 +399,9 @@ def report(request):
     return getModules(request, keys)
 
 @view_config(route_name='people_list', permission='view', renderer='json')
-def people_list(request):
+def people_list(request, keys=None):
+    if not keys:
+        keys = {}
     get = request.GET
     role_arg = 'd,r,p,a'
     if 'r' in get:
@@ -408,10 +410,10 @@ def people_list(request):
     
     data = get_persons(roles=roles)
     
-    return dict(data=data,
-                headers=('ID',
-                         'Name',
-                         'Email')) 
+    keys['data'] = data
+    keys['headers'] = ('ID', 'Name', 'Email')
+    
+    return keys 
 
 @view_config(route_name='landing', permission='view')
 def landing(request):
