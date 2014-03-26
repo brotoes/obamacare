@@ -282,7 +282,8 @@ def logout(request):
     return HTTPFound(location = request.route_url('landing'),
                      headers = headers)
 
-@view_config(route_name='record', renderer='templates/view_record.pt')
+@view_config(route_name='record', renderer='templates/view_record.pt',
+permission='view')
 def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
@@ -317,7 +318,7 @@ def record(request):
     )
     return  getModules(request, keys)
         
-@view_config(route_name='image')
+@view_config(route_name='image', permission='view')
 def image(request):
     img_id = request.matchdict['id']
     if (img_id == 'new'):
@@ -342,7 +343,8 @@ def image(request):
 
     return Response(body=resp,  content_type='image/jpeg')
 
-@view_config(route_name='user', renderer='templates/user_page.pt')
+@view_config(route_name='user', renderer='templates/user_page.pt',
+permission='view')
 def user(request):
     uname = request.matchdict['user_name']
     try:
@@ -362,7 +364,7 @@ def user(request):
 
     return Response(resp)
 
-@view_config(route_name="image_list", renderer='json')
+@view_config(route_name="image_list", renderer='json', permission='view')
 def image_list(request):
     rec_id = request.matchdict['id']
     if not rec_id:
@@ -374,7 +376,8 @@ def image_list(request):
     return images
 
 #I'm using user_home.pt for testing purposes only; it already renders a table
-@view_config(route_name='report', renderer='templates/user_home.pt')
+@view_config(route_name='report', renderer='templates/user_home.pt',
+permission='admin')
 def report(request):
     get = request.GET
     user = get_user(authenticated_userid(request))
@@ -410,7 +413,6 @@ def report(request):
                     i[1].diagnosis
                     ))
     def append_(item):
-        print item
         data.append(item)
         ids.append(item[0])
     

@@ -226,17 +226,23 @@ def get_images(request, record_id):
 
 
 def get_report(request, diag_filter, start, end):
-    patients = DBSession.query(
-                        Person,
-                        RadiologyRecord
-                    ).select_from(
-                        join(RadiologyRecord, Person, RadiologyRecord.patient_id)
-                    ).filter(
-                        or_(
-                            RadiologyRecord.test_date.between(start, end),
-                            RadiologyRecord.prescribing_date.between(start, end)
-                           )
-                    ).filter(
-                        RadiologyRecord.diagnosis.contains(diag_filter)
-                    ).all()
-    return patients
+    user_name = authenticated_userid(request)
+    role = getRole(user_name, request)
+    
+    if 'group:a' in role:
+        report = DBSession.query(
+                            Person,
+                            RadiologyRecord
+                        ).select_from(
+                            join(RadiologyRecord, Person, RadiologyRecord.patient_id)
+                        ).filter(
+                            or_(
+                                RadiologyRecord.test_date.between(start, end),
+                                RadiologyRecord.prescribing_date.between(start, end)
+                               )
+                        ).filter(
+                            RadiologyRecord.diagnosis.contains(diag_filter)
+                        ).all()
+        return report
+    else:
+        return None
