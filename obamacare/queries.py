@@ -68,24 +68,23 @@ def get_user(user_name):
     return user
 
 def get_record(request, record_id):
+    user = get_user(authenticated_userid(request))
+    role = getRole(user.user_name, request)
     record = DBSession.query(
             RadiologyRecord
         ).filter(
-            RadiologyRecord.record_id==record_id
+            and_(
+                RadiologyRecord.record_id==record_id,
+                or_(
+                    RadiologyRecord.patient_id==user.person_id,
+                    RadiologyRecord.doctor_id==user.person_id,
+                    RadiologyRecord.radiologist_id==user.person_id,
+                    'group:a' in role
+                    )
+                )
         ).first()
 
-    user = get_user(authenticated_userid(request))
-    role = getRole(user.user_name, request)
-    authd = False
-    if role == 'a':
-        authd = True
-    elif record.patient_id == user.person_id:
-        authd = True
-
-    if authd:
-        return record
-    else:
-        return None
+    return record
 
 def get_records(request, start=None, end=None, search_filter=None):
     if start == None or start == '':
@@ -113,7 +112,9 @@ def get_records(request, start=None, end=None, search_filter=None):
                         ),
                     or_(
                         RadiologyRecord.patient_id==user.person_id,
-                        role == 'a'
+                        RadiologyRecord.doctor_id==user.person_id,
+                        RadiologyRecord.radiologist_id==user.person_id,
+                        'group:a' in role
                         )
                  )
              ).order_by(RadiologyRecord.test_date)
