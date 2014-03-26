@@ -355,8 +355,10 @@ def image(request):
     # TODO: only return images user is allowed to see
     # TODO: This function is supposed to return a single image which is not at all what get images is for
     # That change has caused all images to stop working :(
-    
-    img = get_images(request, get_image)
+    # I also don't know what get image is...
+    # img = get_images(request, get_image)
+
+    img = get_image(request, img_id)
 
     if not img:
         return Response('Image Not Found')

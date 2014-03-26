@@ -118,7 +118,14 @@ def get_records(request, start=None, end=None, search_filter=None):
                         )
                  )
              ).order_by(RadiologyRecord.test_date)
+# TODO: Permission Check here
+def get_images(request, img_id):
+    if not record_id:
+        return None
+    image = DBSession.query(PacsImage).filter(PacsImage.image_id==img_id)
 
+    return image.first()
+    
 # TODO: Possible permission check here
 def get_images(request, record_id):
     if not record_id:
