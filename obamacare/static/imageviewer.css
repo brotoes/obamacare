@@ -1,0 +1,17 @@
+#image_viewer{
+   width: 55em;
+   position: relative;
+   margin: 0 auto;
+}
+.viewcont {
+  float: left;
+  width: 10em;
+  height: 10em;
+  margin: .5em;
+  overflow: hidden;
+}
+
+.viewimg{
+  max-width: 10em;
+  max-height: 10em;
+}

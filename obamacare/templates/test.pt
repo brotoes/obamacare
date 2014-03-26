@@ -2,11 +2,12 @@
        xmlns:tal="http://xml.zope.org/namespaces/tal"
        xmlns:metal="http://xml.zope.org/namespaces/metal">
     <div metal:use-macro="load: master.pt">
-     	<div metal:fill-slot="content"> 
-		<div class="relative1">
-			<div class="relative2">
-			</div>
-			<div class="relative2">
-			</div>
+     	<div metal:fill-slot="content">
+     		
+			<div class="relative1">
+
+				<span tal:repeat="img imgs" class="relative2"><img class="relative3" src="/i/${img[0]}"/></span>
+</div>
 		</div>
+	</div>
 </html>

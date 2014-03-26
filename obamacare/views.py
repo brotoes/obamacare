@@ -42,6 +42,11 @@ from json import loads
 import json
 import random
 
+@view_config(route_name='TESTING', renderer='templates/test.pt', permission='view')
+def test_view(request):
+    imgs = DBSession.query(PacsImage.image_id).all()
+    return getModules(request, dict(imgs=imgs))
+
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
     #print ('auth user', authenticated_userid(request))
@@ -298,7 +303,7 @@ def login(request):
         login = login,
         password = password,
         logged_in = authenticated_userid(request)
-        )
+    )
 
 @view_config(route_name='logout')
 def logout(request):
@@ -310,35 +315,34 @@ def logout(request):
 def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
-        return render_to_response('templates/new_record.pt',
-                              getModules(request),request=request)
+        return render_to_response('templates/new_record.pt', getModules(request),request=request)
+
+    record = get_record(request, rec_id)
+    if record:
+        imgs = get_images(request, rec_id)
+        patient = get_person(record.patient_id)
+        doctor = get_person(record.doctor_id)
+        radi = get_person(record.radiologist_id)
     else:
-        resp = ''
-        record = get_record(request, rec_id)
-        if record:
-            imgs = get_images(request, rec_id)
-            patient = get_person(record.patient_id)
-            doctor = get_person(record.doctor_id)
-            radi = get_person(record.radiologist_id)
-        else:
-            return HTTPForbidden()
-    
-        keys = dict(
-            imgs = imgs,
-            recid = record.record_id,
-            pid = record.patient_id,
-            pname = format_name(patient.first_name, patient.last_name),
-            did = record.doctor_id,
-            dname = format_name(doctor.first_name, doctor.last_name),
-            rid = record.radiologist_id,
-            rname = format_name(radi.first_name, radi.last_name),
-            ttype = record.test_type,
-            pdate = record.prescribing_date,
-            tdate = record.test_date,
-            diag = record.diagnosis,
-            descr = record.description,)
-        
-        return  getModules(request, keys)
+        return HTTPForbidden()
+
+      
+    keys = dict(
+        imgs = imgs,
+        recid = record.record_id,
+        pid = record.patient_id,
+        pname = format_name(patient.first_name, patient.last_name),
+        did = record.doctor_id,
+        dname = format_name(doctor.first_name, doctor.last_name),
+        rid = record.radiologist_id,
+        rname = format_name(radi.first_name, radi.last_name),
+        ttype = record.test_type,
+        pdate = record.prescribing_date,
+        tdate = record.test_date,
+        diag = record.diagnosis,
+        descr = record.description,
+    )
+    return  getModules(request, keys)
         
 #TODO: Permissions
 @view_config(route_name='image')
@@ -349,7 +353,12 @@ def image(request):
     
     # TODO: no db stuff in views
     # TODO: only return images user is allowed to see
-    img = get_images(request, get_image)
+    # TODO: This function is supposed to return a single image which is not at all what get images is for
+    # That change has caused all images to stop working :(
+    # I also don't know what get image is...
+    # img = get_images(request, get_image)
+
+    img = get_image(request, img_id)
 
     if not img:
         return Response('Image Not Found')

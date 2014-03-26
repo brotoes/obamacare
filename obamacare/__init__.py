@@ -61,7 +61,9 @@ def main(global_config, **settings):
         
     config.add_route('get', '/get/{type}')
     config.add_route('user', '/user/{user_name}')
-   
+    
+
+    config.add_route('TESTING', '/test') #this is a fake page :P It's from the scaffold I just use it for reference 
 
     config.add_route('help', '/help') #this is a fake page :P It's from the scaffold I just use it for reference 
     config.scan()
