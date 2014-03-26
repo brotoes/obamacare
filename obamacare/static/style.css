@@ -18,13 +18,19 @@ h1{
 }
 .relative1 {
   position: relative;
+  border: 10px solid red;
 }
 .relative2 {
-  position: relative;
-  top: -20px;
-  left: 20px;
-  background-color: white;
-  width: 500px;
+  float: left;
+  width: 10em;
+  height: 10em;
+  margin: .5em;
+  border: 2px solid blue;
+  overflow: hidden;
+}
+.relative3{
+  max-width: 10em;
+  max-height: 10em;
 }
 
 #header, #footer{
@@ -117,13 +123,12 @@ table.searchitem {
   overflow-x: hidden;
   
   margin: 0 auto;
-  
-  border-collapse: collapse;
-  border: 0px;
+
+  border: 2px solid black;
 }
 
 tr.searchitem{
-  border: 0px;
+  border: 2px solid black;
 }
 
 td.searchitem {
@@ -133,7 +138,7 @@ td.searchitem {
   padding-bottom: 4px;
   padding-left: 15px;
 
-  border: 0px;
+  border: 2px solid black;
   
 }
 

@@ -3,54 +3,52 @@
        xmlns:tal="http://xml.zope.org/namespaces/tal"
        xmlns:metal="http://xml.zope.org/namespaces/metal">
  	<head>
- 		<script type='text/javascript' src="${request.static_url('obamacare:static/image_viewer.js')}"></script>
- 	</head>
+ 		<link rel="stylesheet" href="${request.static_url('obamacare:static/imageviewer.css')}" type="text/css" media="screen" charset="utf-8" />
+ 		 	</head>
     <div metal:use-macro="load: master.pt">
       <div metal:fill-slot="content">
       	<div class="content">
       		<div class="align-left">
-						<form method="POST" action="profile">
-							<table style='margin: 0 auto;	'>
-								<tr>
-									<td colspan="2"><h1>Record: ${recid} </h1></td>
-								</tr>
-								<tr>
-									<td>Patient: </td> 
-									<td><a href="${request.route_url('person_info', id=pid)}"> ${pname} </a></td>	
+				<form method="POST" action="profile">
+					<table style='margin: 0 auto;	'>
+						<tr>
+							<td colspan="2"><h1>Record: ${recid} </h1></td>
+						</tr>
+						<tr>
+							<td>Patient: </td> 
+							<td><a href="${request.route_url('person_info', id=pid)}"> ${pname} </a></td>
+							<td>Perscribing Date:</td> 				<td> <input type="text" name="phone" value="${pdate}" readonly/></td>	
 
-								</tr>
-								<tr>
-									<td>Doctor:</td>
-									<td><a href="${request.route_url('person_info', id=did)}"> ${dname} </a></td>	
-								</tr>
-								<tr>
-									<td>Radiologist:</td>
-									<td><a href="${request.route_url('person_info', id=rid)}"> ${rname} </a></td>	
-								</tr>
-								<tr>
-									<td>Test Type:</td> 				<td> <input type="text" name="phone" value="${ttype}" readonly/></td>
-								</tr>
-								<tr>
-									<td>Perscribing Date:</td> 				<td> <input type="text" name="phone" value="${pdate}" readonly/></td>
-								</tr>
-								<tr>
-									<td>Test Date:</td> 				<td> <input type="text" name="phone" value="${tdate}" readonly/></td>
-								</tr>
-
-								<tr>
-									<td>Diagnosis:</td> 				<td> <input type="text" name="phone" value="${diag}" readonly/></td>
-								</tr>
-								<tr>
-									<td>Description:</td> 				<td> <textarea name="phone" cols="50" rows="7" >${descr}</textarea></td>
-								</tr>
-							</table>
-						</form>
-					</div>
-					<div id="imageviewer">
-      			<script>get_images(${request.matchdict['id']});</script>
-      		</div>
-				</div>
+						</tr>
+						<tr>
+							<td>Doctor:</td>
+							<td><a href="${request.route_url('person_info', id=did)}"> ${dname} </a></td>
+							<td>Test Date:</td> 				<td> <input type="text" name="phone" value="${tdate}" readonly/></td>	
+						</tr>
+						<tr>
+							<td>Radiologist:</td>
+							<td><a href="${request.route_url('person_info', id=rid)}"> ${rname} </a></td>
+							<td>Test Type:</td> 				<td> <input type="text" name="phone" value="${ttype}" readonly/></td>	
+						</tr>
+						<tr>
+							<td>Diagnosis:</td> 				<td> <input type="text" name="phone" value="${diag}" readonly/></td>
+						</tr>
+						<tr>
+							<td>Description:</td> 				<td colspan="3"> <textarea name="phone" cols="50" rows="7" >${descr}</textarea></td>
+						</tr>
+					</table>
+				</form>
+				<div id="image_viewer">
+				<p><h1>Images:</h1></p>
+					
+				<span tal:repeat="img imgs" class="viewcont"><a href="${request.route_url('image',id=img.image_id,_query={'s':'f'})}">
+						<img class="viewimg" src="${request.route_url('image',id=img.image_id)}"/>
+					</a>
+				</span>
 			</div>
+			</div>
+			
 		</div>
-
+	</div>
+</div>
 </html>

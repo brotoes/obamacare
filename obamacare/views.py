@@ -41,6 +41,11 @@ from json import loads
 import json
 import random
 
+@view_config(route_name='TESTING', renderer='templates/test.pt', permission='view')
+def test_view(request):
+    imgs = DBSession.query(PacsImage.image_id).all()
+    return getModules(request, dict(imgs=imgs))
+
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
     #print ('auth user', authenticated_userid(request))
@@ -282,7 +287,7 @@ def login(request):
         login = login,
         password = password,
         logged_in = authenticated_userid(request)
-        )
+    )
 
 @view_config(route_name='logout')
 def logout(request):
@@ -296,39 +301,36 @@ def record(request):
     if (rec_id == 'new'):
         return render_to_response('templates/new_record.pt',
                               getModules(request),request=request)
-    else:
-        resp = ''
-        try:
-            record = DBSession.query(RadiologyRecord).filter(
-                RadiologyRecord.record_id==rec_id).first()
-            imgs = DBSession.query(
-                             PacsImage
-                       ).filter(
-                             PacsImage.record_id==rec_id
-                       ).all()
-            patient = get_person(record.patient_id)
-            doctor = get_person(record.doctor_id)
-            radi = get_person(record.radiologist_id)
 
-        except DBAPIError:
-            return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    try:
+        record = DBSession.query(RadiologyRecord).filter(
+            RadiologyRecord.record_id==rec_id).first()
+        imgs = DBSession.query(PacsImage).filter(
+            PacsImage.record_id==rec_id).all()
+
+        patient = get_person(record.patient_id)
+        doctor = get_person(record.doctor_id)
+        radi = get_person(record.radiologist_id)
+
+    except DBAPIError:
+        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+
+    keys = dict(
+        imgs = imgs,
+        recid = record.record_id,
+        pid = record.patient_id,
+        pname = format_name(patient.first_name, patient.last_name),
+        did = record.doctor_id,
+        dname = format_name(doctor.first_name, doctor.last_name),
+        rid = record.radiologist_id,
+        rname = format_name(radi.first_name, radi.last_name),
+        ttype = record.test_type,
+        pdate = record.prescribing_date,
+        tdate = record.test_date,
+        diag = record.diagnosis,
+        descr = record.description,)
     
-        keys = dict(
-            imgs = imgs,
-            recid = record.record_id,
-            pid = record.patient_id,
-            pname = format_name(patient.first_name, patient.last_name),
-            did = record.doctor_id,
-            dname = format_name(doctor.first_name, doctor.last_name),
-            rid = record.radiologist_id,
-            rname = format_name(radi.first_name, radi.last_name),
-            ttype = record.test_type,
-            pdate = record.prescribing_date,
-            tdate = record.test_date,
-            diag = record.diagnosis,
-            descr = record.description,)
-        
-        return  getModules(request, keys)
+    return  getModules(request, keys)
         
 #TODO: Permissions
 @view_config(route_name='image')
