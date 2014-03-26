@@ -1,5 +1,7 @@
 #image_viewer{
-  position: relative;
+   width: 55em;
+   position: relative;
+   margin: 0 auto;
 }
 .viewcont {
   float: left;
@@ -8,6 +10,7 @@
   margin: .5em;
   overflow: hidden;
 }
+
 .viewimg{
   max-width: 10em;
   max-height: 10em;

@@ -34,20 +34,22 @@
 							<td>Diagnosis:</td> 				<td> <input type="text" name="phone" value="${diag}" readonly/></td>
 						</tr>
 						<tr>
-							<td>Description:</td> 				<td colspan="3"> <textarea name="phone" cols="50" rows="7" >${descr}</textarea></td>
+							<td valign="top">Description:</td> 				<td colspan="3"> <textarea name="phone" cols="50" rows="7" >${descr}</textarea></td>
 						</tr>
 					</table>
 				</form>
-				<div id="image_viewer">
+
+			</div>
+			<div id="image_viewer">
 				<p><h1>Images:</h1></p>
-					
-				<span tal:repeat="img imgs" class="viewcont"><a href="${request.route_url('image',id=img.image_id,_query={'s':'f'})}">
+			
+				<span tal:repeat="img imgs" class="viewcont">
+					<a href="${request.route_url('image',id=img.image_id,_query={'s':'f'})}">
 						<img class="viewimg" src="${request.route_url('image',id=img.image_id)}"/>
 					</a>
 				</span>
 			</div>
-			</div>
-			
+			<div class="afterfloats"></div>
 		</div>
 	</div>
 </div>
