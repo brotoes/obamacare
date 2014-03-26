@@ -8,7 +8,8 @@ from datetime import date
 from sqlalchemy import (
     engine_from_config,
     or_,
-    and_
+    and_,
+    func
     )
 
 from sqlalchemy.exc import (
@@ -118,6 +119,50 @@ def get_records(request, start=None, end=None, search_filter=None):
                         )
                  )
              ).order_by(RadiologyRecord.test_date)
+
+#TODO discuss the extent of permissions necessary here
+def insert_record(request, patient_id, doctor_id, radiologist_id, test_type,
+                  prescribing_date, test_date, diagnosis='', description='',
+                  images=[]):
+    user = get_user(authenticated_userid(request))
+    person = user.person_id
+    role = getRole(user.user_name, request)
+
+    permission = True
+    if 'group:r' in role and not person.person_id == radiologist_id:
+        permission = False
+    if 'group:d' in role and not person.person_id == doctor_id:
+        permission = False
+    if 'group:p' in role:
+        permission = False
+    #test if persons have correct roles to be inserted? 
+
+    if permission:
+        with transaction.manager:
+            DBSession.add(RadiologyRecord(
+                patient_id,
+                doctor_id,
+                radiologist_id,
+                test_type,
+                prescribing_date,
+                test_date,
+                diagnosis,
+                description
+            ))
+            transaction.manager.commit()
+
+def insert_image(request, record_id):
+    user = get_user(authenticated_userid(request))
+    person = user.person_id
+    role = getRole(user.user_name, request)
+
+    authd_persons = []
+    authd_persons.append(record.doctor_id)
+    authd_persons.append(record.radiologist_id)
+
+    if 'group:a' or person in authd_persons:
+        pass
+        #TODO insert image
 
 def get_image(request, img_id):
     if not img_id:

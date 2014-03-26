@@ -49,7 +49,6 @@ def test_view(request):
 
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
-    #print ('auth user', authenticated_userid(request))
     user = get_user(authenticated_userid(request))
     person = get_person(user.person_id)
     if not user:
@@ -104,33 +103,6 @@ def user_home(request):
        name=format_name(person.first_name, person.last_name),
     )
     return getModules(request, keys)
-
-    # the old return stuff that shouldn't be used as it is ugly.
-    """  return {'headers':('record_id', 'patient_id','doctor_id', 'radiologist_id',
-                       'test type',
-                       'prescription date',
-                       'test date',
-                       'diagnosis',
-                       'description'),
-            'data': data,
-            'logged_in': user.user_name,
-            'new': new,
-            'users': users,
-            'reports': reports,
-            'project': 'obamacare',
-            'filter': search_filter,
-            'start': start,
-            'end': end
-            }
-    return {'new': new, 'users':users, 'reports':reports, 
-    return {'headers': ('record id', 'image', 'patient', 'doctor', 'date'), 
-    'data':((10, 15, 'john', 'wilson', '2014-03-16'),('42', 33, 'john', 'wilson', '2014-05-09')), 
-    'new': new, 'users':users, 'reports':reports, 
-    'project': 'obamacare', 'name': person.first_name+' ' +person.last_name, 
-    'logged_in': authenticated_userid(request) }
-
-"""
-
 
 @view_config(route_name='landing', permission='view')
 def landing(request):
@@ -206,7 +178,6 @@ def person_info(request):
 
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
-    #print ('auth user', authenticated_userid(request))
     try:
         user = get_user(authenticated_userid(request))
         person = get_person(user.person_id)
@@ -310,10 +281,13 @@ def logout(request):
     headers = forget(request)
     return HTTPFound(location = request.route_url('landing'),
                      headers = headers)
+
 @view_config(route_name='record', renderer='templates/view_record.pt')
 def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
+        
+        #insert_record(request, 1, 1, 1, 'TESTINGTEST', '2014-03-26','2014-03-26')
         return render_to_response('templates/new_record.pt', getModules(request),request=request)
 
     record = get_record(request, rec_id)

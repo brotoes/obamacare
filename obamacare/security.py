@@ -14,13 +14,13 @@ from pyramid.security import (
 from sqlalchemy.exc import DBAPIError
 
 def getRole(username, request):
-	print ("getRole called: ", username)	
+	#print ("getRole called: ", username)	
 	try:
 		user = DBSession.query(User).filter_by(user_name=username).first()
 	except DBAPIError:
 		return none
-	print ('user: ', user)
-	print ['group:'+user.role]
+	#print ('user: ', user)
+	#print ['group:'+user.role]
 
 	return ['group:'+user.role]
 
