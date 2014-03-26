@@ -49,6 +49,7 @@ def test_view(request):
 
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
+    #print ('auth user', authenticated_userid(request))
     user = get_user(authenticated_userid(request))
     person = get_person(user.person_id)
     if not user:
@@ -90,7 +91,9 @@ def user_home(request):
             rec.diagnosis,
         ))
     keys = dict(
-       headers= ('Record ID',
+        displaysuccess = None,
+        displayerror = None,
+        headers= ('Record ID',
                  'Patient',
                  'Doctor',
                  'Radiologist',
@@ -103,59 +106,6 @@ def user_home(request):
        name=format_name(person.first_name, person.last_name),
     )
     return getModules(request, keys)
-
-@view_config(route_name='landing', permission='view')
-def landing(request):
-    return HTTPFound(location=request.route_url('home'))
-    
-    if uid == 'admin':
-        results =  DBSession.query(RadiologyRecord)
-    else:
-        results = DBSession.query(RadiologyRecord).filter(or_(RadiologyRecord.patient_id==person.person_id,
-            RadiologyRecord.doctor_id==person.person_id, RadiologyRecord.radiologist_id==person.person_id))
-
-    images = DBSession.query(PacsImage).all() 
-    if get.items() != []:
-        print ("\n\ngot filters\n\n")
-        search_filter = clean(get['filter'])
-        start = clean(get['start'])
-        end = clean(get['end'])
-
-        try:
-            if search_filter:
-                print("filtering")
-                results = results.filter(or_(RadiologyRecord.diagnosis.contains(search_filter), 
-                    RadiologyRecord.description.contains(search_filter)))       
-            # this query should be looked at..
-            """records.filter(
-                RadiologyRecord.test_date >= start and
-                RadiologyRecord.test_date <= end and
-                (search_filter.upper in
-                RadiologyRecord.diagnosis.upper or
-                 search_filter.upper in
-                 RadiologyRecord.description.upper))"""  
-        except DBAPIError:
-            return Response(conn_err_msg, content_type='text/plain', status_int=500)
-
-    # I added some more back end stuff that will show all records belonging to the signed in user
-    # This is the type of thing that should probably be in the queuys oh i mean queries thing.
-    records = results.all()
-    data = []
-    for rec in records:
-        pait = get_person(rec.patient_id)
-        doc = get_person(rec.doctor_id)
-        radi = get_person(rec.radiologist_id)
-        data.append(
-            (rec.record_id, images[random.randrange(len(images))].image_id, format_name(pait.first_name, pait.last_name), 
-                format_name(doc.last_name, doc.first_name),
-                format_name(radi.first_name,radi.last_name), rec.prescribing_date))
-                        
-    keys = dict(
-        headers=('record id', 'image', 'patient', 'doctor', 'Radiologist','date'),
-        data=data, name= format_name(person.first_name, person.last_name),
-    )
-    return getModules(request, keys)
-
                         
 @view_config(route_name='person_info', renderer='templates/person_profile.pt', permission='view')
 def person_info(request):
@@ -170,6 +120,8 @@ def person_info(request):
         return HTTPNotFound()
 
     keys = dict(
+        displaysuccess = None,
+        displayerror = None,
         fname = person.first_name, lname = person.last_name, 
         address = person.address, email = person.email,
         phone =person.phone
@@ -178,6 +130,7 @@ def person_info(request):
 
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
+    #print ('auth user', authenticated_userid(request))
     try:
         user = get_user(authenticated_userid(request))
         person = get_person(user.person_id)
@@ -234,6 +187,8 @@ def user_profile(request):
             return Response(conn_err_msg, content_type='text/plain', status_int=500)
     
     keys = dict(
+        displaysuccess = None,
+        displayerror = None,
          fname = person.first_name, lname = person.last_name, 
          address = person.address, email = person.email,
          phone =person.phone
@@ -268,7 +223,8 @@ def login(request):
         message = 'Failed login'
 
     return dict(
-        message = message,
+        displaysuccess = message,
+        displayerror = message,
         url = request.application_url + '/login',
         came_from = came_from,
         login = login,
@@ -281,15 +237,13 @@ def logout(request):
     headers = forget(request)
     return HTTPFound(location = request.route_url('landing'),
                      headers = headers)
-
-@view_config(route_name='record', renderer='templates/view_record.pt',
-permission='view')
+#TODO: Permissions
+@view_config(route_name='record', renderer='templates/view_record.pt')
 def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
-        
-        #insert_record(request, 1, 1, 1, 'TESTINGTEST', '2014-03-26','2014-03-26')
-        return render_to_response('templates/new_record.pt', getModules(request),request=request)
+        return render_to_response('templates/new_record.pt', 
+            getModules(request,  dict(displaysuccess = None,displayerror = None)))
 
     record = get_record(request, rec_id)
     if record:
@@ -302,6 +256,8 @@ def record(request):
 
       
     keys = dict(
+        displaysuccess = None,
+        displayerror = None,
         imgs = imgs,
         recid = record.record_id,
         pid = record.patient_id,
@@ -318,21 +274,29 @@ def record(request):
     )
     return  getModules(request, keys)
         
-@view_config(route_name='image', permission='view')
+#TODO: Permissions
+@view_config(route_name='image')
 def image(request):
     img_id = request.matchdict['id']
     if (img_id == 'new'):
         return Response("Create new image")
+    
+    # TODO: no db stuff in views
+    # TODO: only return images user is allowed to see
+    # TODO: This function is supposed to return a single image which is not at all what get images is for
+    # That change has caused all images to stop working :(
+    # I also don't know what get image is...
+    # img = get_images(request, get_image)
 
     img = get_image(request, img_id)
 
     if not img:
-        return HTTPForbidden()
+        return Response('Image Not Found')
    
     if 's' in request.GET:
         size = request.GET['s']
     else: 
-        size = 'r'
+        size = "r"
 
     if size == 't':
         resp = img.thumbnail
@@ -343,8 +307,11 @@ def image(request):
 
     return Response(body=resp,  content_type='image/jpeg')
 
-@view_config(route_name='user', renderer='templates/user_page.pt',
-permission='view')
+    # Method 2
+    #response = Response(content_type='application/jpg')
+    #response.app_iter = img.thumbnail  
+
+@view_config(route_name='user', renderer='templates/user_page.pt')
 def user(request):
     uname = request.matchdict['user_name']
     try:
@@ -364,7 +331,7 @@ def user(request):
 
     return Response(resp)
 
-@view_config(route_name="image_list", renderer='json', permission='view')
+@view_config(route_name="image_list", renderer='json')
 def image_list(request):
     rec_id = request.matchdict['id']
     if not rec_id:
@@ -372,87 +339,24 @@ def image_list(request):
     images = get_images(request, rec_id)
     if not images:
         return None
-   
+    print images
     return images
 
-#I'm using user_home.pt for testing purposes only; it already renders a table
-@view_config(route_name='report', renderer='templates/user_home.pt',
-permission='admin')
-def report(request):
-    get = request.GET
-    user = get_user(authenticated_userid(request))
-    person = get_person(user.person_id)
-    if not user:
-        return HTTPForbidden()
-
-    role = getRole(user.user_name, request)[0].split(':')[1].strip()   
-    users = role == 'a'
-    reports = role == 'a'
-    new = role!='p'
-
-    diag_filter = ''
-    start = '0001-01-01'
-    end = '9999-12-31'
-
-    if 'f' in get:
-        diag_filter = clean(get['f'])
-    if 'start' in get:
-        start = clean(get['start'])
-    if 'end' in get:
-        end = clean(get['end'])
-
-    report = get_report(request, diag_filter, start, end)
-    
-    duplicates = []
-    data = []
-    ids = []
-    for i in report:
-        duplicates.append((
-                    i[0].person_id,
-                    format_name(i[0].first_name, i[0].last_name),
-                    i[1].diagnosis
-                    ))
-    def append_(item):
-        data.append(item)
-        ids.append(item[0])
-    
-    [append_(item) for item in duplicates if item[0] not in ids]
-    keys = dict(
-       headers= (
-                 'Patient ID',
-                 'Name',
-                 'Diagnosis'
-                 ),
-       data=data, 
-       name=format_name(person.first_name, person.last_name),
-    )
-    return getModules(request, keys)
-
-@view_config(route_name='people_list', permission='view', renderer='json')
-def people_list(request):
-    get = request.GET
-    role_arg = 'd,r,p,a'
-    if 'r' in get:
-        role_arg = clean(get['r'])
-    roles = role_arg.split(',')
-    """
-    persons = get_persons()
-
-    data = []
-
-    for i in persons:
-        data.append(
-                    i.person_id,
-                    format_name(i.first_name, i.last_name),
-                    i.email
-                    )
 """
-    return dict(data=[[1, 'obamacare, admin', 'a@a.com'],
-                      [2, 'fisher, john', 'b@b.com'],
-                      [3, 'roberts wilson', 'c@c.com']],
-                headers=('ID',
-                         'Name',
-                         'Email')) 
+@view_config(route_name='get', renderer='json')
+def get(request):
+    get_type = request.matchdict['type']
+    if get_type == 'users':
+        return {
+            'userid':[
+                        58,
+                        59,
+                        60
+                     ]
+            }
+    else:
+        return HTTPNotFound()
+""" 
 
 @view_config(route_name='landing', permission='view')
 def landing(request):
