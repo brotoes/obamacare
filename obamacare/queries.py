@@ -55,6 +55,19 @@ def get_person(person_id):
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
+#returns a list of all persons
+def get_persons(roles=['d','r','p','a']):
+    persons = DBSession.query(
+                        Person,
+                        User
+                    ).select_from(
+                        join(Person, User, User.person_id)
+                    ).filter(
+                        User.role in roles
+                    ).all()
+
+    print persons
+
 def get_user(user_name):
     if not user_name:
         return None

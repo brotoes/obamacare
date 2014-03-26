@@ -430,11 +430,29 @@ def report(request):
 
 @view_config(route_name='people_list', permission='view', renderer='json')
 def people_list(request):
-    
+    get = request.GET
+    role_arg = 'd,r,p,a'
+    if 'r' in get:
+        role_arg = clean(get['r'])
+    roles = role_arg.split(',')
+    """
+    persons = get_persons()
 
-    return [[1, 'admin', 'obamacare', 'a@a.com'],
-            [2, 'john', 'fisher', 'b@b.com'],
-            [3, 'wilson', 'roberts', 'c@c.com']] 
+    data = []
+
+    for i in persons:
+        data.append(
+                    i.person_id,
+                    format_name(i.first_name, i.last_name),
+                    i.email
+                    )
+"""
+    return dict(data=[[1, 'obamacare, admin', 'a@a.com'],
+                      [2, 'fisher, john', 'b@b.com'],
+                      [3, 'roberts wilson', 'c@c.com']],
+                headers=('ID',
+                         'Name',
+                         'Email')) 
 
 @view_config(route_name='landing', permission='view')
 def landing(request):
