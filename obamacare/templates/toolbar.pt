@@ -11,13 +11,13 @@
 				<a href="${request.application_url}/profile"> Profile </a>
 			</span>
 			<span tal:condition="new" class="toolitem">
-				<a href="${request.application_url}/record/new"> New </a>
+				<a href="${request.route_url('record', id='new')}"> New </a>
 			</span>
 			<span tal:condition="reports" class="toolitem">
-				<a href="${request.application_url}/profile"> Reports </a>
+				<a href="${request.route_url('report')}"> Reports </a>
 			</span>
 			<span tal:condition="users" class="toolitem">
-				<a href="${request.application_url}/profile"> Users </a>
+				<a href="${request.route_url('user_profile')}"> Users </a>
 			</span>
 			<span tal:condition="logged_in" class="toolitem">
 			    <a href="${request.application_url}/logout">Logout</a>
