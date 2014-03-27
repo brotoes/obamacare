@@ -6,36 +6,48 @@
     <div metal:use-macro="load: master.pt">
       <div metal:fill-slot="content">
       	<div class="content">
+	      	<div id="overlay" class="overlay">
+	      		<div metal:use-macro="load: people_picker.pt"></div>
+			</div>
+
 	        <div class="align-left">
 						<form method="POST" action="" accept-charset="utf-8" enctype="multipart/form-data">
-							<table style='margin: 0 auto;	'>
+							<table style='margin: 0 auto;'>
 								<tr>
 									<td colspan="2"><h1>New Record </h1></td>
 								</tr>
 								<tr>
-									<td>Patient: </td> 		<td><input type="text" name="lname" /></td>
+									<td>Patient: </td> 		
+									<td><input type="text" name="pid" id="pid"/> <input onclick="open_peoplepicker('pid')" type="button" value=".."/></td>
 								</tr>
 								<tr>
-									<td>Doctor:</td> 		<td><input type="text" name="address" /></td>
+									<td>Doctor:</td> 		
+									<td><input type="text" name="did" id="did"/> <input onclick="open_peoplepicker('did')" type="button" value=".."/></td>
 								</tr>
 								<tr>
-									<td>Radiologist:</td> 				<td> <input type="text" name="email" /></td>
+									<td>Radiologist:</td> 				
+									<td> <input type="text" name="rid" id="rid"/> <input onclick="open_peoplepicker('rid')" type="button" value=".."/></td>
 								</tr>
 								<tr>
-									<td>Test Type:</td> 				<td> <input type="text" name="phone" /></td>
+									<td>Test Type:</td> 				
+									<td> <input type="text" name="ttype" /></td>
 								</tr>
 								<tr>
-									<td>Perscribing Date:</td> 				<td> <input type="text" name="phone" /></td>
+									<td>Perscribing Date:</td> 				
+									<td> <input type="text" name="pdate" /></td>
 								</tr>
 								<tr>
-									<td>Test Date:</td> 				<td> <input type="text" name="phone" /></td>
+									<td>Test Date:</td> 				
+									<td> <input type="text" name="tdate" /></td>
 								</tr>
 
 								<tr>
-									<td>Diagnosis:</td> 				<td> <input type="text" name="phone" /></td>
+									<td>Diagnosis:</td> 				
+									<td> <input type="text" name="daig" /></td>
 								</tr>
 								<tr>
-									<td>Description:</td> 				<td> <textarea name="phone" cols="50" rows="7" ></textarea></td>
+									<td>Description:</td> 				
+									<td> <textarea name="desc" cols="50" rows="7" ></textarea></td>
 								</tr>
 								<tr>
 									<td> File: </td> 	<td></td>
