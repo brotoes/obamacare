@@ -1,0 +1,73 @@
+#peoplepicker{
+  position: relative;
+  width: 30em;
+  height: 28em;
+  background-color: white;
+  padding: 2em;
+  margin-left: auto;
+  margin-right:auto;
+  top: 50%;
+  margin-top: -16em;
+  border: 2px solid black;
+}
+#pickerheader{
+  position: relative;
+  width: 100%;
+  height: 10%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#pickercontent{
+  position: relative;
+  height: 85%;
+  width: 90%;
+ 
+  overflow: auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2em;
+
+}
+table.picker {
+  width: 90%;
+  overflow-x: hidden;
+  
+  white-space:nowrap;
+  border-collapse: collapse;
+
+}
+
+th.picker {
+  border-right: 4px solid #b2b2b2;
+  padding-top: .2em;
+  padding-bottom: .2em;
+  background-color:#fff;
+  border-bottom: 1px outset;
+  font-size: 15px;
+}
+tr.picker{
+  border-bottom: 2px solid #000;
+  
+}
+tr.picker:hover{
+  background-color: #b2b2b2;
+}
+td.picker {
+  
+  border-right: 1px solid #b2b2b2;
+font-size: 12   px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 15px;
+  
+}
+
+.even_zebra{
+  background-color: #eee; 
+  cursor: pointer;
+}
+.odd_zebra{ 
+  background-color: #fff;
+  cursor: pointer;
+}

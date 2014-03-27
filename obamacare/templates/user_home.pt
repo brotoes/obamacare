@@ -22,7 +22,7 @@
 	      				<table class="searchitem">
 	      					<tbody class="searchitem">
 	      						<tr ckass="searchitem">
-	      						 	<td class="searchitem">Filter: </td><td class="searchitem"><input type="text" name="filter"/> 
+	      						 	<td class="searchitem">${filter_text}: </td><td class="searchitem"><input type="text" name="filter"/> 
 	      							</td>
 	      							<td class="searchitem">Before:</td><td class="searchitem"><input type="text" name="start"/>
 	      							</td>
