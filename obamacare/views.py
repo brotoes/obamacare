@@ -342,7 +342,6 @@ def image_list(request):
     images = get_images(request, rec_id)
     if not images:
         return None
-    print images
     return images
 
 #I'm using user_home.pt for testing purposes only; it already renders a table
