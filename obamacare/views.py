@@ -224,6 +224,21 @@ def logout(request):
 def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
+       
+        post = request.POST
+
+        if post.items() != []:
+            pid = post['pid']
+            did = post['did']
+            rid = post['rid']
+            ttype = post['ttype']
+            pdate = post['pdate']
+            tdate = post['tdate']
+            diag = post['daig']
+            desc = post['desc']
+
+            insert_record(request, pid, did, rid, ttype, pdate, tdate,
+                          diagnosis=diag, description=desc)
         
         return render_to_response('templates/new_record.pt', 
             getModules(request,  people_list(request, dict(request=request, displaysuccess = None,displayerror = None)))
