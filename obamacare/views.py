@@ -54,6 +54,7 @@ def userlist_view(request):
         Person.first_name, Person.last_name, Person.email).all()
     keys['headers'] = ('Person ID', 'First', 'Last', 'Email')
     keys['filter_text'] = 'Filter'
+    keys['base_url'] = '/person/'
     return getModules(request, keys)
 
 
@@ -94,6 +95,7 @@ def user_home(request):
         ))
     keys = dict(
         filter_text = "Filter",  # This controls what is displayed to the user
+        base_url = '/person/',
         displaysuccess = None,
         displayerror = None,
         headers= ('Record ID', 'Patient','Doctor', 'Radiologist', 
@@ -102,6 +104,7 @@ def user_home(request):
         data=data, 
         name=format_name(person.first_name, person.last_name),
     )
+
     return getModules(request, keys)
                         
 @view_config(route_name='person_info', renderer='templates/person_profile.pt', permission='view')
@@ -379,6 +382,7 @@ def report(request):
     [append_(item) for item in duplicates if item[0] not in ids]
     keys = dict(
         filter_text = "Diagnosis",      # this changes what is displayed to user 
+        base_url = '/person/',
         displayerror = None,
         displaysuccess = None,
         headers= (
