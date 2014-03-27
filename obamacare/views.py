@@ -109,9 +109,14 @@ def user_home(request):
                         
 @view_config(route_name='person_info', renderer='templates/person_profile.pt', permission='view')
 def person_info(request):
+    error_message = None
+    success_message = None
+
     uid = authenticated_userid(request)
     if not uid:
         return HTTPForbidden()
+
+    role = getRole(uid, request)
 
     req_id = request.matchdict['id']
     if not req_id:
@@ -120,12 +125,83 @@ def person_info(request):
     if not Person:
         return HTTPNotFound()
 
+    post = request.POST
+
+    if 'group:a' in role and post.items() != []:
+        if 'fname' in post:
+            new_fname = clean(post['fname'])
+        else:
+            new_fname = None
+        if 'lname' in post:
+            new_lname = clean(post['lname'])
+        else:
+            new_lname = None
+        if 'address' in post:
+            new_address = clean(post['address'])
+        else:
+            new_address = None
+        if 'email' in post:
+            new_email = format_email(clean(post['email']))
+            if new_email == 'BAD FORMAT':
+                new_email = None
+                error_message = 'Incorrect Email Format'
+        else:
+            new_email = None
+        if 'phone' in post:
+            new_phone = format_phone(clean(post['phone']))
+            if new_phone == 'BAD FORMAT':
+                new_phone = None
+                error_message = 'Incorrect Phone Format'
+        else:
+            new_phone = None
+
+        if new_fname and new_fname != person.first_name \
+            and new_fname != '':
+            person.first_name = new_fname
+            success_message = mess_cat(
+                            success_message,
+                            'First Name Updated Successfully'
+                                      )
+        if new_lname and new_lname != person.last_name \
+            and new_lname != '':
+            person.last_name = new_lname
+            success_message = mess_cat(
+                            success_message,
+                            'Last Name Updated Successfully'
+                                      )
+        if new_address and new_address != person.address \
+            and new_address != '':
+            person.address = new_address
+            success_message = mess_cat(
+                            success_message,
+                            'Address Updated Successfully'
+                                      )
+        if new_email and new_email != person.email \
+            and new_email != '':
+            person.email = new_email
+            success_message = mess_cat(
+                            success_message,
+                            'Email Updated Successfully'
+                                      )
+        if new_phone and new_phone != person.phone \
+            and new_phone != '':
+            person.phone = new_phone
+            success_message = mess_cat(
+                            success_message,
+                            'Phone Updated Successfully'
+                                      )
+        if not success_message and not error_message:
+            error_message = 'Nothing Updated'
+
+
     keys = dict(
-        role = getRole(uid, request)[0],
-        displaysuccess = None,
-        displayerror = None,
-        fname = person.first_name, lname = person.last_name, 
-        address = person.address, email = person.email,
+        role = role[0],
+        displaysuccess = success_message,
+        displayerror = error_message,
+        fname = person.first_name,
+        lname = person.last_name, 
+        address = person.address,
+        email = person.email,
         phone =person.phone
     )
     return  getModules(request, keys)
@@ -133,11 +209,8 @@ def person_info(request):
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
     #print ('auth user', authenticated_userid(request))
-    try:
-        user = get_user(authenticated_userid(request))
-        person = get_person(user.person_id)
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    user = get_user(authenticated_userid(request))
+    person = get_person(user.person_id)
    
     error_message = ""
 
@@ -249,7 +322,7 @@ def record(request):
             ttype = post['ttype']
             pdate = post['pdate']
             tdate = post['tdate']
-            diag = post['daig']
+            diag = post['diag']
             desc = post['desc']
 
             insert_record(request, pid, did, rid, ttype, pdate, tdate,

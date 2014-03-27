@@ -48,6 +48,17 @@ def clean(to_clean, remove=default_remove, exclude=[]):
 
     return cleaned
 
+def mess_cat(cur_mess, new_mess, allow_duplicates=False):
+    print "hello"
+    if not cur_mess:
+        return new_mess
+    if cur_mess == '':
+        return new_mess
+    if new_mess in cur_mess and not allow_duplicates:
+        return cur_mess
+
+    return cur_mess + '</br>' + new_mess
+
 def format_phone(phone):
     if phone == None:
         return None
@@ -61,6 +72,20 @@ def format_phone(phone):
         return ''.join(phone)
     else:
         return 'BAD FORMAT'
+
+def format_email(email):
+    if not email:
+        return None
+    parts = email.split('@')
+    if len(parts) != 2:
+        return 'BAD FORMAT'
+    user = parts[0]
+    domain = parts[1]
+    if len(user.split('.')) != 1:
+        return 'BAD FORMAT'
+    if len(domain.split('.')) < 2:
+        return 'BAD FORMAT'
+    return email
 
 def format_date(date):
     if date == None:
