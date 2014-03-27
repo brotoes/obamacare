@@ -33,7 +33,7 @@
 									<td> <input type="text" name="ttype" /></td>
 								</tr>
 								<tr>
-									<td>Perscribing Date:</td> 				
+									<td>Prescribing Date:</td> 				
 									<td> <input type="text" name="pdate" /></td>
 								</tr>
 								<tr>

@@ -83,7 +83,7 @@ def user_home(request):
             rec.test_type, rec.prescribing_date, rec.test_date, rec.diagnosis,
         ))
     keys = dict(
-        filter_text = "Filter",  # This controls what is displayed as the user
+        filter_text = "Filter",  # This controls what is displayed to the user
         displaysuccess = None,
         displayerror = None,
         headers= ('Record ID', 'Patient','Doctor', 'Radiologist', 
@@ -356,7 +356,7 @@ def report(request):
     
     [append_(item) for item in duplicates if item[0] not in ids]
     keys = dict(
-        filter_text = "diagnosis",      # this changes what is displayed to user 
+        filter_text = "Diagnosis",      # this changes what is displayed to user 
         displayerror = None,
         displaysuccess = None,
         headers= (
