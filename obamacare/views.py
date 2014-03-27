@@ -42,12 +42,24 @@ from json import loads
 import json
 import random
 
+"""
+For testing use only: to be removed for production release
+"""
 @view_config(route_name='TESTING', renderer='templates/test.pt', permission='view')
 def test_view(request):
     imgs = DBSession.query(PacsImage.image_id).all()
     return getModules(request, dict(imgs=imgs))
 
-@view_config(route_name='user_list', renderer='templates/user_list.pt', permission='view')
+"""
+Renders a list of people for the administrator to view an edit
+
+/users
+
+takes one GET argument
+'filter'
+"""
+@view_config(route_name='user_list', renderer='templates/user_list.pt',
+             permission='admin')
 def userlist_view(request):
     keys = get_standard_keys(request)
     keys['data'] = DBSession.query(Person.person_id, 
@@ -57,7 +69,17 @@ def userlist_view(request):
     keys['base_url'] = '/person/'
     return getModules(request, keys)
 
+"""
+This is the start page, after logging in
+It shows a list of all records relevant to the user
 
+/home
+
+takes three GET arguments
+'start'
+'end'
+'filter'
+"""
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
     #print ('auth user', authenticated_userid(request))
@@ -106,12 +128,23 @@ def user_home(request):
     )
 
     return getModules(request, keys)
-                        
+
+"""
+Allows any user to view another person's information corresponding to id
+in the case of the administrator, this information is edittable
+
+/person/{id}
+"""
 @view_config(route_name='person_info', renderer='templates/person_profile.pt', permission='view')
 def person_info(request):
+    error_message = None
+    success_message = None
+
     uid = authenticated_userid(request)
     if not uid:
         return HTTPForbidden()
+
+    role = getRole(uid, request)
 
     req_id = request.matchdict['id']
     if not req_id:
@@ -120,25 +153,101 @@ def person_info(request):
     if not Person:
         return HTTPNotFound()
 
+    post = request.POST
+
+    if 'group:a' in role and post.items() != []:
+        if 'fname' in post:
+            new_fname = clean(post['fname'])
+        else:
+            new_fname = None
+        if 'lname' in post:
+            new_lname = clean(post['lname'])
+        else:
+            new_lname = None
+        if 'address' in post:
+            new_address = clean(post['address'])
+        else:
+            new_address = None
+        if 'email' in post:
+            new_email = format_email(clean(post['email']))
+            if new_email == 'BAD FORMAT':
+                new_email = None
+                error_message = 'Incorrect Email Format'
+        else:
+            new_email = None
+        if 'phone' in post:
+            new_phone = format_phone(clean(post['phone']))
+            if new_phone == 'BAD FORMAT':
+                new_phone = None
+                error_message = 'Incorrect Phone Format'
+        else:
+            new_phone = None
+
+        if new_fname and new_fname != person.first_name \
+            and new_fname != '':
+            person.first_name = new_fname
+            success_message = mess_cat(
+                            success_message,
+                            'First Name Updated Successfully'
+                                      )
+        if new_lname and new_lname != person.last_name \
+            and new_lname != '':
+            person.last_name = new_lname
+            success_message = mess_cat(
+                            success_message,
+                            'Last Name Updated Successfully'
+                                      )
+        if new_address and new_address != person.address \
+            and new_address != '':
+            person.address = new_address
+            success_message = mess_cat(
+                            success_message,
+                            'Address Updated Successfully'
+                                      )
+        if new_email and new_email != person.email \
+            and new_email != '':
+            person.email = new_email
+            success_message = mess_cat(
+                            success_message,
+                            'Email Updated Successfully'
+                                      )
+        if new_phone and new_phone != person.phone \
+            and new_phone != '':
+            person.phone = new_phone
+            success_message = mess_cat(
+                            success_message,
+                            'Phone Updated Successfully'
+                                      )
+        if not success_message and not error_message:
+            error_message = 'Nothing Updated'
+
+
     keys = dict(
-        user_list= (('admin', 'a'), ('devon', 'r'), ('amy', 'p'), ('wilson', 'd')),
-        role = getRole(uid, request)[0],
-        displaysuccess = None,
-        displayerror = None,
-        fname = person.first_name, lname = person.last_name, 
-        address = person.address, email = person.email,
-        phone =person.phone
+        role = role[0],
+        displaysuccess = success_message,
+        displayerror = error_message,
+        fname = person.first_name,
+        lname = person.last_name, 
+        address = person.address,
+        email = person.email,
+        phone = person.phone,
+        user_list = (('admin', 'a'),
+                     ('devon', 'r'),
+                     ('amy', 'p'),
+                     ('wilson', 'd'))
     )
     return  getModules(request, keys)
 
+"""
+Allows a user to view and edit their own information
+
+/profile
+"""
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
     #print ('auth user', authenticated_userid(request))
-    try:
-        user = get_user(authenticated_userid(request))
-        person = get_person(user.person_id)
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    user = get_user(authenticated_userid(request))
+    person = get_person(user.person_id)
    
     error_message = ""
 
@@ -195,6 +304,11 @@ def user_profile(request):
 
     return  getModules(request, keys)
 
+"""
+Here, a user may log in.
+
+/login
+"""
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
 def login(request):
@@ -231,11 +345,22 @@ def login(request):
         logged_in = authenticated_userid(request)
     )
 
+"""
+Logs a user out
+
+/logout
+"""
 @view_config(route_name='logout')
 def logout(request):
     headers = forget(request)
     return HTTPFound(location = request.route_url('landing'),
                      headers = headers)
+
+"""
+View a records, corresponding to {id}  information and associated images
+
+/record/{id}
+"""
 @view_config(route_name='record', renderer='templates/view_record.pt')
 def record(request):
     rec_id = request.matchdict['id']
@@ -250,7 +375,7 @@ def record(request):
             ttype = post['ttype']
             pdate = post['pdate']
             tdate = post['tdate']
-            diag = post['daig']
+            diag = post['diag']
             desc = post['desc']
 
             insert_record(request, pid, did, rid, ttype, pdate, tdate,
@@ -289,12 +414,16 @@ def record(request):
     )
     return  getModules(request, keys)
         
+"""
+displays a single image corresponding to id
+
+/i/{id}
+
+takes a single GET argument, 's=[t,r,f]' specifying the size of the image
+"""
 @view_config(route_name='image')
 def image(request):
     img_id = request.matchdict['id']
-    if (img_id == 'new'):
-        return Response("Create new image")
-    
     img = get_image(request, img_id)
 
     if not img:
@@ -314,14 +443,18 @@ def image(request):
 
     return Response(body=resp,  content_type='image/jpeg')
 
+"""
+returns the name and email of a user specified by 'user_name'
+
+/user/{user_name}
+
+***Not in use, likely to be removed
+"""
 @view_config(route_name='user', renderer='templates/user_page.pt')
 def user(request):
     uname = request.matchdict['user_name']
-    try:
-        user_rec = get_user(uname)
-        person = get_person(user_rec.person_id)
-    except DBAPIError:                    
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    user_rec = get_user(uname)
+    person = get_person(user_rec.person_id)
     resp  = 'fname: ' + person.first_name + '</br>'
     resp += 'lname: ' + person.last_name + '</br>'
     resp += 'email: ' + person.email
@@ -334,6 +467,11 @@ def user(request):
 
     return Response(resp)
 
+"""
+returns a json list of images belonging to the record corresponding to 'id'
+
+/images/{id}
+"""
 @view_config(route_name="image_list", renderer='json')
 def image_list(request):
     rec_id = request.matchdict['id']
@@ -344,6 +482,17 @@ def image_list(request):
         return None
     return images
 
+"""
+Allows the user to get a list of patients who, between the time of start and end
+where diagnosed with a specified diagnosis.
+
+/report
+
+takes three GET arguments
+'start'
+'end'
+'filter'
+"""
 #I'm using user_home.pt for testing purposes only; it already renders a table
 @view_config(route_name='report', renderer='templates/user_home.pt',
 permission='admin')
@@ -400,6 +549,15 @@ def report(request):
     )
     return getModules(request, keys)
 
+"""
+returns a JSON list of people who have an attached user account with a specified
+role
+
+/p
+
+takes one GET argument
+'r=[d,r,p,a]'
+"""
 @view_config(route_name='people_list', permission='view', renderer='json')
 def people_list(request, keys=None):
     if not keys:
@@ -417,10 +575,18 @@ def people_list(request, keys=None):
     
     return keys 
 
+"""
+forwards user to /home
+
+/
+"""
 @view_config(route_name='landing', permission='view')
 def landing(request):
     return HTTPFound(location=request.route_url('home'))
 
+"""
+Here for more testing -- as a reference
+"""
 @view_config(route_name='help', renderer='templates/mytemplate.pt')
 def my_view(request):
     try:
@@ -428,6 +594,7 @@ def my_view(request):
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     return {'one': one, 'project': 'obamacare', 'logged_in': authenticated_userid(request)!=None}
+
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
