@@ -39,6 +39,12 @@ Function takes a string and cleans it by performing the following:
 default_remove = [';', ')', '(']
 digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
+
+"""
+This function takes a string (from GET or POST requests) and removes
+any superfluous, error prone, or potentially malicious characters from it
+so as to prevent formatting problems, errors, or code injections.
+"""
 def clean(to_clean, remove=default_remove, exclude=[]):
     remove = [i for i in remove if i not in exclude]
 
@@ -48,8 +54,12 @@ def clean(to_clean, remove=default_remove, exclude=[]):
 
     return cleaned
 
+"""
+This function takes a message (error, or success) and adds another message,
+accounting for things such as duplicates and whether to add a newline
+TODO: currently, newlines appear to be broken
+"""
 def mess_cat(cur_mess, new_mess, allow_duplicates=False):
-    print "hello"
     if not cur_mess:
         return new_mess
     if cur_mess == '':
@@ -57,8 +67,12 @@ def mess_cat(cur_mess, new_mess, allow_duplicates=False):
     if new_mess in cur_mess and not allow_duplicates:
         return cur_mess
 
-    return cur_mess + '</br>' + new_mess
+    return cur_mess + '\n' + new_mess
 
+"""
+This function takes a phone number (a string) and ensures that it is formatted
+correctly for use with database information
+"""
 def format_phone(phone):
     if phone == None:
         return None
@@ -73,6 +87,10 @@ def format_phone(phone):
     else:
         return 'BAD FORMAT'
 
+"""
+This function takes an email address and ensures that it is formatted
+correctly for use with database information
+"""
 def format_email(email):
     if not email:
         return None
@@ -87,6 +105,10 @@ def format_email(email):
         return 'BAD FORMAT'
     return email
 
+"""
+this function takes a date and ensures that it is formatted correctly for use
+with database information
+"""
 def format_date(date):
     if date == None:
         return None
@@ -99,6 +121,10 @@ def format_date(date):
         return ''.join(date[0:3]) + '-' + ''.join(date[4:5]) + \
         '-' + ''.join(date[6:7])
 
+"""
+This function takes a first and last name and formats them into a single string,
+'Last, First'
+"""
 def format_name(first, last):
     if not first:
         first = "Unknown"
@@ -113,6 +139,11 @@ def format_name(first, last):
 
     return last + ", " + first
    
+
+"""
+Simplifies work of what keys need to be passed from views to templates for
+rendering
+"""
 def get_standard_keys(request, keys = None):
     if not keys:
         keys = {}
