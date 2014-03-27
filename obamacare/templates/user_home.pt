@@ -37,7 +37,7 @@
 	      			</form>
       			</div>
 				
-      		<div metal:use-macro="load: zebra_list.pt"></div>
+      			<div metal:use-macro="load: zebra_list.pt"></div>
       		</div>
       	</div>
 	</div>

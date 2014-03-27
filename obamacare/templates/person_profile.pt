@@ -7,7 +7,8 @@
     <div metal:fill-slot="content">
       	<div class="content">
 	        <div class="align-left">
-				<table style='margin: 0 auto;'>
+	    
+				<table  tal:condition="role!='group:a'" style='margin: 0 auto;'>
 					<tr>
 						<td colspan="2"><h1>${fname}'s Profile</h1></td>
 					</tr>
@@ -26,6 +27,39 @@
 					</tr>
 					
 				</table>
+				<form tal:condition="role=='group:a'" method="POST" action="">
+				<table style='margin: 0 auto;'>
+					<tr>
+						<td colspan="2"><h1>${fname}'s Profile</h1></td>
+					</tr>
+					<tr>
+					<td>First Name:</td>		
+					<td class="align-right"><input type="text" name="fname" value="${fname}"/></td>
+					</tr>
+					<tr>
+						<td>Last Name: </td>		
+						<td class="align-right"><input type="text" name="lname" value="${lname}"/></td>
+					</tr>
+					<tr>
+						<td>Address:</td>		
+						<td class="align-right"><input type="text" name="address" value="${address}"/></td>
+					</tr>
+					<tr>
+						<td>Email:</td>		
+						<td class="align-right"> <input type="text" name="email" value="${email}"/></td>
+					</tr>
+					<tr>
+						<td>Phone:</td>		
+						<td class="align-right"> <input type="text" name="phone" value="${phone}"/></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+								<input type="submit" value="Submit"/>
+						</td>
+					</tr>
+					
+				</table>
+				<
 			</div>
 		</div>
 	</div>

@@ -95,7 +95,7 @@ def user_home(request):
         ))
     keys = dict(
         filter_text = "Filter",  # This controls what is displayed to the user
-        base_url = '/person/',
+        base_url = '/record/',
         displaysuccess = None,
         displayerror = None,
         headers= ('Record ID', 'Patient','Doctor', 'Radiologist', 
@@ -112,6 +112,7 @@ def person_info(request):
     uid = authenticated_userid(request)
     if not uid:
         return HTTPForbidden()
+
     req_id = request.matchdict['id']
     if not req_id:
         return HTTPNotFound()
@@ -120,6 +121,7 @@ def person_info(request):
         return HTTPNotFound()
 
     keys = dict(
+        role = getRole(uid, request)[0],
         displaysuccess = None,
         displayerror = None,
         fname = person.first_name, lname = person.last_name, 
