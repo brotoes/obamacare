@@ -25,7 +25,7 @@ def main(global_config, **settings):
         parser.readfp(open(os.path.expanduser(sqlalchemy_url[1].strip()[2:])))
         settings['sqlalchemy.url'] = parser.get('main', 'db.url')
 
-    engine = engine_from_config(settings, 'sqlalchemy.')
+    engine = engine_from_config(settings, 'sqlalchemy.', echo=True)
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
 
