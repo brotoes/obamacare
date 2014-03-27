@@ -27,39 +27,53 @@
 					</tr>
 					
 				</table>
+				
 				<form tal:condition="role=='group:a'" method="POST" action="">
-				<table style='margin: 0 auto;'>
+				
+				<table style='margin: 0 auto;border 2px solid black;'>
 					<tr>
 						<td colspan="2"><h1>${fname}'s Profile</h1></td>
 					</tr>
 					<tr>
 					<td>First Name:</td>		
-					<td class="align-right"><input type="text" name="fname" value="${fname}"/></td>
+					<td><input type="text" name="fname" value="${fname}"/></td>
 					</tr>
 					<tr>
 						<td>Last Name: </td>		
-						<td class="align-right"><input type="text" name="lname" value="${lname}"/></td>
+						<td colspan="4"><input type="text" name="lname" value="${lname}"/></td>
 					</tr>
 					<tr>
 						<td>Address:</td>		
-						<td class="align-right"><input type="text" name="address" value="${address}"/></td>
+						<td ><input type="text" name="address" value="${address}"/></td>
 					</tr>
 					<tr>
 						<td>Email:</td>		
-						<td class="align-right"> <input type="text" name="email" value="${email}"/></td>
+						<td> <input type="text" name="email" value="${email}"/></td>
 					</tr>
 					<tr>
 						<td>Phone:</td>		
-						<td class="align-right"> <input type="text" name="phone" value="${phone}"/></td>
+						<td> <input type="text" name="phone" value="${phone}"/></td>
+					</tr>
+					<tr colspan="2">
+						<td><h1>Users:</h1></td>
+					</tr>
+					<tr rowspan="${len(user_list)}">
+						<td colspan="4">
+						<div tal:repeat="user user_list">
+							<input class="name" type="text" name="${user[0]}" value="${user[0]}"/>
+							<input class="role"  type="text" name="${user[0]}:role" value="${user[1]}"/>
+							<input class="password" type="text" name="${user[0]}:newpass" value="New Password"/> 
+							<input class="password" type="text" name="${user[0]}:confirmpass" value="Confirm New Pasword" />
+						</div>
+						</td>
 					</tr>
 					<tr>
 						<td colspan="2">
 								<input type="submit" value="Submit"/>
 						</td>
 					</tr>
-					
 				</table>
-				<
+				</form>
 			</div>
 		</div>
 	</div>

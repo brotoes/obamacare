@@ -5,9 +5,6 @@
     <head>
       
     	 <link rel="stylesheet" href="${request.static_url('obamacare:static/style.css')}" type="text/css" media="screen" charset="utf-8" />
-      	<link rel="stylesheet" href="${request.static_url('obamacare:static/resizable.css')}" type="text/css" media="screen" charset="utf-8" />
-
-      	<script type='text/javascript' src="${request.static_url('obamacare:static/resizable.js')}"></script>
 
    </head>
     
