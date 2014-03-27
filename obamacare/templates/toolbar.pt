@@ -17,7 +17,7 @@
 				<a href="${request.route_url('report')}"> Reports </a>
 			</span>
 			<span tal:condition="users" class="toolitem">
-				<a href="${request.route_url('user_profile')}"> Users </a>
+				<a href="${request.route_url('user_list')}"> Users </a>
 			</span>
 			<span tal:condition="logged_in" class="toolitem">
 			    <a href="${request.application_url}/logout">Logout</a>

@@ -41,36 +41,39 @@ def main(global_config, **settings):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('landing', '/')
     
-    # Login Module: 
+# Login Module: 
     config.add_route('user_profile', '/profile')
         # ---> HTML page with the logged in user's editable info displayed
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
-    # Search Module
+
+# Search Module
     config.add_route('home', '/home')
         # ---> HTML page with the user's current records
     config.add_route('record', '/record/{id}')
         # ---> HTML page with the record and image info for rec_id=id
     config.add_route('person_info', '/person/{id}')
         # ---> HTML page with the info with p_id=id
-
     config.add_route('image', '/i/{id}') 
         # ---> JPEG matching id and optionally ?s=[t,r,f]
     config.add_route('image_list', '/images/{id}')
         # ---> JSON list of images ids that are related by record_id=id
-        
-    config.add_route('get', '/get/{type}')
-    config.add_route('user', '/user/{user_name}')
 
-    #Report Module:
+# User Management Module
+    config.add_route('user_list', '/users')   
+    config.add_route('user', '/user/{user_name}')
+    config.add_route('get', '/get/{type}')
+
+
+# Report Module:
     config.add_route('report', '/report')    
+
 
     config.add_route('people_list', '/p')
 
     config.add_route('add_familydoctor', '/afd/{id}')
 
-    config.add_route('TESTING', '/test') #this is a fake page :P It's from the scaffold I just use it for reference 
-
+    config.add_route('TESTING', '/test') # This is so I can quickly throw up stuff to test
     config.add_route('help', '/help') #this is a fake page :P It's from the scaffold I just use it for reference 
     config.scan()
     return config.make_wsgi_app()
