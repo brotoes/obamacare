@@ -55,11 +55,6 @@ def user_home(request):
     if not user:
         return HTTPForbidden()
 
-    role = getRole(user.user_name, request)[0].split(':')[1].strip()   
-    users = role == 'a'
-    reports = role == 'a'
-    new = role!='p'
-
     get = request.GET
 
     search_filter = ''
@@ -84,30 +79,17 @@ def user_home(request):
         pait = get_person(rec.patient_id)
         doc = get_person(rec.doctor_id)
         radi = get_person(rec.radiologist_id)
-        data.append((
-            rec.record_id,
-            pait.last_name,
-            doc.last_name,
-            radi.last_name,
-            rec.test_type,
-            rec.prescribing_date,
-            rec.test_date,
-            rec.diagnosis,
+        data.append((rec.record_id, pait.last_name,doc.last_name, radi.last_name,
+            rec.test_type, rec.prescribing_date, rec.test_date, rec.diagnosis,
         ))
     keys = dict(
         displaysuccess = None,
         displayerror = None,
-        headers= ('Record ID',
-                 'Patient',
-                 'Doctor',
-                 'Radiologist',
-                 'Test Type',
-                 'Prescription Date',
-                 'Test Date',
-                 'Diagnosis'
-                 ),
-       data=data, 
-       name=format_name(person.first_name, person.last_name),
+        headers= ('Record ID', 'Patient','Doctor', 'Radiologist', 
+            'Test Type', 'Prescription Date','Test Date', 'Diagnosis'
+        ),
+        data=data, 
+        name=format_name(person.first_name, person.last_name),
     )
     return getModules(request, keys)
                         
@@ -141,11 +123,6 @@ def user_profile(request):
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
    
-    role = getRole(user.user_name, request)[0].split(':')[1].strip()   
-    users = role == 'a'
-    reports = role == 'a'
-    new = role!='p'
-    
     error_message = ""
 
     #update database
@@ -248,7 +225,8 @@ def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
         return render_to_response('templates/new_record.pt', 
-            getModules(request,  dict(request=request, displaysuccess = None,displayerror = None)))
+            getModules(request,  people_list(request, dict(request=request, displaysuccess = None,displayerror = None)))
+            )
 
     record = get_record(request, rec_id)
     if record:
@@ -356,11 +334,6 @@ def report(request):
     person = get_person(user.person_id)
     if not user:
         return HTTPForbidden()
-
-    role = getRole(user.user_name, request)[0].split(':')[1].strip()   
-    users = role == 'a'
-    reports = role == 'a'
-    new = role!='p'
 
     diag_filter = ''
     start = '0001-01-01'

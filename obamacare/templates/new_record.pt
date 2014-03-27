@@ -6,25 +6,8 @@
     <div metal:use-macro="load: master.pt">
       <div metal:fill-slot="content">
       	<div class="content">
-	      	<div class="overlay">
-	      		<div id="peoplepicker">
-		      		<table id='table1' class='resizable' style='margin: 0 auto;'>
-						<thead><tr tal:condition="headers">
-							<th tal:repeat="head range(len(headers))" tal:content="headers[repeat.head.index]">
-							</th>
-						</tr></thead>
-						
-						<tbody tal:define="row 0; col 0">
-						
-							<tr tal:repeat="row range(len(data))" tal:attributes="class 'even_zebra' if repeat.row.even else 'odd_zebra';onclick 'document.location = \'/record/' + str(data[row][0]) + '\''">
-								<a href="#"><td tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td></a>
-							</tr>
-
-
-						</tbody>
-
-					</table>
-				</div>
+	      	<div id="overlay" class="overlay">
+	      		<div metal:use-macro="load: people_picker.pt"></div>
 			</div>
 
 	        <div class="align-left">
@@ -34,29 +17,37 @@
 									<td colspan="2"><h1>New Record </h1></td>
 								</tr>
 								<tr>
-									<td>Patient: </td> 		<td><input type="text" name="lname" /></td>
+									<td>Patient: </td> 		
+									<td><input type="text" name="pid" id="pid"/> <input onclick="open_peoplepicker('pid')" type="button" value=".."/></td>
 								</tr>
 								<tr>
-									<td>Doctor:</td> 		<td><input type="text" name="address" /></td>
+									<td>Doctor:</td> 		
+									<td><input type="text" name="did" id="did"/> <input onclick="open_peoplepicker('did')" type="button" value=".."/></td>
 								</tr>
 								<tr>
-									<td>Radiologist:</td> 				<td> <input type="text" name="email" /></td>
+									<td>Radiologist:</td> 				
+									<td> <input type="text" name="rid" id="rid"/> <input onclick="open_peoplepicker('rid')" type="button" value=".."/></td>
 								</tr>
 								<tr>
-									<td>Test Type:</td> 				<td> <input type="text" name="phone" /></td>
+									<td>Test Type:</td> 				
+									<td> <input type="text" name="ttype" /></td>
 								</tr>
 								<tr>
-									<td>Perscribing Date:</td> 				<td> <input type="text" name="phone" /></td>
+									<td>Perscribing Date:</td> 				
+									<td> <input type="text" name="pdate" /></td>
 								</tr>
 								<tr>
-									<td>Test Date:</td> 				<td> <input type="text" name="phone" /></td>
+									<td>Test Date:</td> 				
+									<td> <input type="text" name="tdate" /></td>
 								</tr>
 
 								<tr>
-									<td>Diagnosis:</td> 				<td> <input type="text" name="phone" /></td>
+									<td>Diagnosis:</td> 				
+									<td> <input type="text" name="daig" /></td>
 								</tr>
 								<tr>
-									<td>Description:</td> 				<td> <textarea name="phone" cols="50" rows="7" ></textarea></td>
+									<td>Description:</td> 				
+									<td> <textarea name="desc" cols="50" rows="7" ></textarea></td>
 								</tr>
 								<tr>
 									<td> File: </td> 	<td></td>
