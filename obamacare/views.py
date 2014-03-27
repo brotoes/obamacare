@@ -574,6 +574,8 @@ def people_list(request, keys=None):
 
 """
 forwards user to /home
+
+/
 """
 @view_config(route_name='landing', permission='view')
 def landing(request):
@@ -589,6 +591,7 @@ def my_view(request):
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     return {'one': one, 'project': 'obamacare', 'logged_in': authenticated_userid(request)!=None}
+
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
