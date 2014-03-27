@@ -173,7 +173,7 @@ input
 
 input[type=text], input[type=password]
 {
-  width: 205px;
+  width: 16em;
 }
 
 input[type=submit]
@@ -181,3 +181,18 @@ input[type=submit]
   background-color: #ddd;
   font-weight: 700;
 }
+
+input.name{
+  width:10em;
+
+}
+
+input.password{
+  width:12em;
+}
+input.role{
+  width:1.5em;
+
+}
+
+
