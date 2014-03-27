@@ -50,7 +50,10 @@ def test_view(request):
 @view_config(route_name='user_list', renderer='templates/user_list.pt', permission='view')
 def userlist_view(request):
     keys = get_standard_keys(request)
-    keys['people'] = DBSession.query(Person).all()
+    keys['data'] = DBSession.query(Person.person_id, 
+        Person.first_name, Person.last_name, Person.email).all()
+    keys['headers'] = ('Person ID', 'First', 'Last', 'Email')
+    keys['filter_text'] = 'Filter'
     return getModules(request, keys)
 
 
