@@ -17,7 +17,7 @@
 						<tr>
 							<td>Patient: </td> 
 							<td><a href="${request.route_url('person_info', id=pid)}"> ${pname} </a></td>
-							<td>Perscribing Date:</td> 				<td> <input type="text" name="phone" value="${pdate}" readonly/></td>	
+							<td>Prescribing Date:</td> 				<td> <input type="text" name="phone" value="${pdate}" readonly/></td>	
 
 						</tr>
 						<tr>
