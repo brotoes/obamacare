@@ -188,8 +188,6 @@ def insert_image(request, record_id):
     authd_persons.append(record.doctor_id)
     authd_persons.append(record.radiologist_id)
 
-    if 'group:a' or person in authd_persons:
-        pass
         #TODO insert image
 
 def get_image(request, img_id):
