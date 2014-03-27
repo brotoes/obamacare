@@ -43,7 +43,7 @@
 
 								<tr>
 									<td>Diagnosis:</td> 				
-									<td> <input type="text" name="daig" /></td>
+									<td> <input type="text" name="diag" /></td>
 								</tr>
 								<tr>
 									<td>Description:</td> 				

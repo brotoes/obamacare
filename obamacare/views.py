@@ -47,6 +47,13 @@ def test_view(request):
     imgs = DBSession.query(PacsImage.image_id).all()
     return getModules(request, dict(imgs=imgs))
 
+@view_config(route_name='user_list', renderer='templates/user_list.pt', permission='view')
+def userlist_view(request):
+    keys = get_standard_keys(request)
+    keys['people'] = DBSession.query(Person).all()
+    return getModules(request, keys)
+
+
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
     #print ('auth user', authenticated_userid(request))

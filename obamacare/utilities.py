@@ -20,6 +20,14 @@ from .models import (
 
 from StringIO import StringIO
 from PIL import Image
+from pyramid.security import (
+    remember,
+    forget,
+    authenticated_userid,
+    )
+from .security import(
+    authenticate,
+)
 
 """
 Function takes a string and cleans it by performing the following:
@@ -80,6 +88,20 @@ def format_name(first, last):
 
     return last + ", " + first
    
+def get_standard_keys(request, keys = None):
+    if not keys:
+        keys = {}
+    
+    user = authenticated_userid(request)
+    
+    if not user:
+        return keys
+
+    keys['logged_in'] = user
+    keys['displaysuccess'] = None
+    keys['displayerror'] = None
+
+    return keys
 
 
 # jpeg  to convert what we read in from an image in binary for the db
