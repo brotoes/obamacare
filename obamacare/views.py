@@ -242,11 +242,11 @@ def logout(request):
     headers = forget(request)
     return HTTPFound(location = request.route_url('landing'),
                      headers = headers)
-#TODO: Permissions
 @view_config(route_name='record', renderer='templates/view_record.pt')
 def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
+        
         return render_to_response('templates/new_record.pt', 
             getModules(request,  dict(request=request, displaysuccess = None,displayerror = None)))
 
@@ -279,20 +279,12 @@ def record(request):
     )
     return  getModules(request, keys)
         
-#TODO: Permissions
 @view_config(route_name='image')
 def image(request):
     img_id = request.matchdict['id']
     if (img_id == 'new'):
         return Response("Create new image")
     
-    # TODO: no db stuff in views
-    # TODO: only return images user is allowed to see
-    # TODO: This function is supposed to return a single image which is not at all what get images is for
-    # That change has caused all images to stop working :(
-    # I also don't know what get image is...
-    # img = get_images(request, get_image)
-
     img = get_image(request, img_id)
 
     if not img:
@@ -311,10 +303,6 @@ def image(request):
         resp = img.regular_size
 
     return Response(body=resp,  content_type='image/jpeg')
-
-    # Method 2
-    #response = Response(content_type='application/jpg')
-    #response.app_iter = img.thumbnail  
 
 @view_config(route_name='user', renderer='templates/user_page.pt')
 def user(request):
