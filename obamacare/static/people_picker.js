@@ -9,18 +9,37 @@ function close_peoplePicker(value){
 }
 
 
-function open_peoplepicker(elmid){
+function open_peoplepicker(elmid, role){
 	element = elmid;
 	$(".overlay").show();
-	get_people('d');
+	get_people(role);
 }
+
+
+
 function populate(data){
+	console.log(data);
 	people_data = eval("("+data+")").data;
-	console.log(people_data);
+	
 	body = document.getElementById("table1").getElementsByTagName('tbody')[0]
 	body.innerHTML="";
 	for (i=0;i<people_data.length;i++){
-		console.log(people_data[i]);
+		var row = document.createElement("tr");
+		row.className = (i%2==0) ? "even_zebra" : "odd_zebra";
+		row.pid = people_data[i][0];
+		row.onclick = function (){
+			close_peoplePicker(this.pid);
+			$(".overlay").hide();	
+		};
+		for (j=0;j<people_data[0].length;j++){
+			cell = document.createElement("td");
+			cell.className="picker";
+			cell.innerHTML = people_data[i][j];
+			row.appendChild(cell);
+		}
+		body.appendChild(row);
+		
+
 	}
 }
 

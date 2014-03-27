@@ -19,10 +19,11 @@
 			</tr></thead>
 			
 			<tbody class='picker' tal:define="row 0; col 0">
-			
+			<!-- This is now done dynamically by js
 				<tr tal:repeat="row range(len(data))" tal:attributes="class 'even_zebra' if repeat.row.even else 'odd_zebra';onclick 'close_peoplePicker('+str(data[row][0])+')'">
 					<a href="#"><td class='picker' tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td></a>
 				</tr>
+			-->
 			</tbody>
 		</table>
 	</div>
