@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:tal="http://xml.zope.org/namespaces/tal"
+       xmlns:metal="http://xml.zope.org/namespaces/metal">
+   	<head>
+      
+    	 <link rel="stylesheet" href="${request.static_url('obamacare:static/style.css')}" type="text/css" media="screen" charset="utf-8" />
+      	<link rel="stylesheet" href="${request.static_url('obamacare:static/resizable.css')}" type="text/css" media="screen" charset="utf-8" />
+
+      	<script type='text/javascript' src="${request.static_url('obamacare:static/resizable.js')}"></script>
+
+   </head>	
+
+
+	<table id='table1' class='resizable' style='margin: 0 auto;'>
+		<thead>
+			<tr tal:condition="headers">
+				<th tal:repeat="head range(len(headers))" tal:content="headers[repeat.head.index]"></th>
+			</tr>
+		</thead>
+
+		<tbody tal:define="row 0; col 0">
+			<tr tal:repeat="row range(len(data))" tal:attributes="class 'even_zebra' if repeat.row.even else 'odd_zebra';onclick 'document.location = \'' +  str(base_url) + str(data[row][0]) + '\''">
+				<a href="#">
+					<td tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td>
+				</a>
+			</tr>
+		</tbody>
+	</table>
+</html>
