@@ -368,7 +368,7 @@ def report(request):
     
     [append_(item) for item in duplicates if item[0] not in ids]
     keys = dict(
-        filter_text = "diagnosis",      # this changes what is displayed to user 
+        filter_text = "Diagnosis",      # this changes what is displayed to user 
         displayerror = None,
         displaysuccess = None,
         headers= (
