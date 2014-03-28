@@ -62,29 +62,16 @@ def get_usernames():
 def gen_people():
     NUM_PEOPLE = 70
     people =[
-        ('john', 'fisher', 'p', 'john'), ('wilson', 'roberts', 'd', 'wilson'), 
-        ('george', 'washington', 'r', 'admin'), ('lisa', 'brigs', 'pd', 'wilson'),
-        ('newton', 'bitches!', 'pdr', 'admin'), ('frodo', 'baggins', 'dr', 'admin'), 
-        ('Thomas', 'O\'Conner', 'p', 'thomas'), ('Kevin', 'Pain', 'd', 'kevin'),
-        ('Devon', 'Milkman', 'r', 'devin'), ('Peter', 'Andrews', 'p', 'peter'),
-        ('Amy', 'Smith', 'p', 'amy'), ('Jason' , 'Georgegino', 'p', 'jason'),
-        ('James', 'Davidson', 'p', 'james')
+        ('john', 'fisher','p'), ('wilson', 'roberts','d'), 
+        ('george', 'washington', 'd'), ('lisa', 'brigs','r'),
+        ('newton', 'bitches!', 'd'), ('frodo', 'baggins','p'), 
+        ('Thomas', 'O\'Conner','d'), ('Kevin', 'Pain','d'),
+        ('Devon', 'Milkman','r'), ('Peter', 'Andrews','d'),
+        ('Amy', 'Smith','p'), ('Jason' , 'Georgegino','p' ),
+        ('James', 'Davidson', 'p' )
         ]
-
-    names = random.sample(get_names(), NUM_PEOPLE)
-    users = random.sample(get_usernames(), NUM_PEOPLE*5)
-   
-
-    for i in range(0, len(names)):
-        name = names.pop()
-        sample = random.sample(users, random.randint(1,5))
-        for username in sample:
-            people.append((name[0], name[1], 'p', username))
-            users.remove(username)
-    print people
-
-    pdb.set_trace()
-
+    names = list(set(random.sample(get_names(), NUM_PEOPLE)))
+    users = list(set(random.sample(get_usernames(), len(names)*5)))
 
     admin = ('Admin', 'Obamacare', 'a', 'admin')
     with transaction.manager:
@@ -111,6 +98,22 @@ def gen_people():
             new_user = User(per[0].lower(), 'password', per[2][0], datetime.date(2014, 03, 06), new_person.person_id)
             DBSession.add(new_user)
             transaction.manager.commit()
+
+        for i in range(0, len(names)):
+            name = names.pop()
+            person = Person(name[0], name[1], 'randomly genereated...', name[0] +"."+name[1]+"@gmail.com" ,'7308291258')
+            DBSession.add(person)
+            transaction.manager.commit()
+            
+            new_person= DBSession.query(Person).filter(Person.email==email).first() 
+
+            sample = random.sample(users, random.randint(1,5))
+            for username in sample:
+                new_user = User(username, "password", "p", gen_randDate(), new_person.person_id)
+                DBSession.add(new_user)
+                users.remove(username)
+            transaction.manager.commit()
+               
 
 def gen_images():
     #pdb.set_trace()
