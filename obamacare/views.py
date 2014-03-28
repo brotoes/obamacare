@@ -110,19 +110,27 @@ def user_home(request):
 
     data = []
     for rec in records:
-        pait = get_person(rec.patient_id)
-        doc = get_person(rec.doctor_id)
-        radi = get_person(rec.radiologist_id)
-        data.append((rec.record_id, pait.last_name,doc.last_name, radi.last_name,
-            rec.test_type, rec.prescribing_date, rec.test_date, rec.diagnosis,
-        ))
+        data.append((rec[0],
+                     rec[1],
+                     rec[2],
+                     rec[3],
+                     rec[4],
+                     rec[5],
+                     rec[6],
+                     rec[7],
+                    ))
     keys = dict(
         filter_text = "Filter",  # This controls what is displayed to the user
         base_url = '/record/',
         displaysuccess = None,
         displayerror = None,
-        headers= ('Record ID', 'Patient','Doctor', 'Radiologist', 
-            'Test Type', 'Prescription Date','Test Date', 'Diagnosis'
+        headers= ('Record ID',
+                  'Patient',
+                  'Doctor',
+                  'Radiologist', 
+                  'Test Type',
+                  'Test Date',
+                  'Diagnosis'
         ),
         data=data, 
         name=format_name(person.first_name, person.last_name),

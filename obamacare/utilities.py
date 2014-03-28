@@ -198,7 +198,7 @@ def apply_filter(filter_str, items, cols, method='freq', delimit=' '):
         desc_count = 0
         for col_ind in range(len(cols)):
             title = cols[col_ind]
-            if title:
+            if title != None and 'date' not in title:
                 count = 0
                 for term in terms:
                     count += item[col_ind].upper().count(term.upper())
@@ -216,7 +216,7 @@ def apply_filter(filter_str, items, cols, method='freq', delimit=' '):
                 result.append(item)
     sort_col = 0
     for i in range(len(cols)):
-        if 'date' in cols[i]:
+        if cols[i] != None and 'date' in cols[i]:
             sort_col = i
             break
 

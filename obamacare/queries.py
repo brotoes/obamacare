@@ -135,30 +135,27 @@ def get_record(request, record_id):
 
     return record
 
-def get_records(request, start=None, end=None, search_filter=None):
+def get_records(request, start=None, end=None, search_filter=None, method='freq'):
     if start == None or start == '':
         start = '0001-01-01'
     if end == None or end == '':
         end = '9999-12-31'
-    if search_filter == None or search_filter == '':
-        search_filter = '%%'
-    else:
-        search_filter = '%' + search_filter + '%'
 
-    search_filter = search_filter.replace('*', '%')
     user = get_user(authenticated_userid(request))
     role = getRole(user.user_name, request)
 
-    return DBSession.query(
-                 RadiologyRecord
+    records = DBSession.query(
+                 RadiologyRecord.record_id,
+                 RadiologyRecord.patient_id,
+                 RadiologyRecord.doctor_id,
+                 RadiologyRecord.radiologist_id,
+                 RadiologyRecord.test_type,
+                 RadiologyRecord.test_date,
+                 RadiologyRecord.diagnosis,
+                 RadiologyRecord.description 
              ).filter(
                  and_(RadiologyRecord.test_date.between(
                     start, end), 
-                    or_(
-                        RadiologyRecord.diagnosis.like(search_filter),
-                        RadiologyRecord.description.like(search_filter),
-                        RadiologyRecord.test_type.like(search_filter)
-                        ),
                     or_(
                         RadiologyRecord.patient_id==user.person_id,
                         RadiologyRecord.doctor_id==user.person_id,
@@ -166,7 +163,24 @@ def get_records(request, start=None, end=None, search_filter=None):
                         'group:a' in role
                         )
                  )
-             ).order_by(RadiologyRecord.test_date)
+             ).all()
+
+    formatted = []
+    for i in records:
+        pname = get_name(get_person(i[1]))
+        dname = get_name(get_person(i[2]))
+        rname = get_name(get_person(i[3]))
+        formatted.append((i[:1] + (pname, dname, rname) + i[4:]))
+
+    if search_filter:
+        cols = (None, 'pname', None, None, None, 'tdate', 'diag', 'desc')
+        formatted = apply_filter(search_filter, formatted, cols, method=method)
+
+    for i in formatted:
+        print i
+
+    return formatted
+
 
 #TODO discuss the extent of permissions necessary here
 def insert_record(request, patient_id, doctor_id, radiologist_id, test_type,
