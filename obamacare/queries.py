@@ -370,7 +370,9 @@ def get_report(request, diag_filter, start, end):
                             RadiologyRecord.patient_id==Person.person_id
                         ).filter(
                             RadiologyRecord.diagnosis.contains(diag_filter)
-                        ).all()
+                        ).order_by(
+                            RadiologyRecord.test_date.desc()
+                        )
         return report
     else:
         return None

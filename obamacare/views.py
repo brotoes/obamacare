@@ -579,7 +579,9 @@ def report(request):
         duplicates.append((
                     i[0].person_id,
                     format_name(i[0].first_name, i[0].last_name),
-                    i[1].diagnosis
+                    i[0].address,
+                    i[0].phone,
+                    i[1].test_date,
                     ))
     def append_(item):
         data.append(item)
@@ -594,7 +596,9 @@ def report(request):
         headers= (
                  'Patient ID',
                  'Name',
-                 'Diagnosis'
+                 'Address',
+                 'Phone',
+                 'Test Date',
                  ),
        data=data, 
        name=format_name(person.first_name, person.last_name),
