@@ -55,6 +55,19 @@ def get_person(person_id):
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
+"""
+returns a list of tuples, (user_name, role), attached to person_id, pid
+"""
+def get_attached_users(pid):
+    user_list = DBSession.query(
+                        User.user_name,
+                        User.role
+                    ).filter(
+                        User.person_id==pid
+                    ).all()
+
+    return user_list
+
 #returns a list of all persons in the form
 #[(id, name, email), ...]
 def get_persons(roles=['d','r','p','a']):
