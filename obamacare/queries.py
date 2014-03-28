@@ -34,7 +34,8 @@ from .models import (
     User,
     Person,
     RadiologyRecord,
-    PacsImage
+    PacsImage,
+    FamilyDoctor
     )
 
 from .security import (
@@ -47,12 +48,20 @@ from utilities import *
 returns a list of all valid roles for a user
 """
 def get_roles():
-#TODO actually query the database
-    return ['d','r','p','a']
+    roles = DBSession.query(
+                        Role.role
+                    ).all()
+    return roles
 
+"""
+returns a properly formatted name corresponding to person
+"""
 def get_name(person):
     return format_name(person.first_name, person.last_name)
 
+"""
+returns a person object corresponding to person_id
+"""
 def get_person(person_id):
     if not person_id:
         return None
@@ -61,6 +70,57 @@ def get_person(person_id):
         return person
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
+
+"""
+takes a person_id and returns a list of ids relating to doctors
+"""
+def get_fdoctors(pid):
+    dids = DBSession.query(
+                        FamilyDoctor.doctor_id
+                    ).filter(
+                        FamilyDoctor.patient_id==pid
+                    ).all()
+
+    return dids
+
+"""
+takes a person_id and returns a list of ids relating to patients
+who have the person_id as a family doctor
+"""
+def get_fpatients(did):
+    pids = DBSession.query(
+                        FamilyDoctor.patient_id
+                    ).filter(
+                        FamilyDoctor.patient_id==pid
+                    ).all()
+
+    return pids
+
+"""
+takes a patient_id and doctor_id and inserts it into the family_doctor table
+"""
+def add_fdoctor(request, did, pid):
+    user_name = authenticated_userid(request)
+    role = getRole(user_name, request)
+    person = get_user(user_name).person_id
+
+    permission = False
+
+    if 'group:a' in role:
+        permission = True
+    elif 'group:p' in role and pid == person:
+        permission = True
+    elif 'group:d' in role and did == person:
+        permission = True
+
+    if permission:
+        with transaction.manager:
+            DBSession.add(FamilyDoctor(
+                did,
+                pid
+            ))
+            transaction.manager.commit()
+
 
 """
 returns a list of tuples, (user_name, role), attached to person_id, pid
@@ -102,6 +162,9 @@ def get_persons(roles=['d','r','p','a']):
 
     return data
 
+"""
+returns a user object corresponding to user_name
+"""
 def get_user(user_name):
     if not user_name:
         return None
@@ -116,6 +179,10 @@ def get_user(user_name):
     
     return user
 
+"""
+returns a record object corresponding to record_id if user in 'request' has
+permission to view that record
+"""
 def get_record(request, record_id):
     user = get_user(authenticated_userid(request))
     role = getRole(user.user_name, request)
@@ -135,6 +202,9 @@ def get_record(request, record_id):
 
     return record
 
+"""
+returns a list of tuples containing record information
+"""
 def get_records(request, start=None, end=None, search_filter=None, method='freq'):
     if start == None or start == '':
         start = '0001-01-01'
@@ -175,9 +245,6 @@ def get_records(request, start=None, end=None, search_filter=None, method='freq'
     if search_filter:
         cols = (None, 'pname', None, None, None, 'tdate', 'diag', 'desc')
         formatted = apply_filter(search_filter, formatted, cols, method=method)
-
-    for i in formatted:
-        print i
 
     return formatted
 

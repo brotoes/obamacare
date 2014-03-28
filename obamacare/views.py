@@ -648,6 +648,45 @@ def my_view(request):
     return {'one': one, 'project': 'obamacare', 'logged_in': authenticated_userid(request)!=None}
 
 
+"""
+Adds a family doctor to the logged in user
+"""
+@view_config(route_name='add_familydoctor', permission='view')
+def afd(request):
+    user = get_user(authenticated_userid(request))
+    patient_id = user.person_id
+    role = getRole(user.user_name, request)
+
+    did = request.matchdict['id']
+
+    if 'group:p' in role:
+        add_fdoctor(request, did, patient_id)
+        return Response("added")
+    else:
+        return Response("you are not a patient")
+    
+"""
+displays a list of doctors if user is a patient, or a list of patients if user
+is a doctor
+"""
+@view_config(route_name='family', permission='view', renderer='json')
+def family(request):
+    user = get_user(authenticated_userid(request))
+    person_id = user.person_id
+    role = getRole(user.user_name, request)
+
+    print role
+
+    if 'group:p' in role:
+        persons = get_fdoctors(person_id)
+    elif 'group:d' in role:
+        persons = get_fpatients(person_id)
+    else:
+        return HTTPForbidden()
+
+    return persons
+
+
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:

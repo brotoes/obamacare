@@ -73,6 +73,8 @@ def main(global_config, **settings):
 
     config.add_route('add_familydoctor', '/afd/{id}')
 
+    config.add_route('family', '/fam')
+
     config.add_route('TESTING', '/test') # This is so I can quickly throw up stuff to test
     config.add_route('help', '/help') #this is a fake page :P It's from the scaffold I just use it for reference 
     config.scan()
