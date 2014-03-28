@@ -4,7 +4,8 @@ import sys
 import transaction
 import datetime
 import random
-
+import urllib
+import re
 from sqlalchemy import engine_from_config
 
 from sqlalchemy.exc import IntegrityError
@@ -35,9 +36,32 @@ def usage(argv):
           '(example: "%s development.ini")' % (cmd, cmd))
     sys.exit(1)
 
+def get_names():
+    names = []
+    role = ['p', 'd', 'r']
+    fd = open("temp-names.txt", "r")
+    for line in fd:
+        parts = line.strip().split(" ")
+        if len(parts) >= 2:
+            names.append((parts[0], parts[1]))
+    fd.close()
+
+    return names    
+
+def get_usernames():
+    
+    urllib.urlretrieve("http://socialblade.com/digg/top1000users.html","tmp-users.html")
+    f = open ("tmp-users.html", 'r')
+    data = f.read()
+    f.close()
+
+    names =re.findall(r'user=[^"]+">([^<]+)',data,re.I)
+
+    return names
 
 def gen_people():
-    people =(
+    NUM_PEOPLE = 70
+    people =[
         ('john', 'fisher', 'p', 'john'), ('wilson', 'roberts', 'd', 'wilson'), 
         ('george', 'washington', 'r', 'admin'), ('lisa', 'brigs', 'pd', 'wilson'),
         ('newton', 'bitches!', 'pdr', 'admin'), ('frodo', 'baggins', 'dr', 'admin'), 
@@ -45,7 +69,23 @@ def gen_people():
         ('Devon', 'Milkman', 'r', 'devin'), ('Peter', 'Andrews', 'p', 'peter'),
         ('Amy', 'Smith', 'p', 'amy'), ('Jason' , 'Georgegino', 'p', 'jason'),
         ('James', 'Davidson', 'p', 'james')
-        )
+        ]
+
+    names = random.sample(get_names(), NUM_PEOPLE)
+    users = random.sample(get_usernames(), NUM_PEOPLE*5)
+   
+
+    for i in range(0, len(names)):
+        name = names.pop()
+        sample = random.sample(users, random.randint(1,5))
+        for username in sample:
+            people.append((name[0], name[1], 'p', username))
+            users.remove(username)
+    print people
+
+    pdb.set_trace()
+
+
     admin = ('Admin', 'Obamacare', 'a', 'admin')
     with transaction.manager:
         admin = DBSession.query(Person).filter(Person.first_name=='admin').first()
@@ -102,8 +142,19 @@ def gen_images():
     print path
 
 
-def gen_randDate():
-    return "2014-03-16"
+def gen_randDate(start=datetime.datetime(1962,1,1,0,0,0)):
+    end = datetime.datetime(2014,12,26,23,59,59)
+    
+    year = start.year + random.randint(1, end.year-start.year+1)-1
+    month = start.month + random.randint(1, end.month-start.month+1)-1
+    day = start.day + random.randint(1, end.day-start.day+1)-1
+    
+    hour = start.hour + random.randint(1, end.hour-start.hour+1)-1
+    minute = start.minute + random.randint(1, end.minute-start.minute+1)-1
+    second = start.second + random.randint(1, end.second-start.second+1)-1
+    
+    ret = datetime.datetime(year,month,day,hour,minute,second)
+    return ret.date().isoformat()
 
 def gen_records():
     test_types = ['invasive', 'scary', 'painful', 'harmles...really', 'smelly', 'chronic', 'geo physical',
@@ -140,6 +191,7 @@ def gen_records():
         transaction.manager.commit()
 
 def main(argv=sys.argv):
+  
     if len(argv) != 2:
         usage(argv)
     config_uri = argv[1]

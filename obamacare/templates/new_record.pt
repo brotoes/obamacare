@@ -18,15 +18,15 @@
 								</tr>
 								<tr>
 									<td>Patient: </td> 		
-									<td><input type="text" name="pid" id="pid"/> <input onclick="open_peoplepicker('pid')" type="button" value=".."/></td>
+									<td><input type="text" name="pid" id="pid"/> <input onclick="open_peoplepicker('pid', 'p')" type="button" value=".."/></td>
 								</tr>
 								<tr>
 									<td>Doctor:</td> 		
-									<td><input type="text" name="did" id="did"/> <input onclick="open_peoplepicker('did')" type="button" value=".."/></td>
+									<td><input type="text" name="did" id="did"/> <input onclick="open_peoplepicker('did', 'd')" type="button" value=".."/></td>
 								</tr>
 								<tr>
 									<td>Radiologist:</td> 				
-									<td> <input type="text" name="rid" id="rid"/> <input onclick="open_peoplepicker('rid')" type="button" value=".."/></td>
+									<td> <input type="text" name="rid" id="rid"/> <input onclick="open_peoplepicker('rid', 'r')" type="button" value=".."/></td>
 								</tr>
 								<tr>
 									<td>Test Type:</td> 				
