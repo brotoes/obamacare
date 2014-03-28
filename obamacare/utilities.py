@@ -3,6 +3,7 @@ import sys
 import transaction
 import datetime
 import random
+import operator
 
 from sqlalchemy import engine_from_config
 
@@ -172,8 +173,9 @@ def jpeg_toBinary(img):
 """
 Takes a list of tuples, and applies filter to it
 
-returns list with tuples not matching removed, and all other tuples have a rank
-added to them. the result is sorted, descending, by rank
+returns list with tuples ranked. rank is appended to end of tuple.
+list is also sorted by rank. Keywords will be searched for in columns specified
+by the cols list. Use 'None' to ignore a column
 
 Ranking:
 if rank='freq', it will be ranked by 
@@ -188,6 +190,30 @@ if rank='new', newest records will be listed first
 for the above, the column index in date_col will be removed from the tuple for
     purposes of searching and used for date-based sorting
 """
-def apply_filter(filter_str, items, col_names, rank='freq'):
-    pass
+def apply_filter(filter_str, items, cols, rank='freq', delimit=' '):
+    terms = filter_str.split(delimit)
+    result = []
+    for item in items:
+        name_count = 0
+        diag_count = 0
+        desc_count = 0
+        for col_ind in range(len(cols)):
+            title = cols[col_ind]
+            if title:
+                count = 0
+                for term in terms:
+                    count += item[col_ind].upper().count(term.upper())
+                if 'name' in title:
+                    name_count += count
+                if 'diag' in title:
+                    diag_count += count
+                if 'desc' in title:
+                    desc_count += count
+        rank = 6*name_count + 3*diag_count + desc_count
+        result.append(item + (rank,))
 
+    result.sort(key=operator.itemgetter(-1), reverse=True)
+
+    result = [i for i in result if i[-1] > 0]
+
+    return result
