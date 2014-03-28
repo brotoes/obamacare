@@ -157,9 +157,6 @@ def person_info(request):
     user_list = get_attached_users(person.person_id)
 
     post = request.POST
-    print "=============================================="
-    print post
-    print "=============================================="
     #process post for admin
     if 'group:a' in role and post.items() != []:
         #put post args in vars
@@ -241,11 +238,11 @@ def person_info(request):
 
             new = data[i][0]
             con = data[i][1]
-            role = data[i][2]
+            new_role = data[i][2]
 
-            if role in get_roles():
-                if role != user.role:
-                    user.role = role
+            if new_role in get_roles():
+                if new_role != user.role:
+                    user.role = new_role
                     success_message = mess_cat(
                         success_message,
                         'Role Updated For ' + uid_to_up[i]
@@ -277,7 +274,6 @@ def person_info(request):
 
         if not success_message and not error_message:
             error_message = 'Nothing Updated'
-
 
     keys = dict(
         role = role[0],

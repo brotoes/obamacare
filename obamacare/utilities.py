@@ -167,3 +167,27 @@ def jpeg_toBinary(img):
     img.save(img_stream, format="JPEG")
 
     return img_stream.getvalue()
+
+
+"""
+Takes a list of tuples, and applies filter to it
+
+returns list with tuples not matching removed, and all other tuples have a rank
+added to them. the result is sorted, descending, by rank
+
+Ranking:
+if rank='freq', it will be ranked by 
+    
+    Rank(record_id) = 6*frequency(patient_name)
+    + 3*frequency(diagnosis) + frequency(description)
+
+for to identify columns, it will use col_names
+
+if rank='old', oldest records will be listed first
+if rank='new', newest records will be listed first
+for the above, the column index in date_col will be removed from the tuple for
+    purposes of searching and used for date-based sorting
+"""
+def apply_filter(filter_str, items, col_names, rank='freq'):
+    pass
+
