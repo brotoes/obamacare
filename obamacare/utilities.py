@@ -169,7 +169,6 @@ def jpeg_toBinary(img):
 
     return img_stream.getvalue()
 
-
 """
 Takes a list of tuples, and applies filter to it
 
@@ -178,19 +177,19 @@ list is also sorted by rank. Keywords will be searched for in columns specified
 by the cols list. Use 'None' to ignore a column
 
 Ranking:
-if rank='freq', it will be ranked by 
+if method='freq', it will be ranked by 
     
     Rank(record_id) = 6*frequency(patient_name)
     + 3*frequency(diagnosis) + frequency(description)
 
 for to identify columns, it will use col_names
 
-if rank='old', oldest records will be listed first
-if rank='new', newest records will be listed first
+if method='old', oldest records will be listed first
+if method='new', newest records will be listed first
 for the above, the column index in date_col will be removed from the tuple for
     purposes of searching and used for date-based sorting
 """
-def apply_filter(filter_str, items, cols, rank='freq', delimit=' '):
+def apply_filter(filter_str, items, cols, method='freq', delimit=' '):
     terms = filter_str.split(delimit)
     result = []
     for item in items:
@@ -210,10 +209,32 @@ def apply_filter(filter_str, items, cols, rank='freq', delimit=' '):
                 if 'desc' in title:
                     desc_count += count
         rank = 6*name_count + 3*diag_count + desc_count
-        result.append(item + (rank,))
+        if rank > 0:
+            if method == 'freq':
+                result.append(item + (rank,))
+            else:
+                result.append(item)
+    sort_col = 0
+    for i in range(len(cols)):
+        if 'date' in cols[i]:
+            sort_col = i
+            break
 
-    result.sort(key=operator.itemgetter(-1), reverse=True)
-
-    result = [i for i in result if i[-1] > 0]
+    if method == 'new':
+        result.sort(key=operator.itemgetter(sort_col), reverse=True)
+        final = []
+        for i in range(len(result)):
+            final.append(result[i] + (len(result) - i,))
+        result = final
+    elif method == 'old':
+        result.sort(key=operator.itemgetter(sort_col))
+        final = []
+        for i in range(len(result)):
+            final.append(result[i] + (len(result) - i,))
+        result = final
+    elif method == 'freq':
+        result.sort(key=operator.itemgetter(-1), reverse=True)
+    else:
+        result = None
 
     return result
