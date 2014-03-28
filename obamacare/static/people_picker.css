@@ -1,7 +1,7 @@
 #peoplepicker{
   position: relative;
   width: 30em;
-  height: 28em;
+  max-height: 28em;
   background-color: white;
   padding: 2em;
   margin-left: auto;
