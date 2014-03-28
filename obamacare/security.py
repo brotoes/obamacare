@@ -57,7 +57,6 @@ def authenticate(user_name, password):
 	finally:
 		if user == None:
 			return None;
-	print (user)
 
 	if (str(user.password) == password):
 		return True

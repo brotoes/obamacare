@@ -43,6 +43,13 @@ from .security import (
 
 from utilities import *
 
+"""
+returns a list of all valid roles for a user
+"""
+def get_roles():
+#TODO actually query the database
+    return ['d','r','p','a']
+
 def get_name(person):
     return format_name(person.first_name, person.last_name)
 
@@ -54,6 +61,19 @@ def get_person(person_id):
         return person
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
+
+"""
+returns a list of tuples, (user_name, role), attached to person_id, pid
+"""
+def get_attached_users(pid):
+    user_list = DBSession.query(
+                        User.user_name,
+                        User.role
+                    ).filter(
+                        User.person_id==pid
+                    ).all()
+
+    return user_list
 
 #returns a list of all persons in the form
 #[(id, name, email), ...]

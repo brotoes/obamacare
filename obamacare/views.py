@@ -42,6 +42,8 @@ from json import loads
 import json
 import random
 
+MIN_PASS_LEN = 6
+
 """
 For testing use only: to be removed for production release
 """
@@ -82,7 +84,6 @@ takes three GET arguments
 """
 @view_config(route_name='home', renderer='templates/user_home.pt', permission='view')
 def user_home(request):
-    #print ('auth user', authenticated_userid(request))
     user = get_user(authenticated_userid(request))
     person = get_person(user.person_id)
     if not user:
@@ -153,9 +154,15 @@ def person_info(request):
     if not Person:
         return HTTPNotFound()
 
-    post = request.POST
+    user_list = get_attached_users(person.person_id)
 
+    post = request.POST
+    print "=============================================="
+    print post
+    print "=============================================="
+    #process post for admin
     if 'group:a' in role and post.items() != []:
+        #put post args in vars
         if 'fname' in post:
             new_fname = clean(post['fname'])
         else:
@@ -183,6 +190,16 @@ def person_info(request):
         else:
             new_phone = None
 
+        uid_to_up = [i.split(':')[0] for i in post if 'newpass' in i]
+        data = []
+        for i in uid_to_up:
+            temp_list = []
+            temp_list.append(post[i + ':newpass'])
+            temp_list.append(post[i + ':confirmpass'])
+            temp_list.append(post[i + ':role'])
+            data.append(temp_list)
+
+        #verify post args
         if new_fname and new_fname != person.first_name \
             and new_fname != '':
             person.first_name = new_fname
@@ -218,6 +235,46 @@ def person_info(request):
                             success_message,
                             'Phone Updated Successfully'
                                       )
+
+        for i in range(len(uid_to_up)):
+            user = get_user(uid_to_up[i])
+
+            new = data[i][0]
+            con = data[i][1]
+            role = data[i][2]
+
+            if role in get_roles():
+                if role != user.role:
+                    user.role = role
+                    success_message = mess_cat(
+                        success_message,
+                        'Role Updated For ' + uid_to_up[i]
+                                              )
+            else:
+                error_message = mess_cat(
+                    error_message,
+                    'Invalid Role For '+ uid_to_up[i]
+                                        )
+            if not 'New Password' in new or not 'Confirm New Password' in con:
+                if new != con:
+                    print con
+                    error_message = mess_cat(
+                        error_message,
+                        'Passwords Do Not Match For ' + uid_to_up[i]
+                                            )
+                elif len(new) < MIN_PASS_LEN:
+                    error_message = mess_cat(
+                        error_message,
+                        'Password Too Short For ' + uid_to_up[i]
+                                            )
+                elif user.password != new:
+                    user.password = new
+                    success_message = mess_cat(
+                        success_message,
+                        'Password Updated For ' + uid_to_up[i]
+                                              )
+
+
         if not success_message and not error_message:
             error_message = 'Nothing Updated'
 
@@ -231,10 +288,7 @@ def person_info(request):
         address = person.address,
         email = person.email,
         phone = person.phone,
-        user_list = (('admin', 'a'),
-                     ('devon', 'r'),
-                     ('amy', 'p'),
-                     ('wilson', 'd'))
+        user_list = user_list
     )
     return  getModules(request, keys)
 
@@ -245,7 +299,6 @@ Allows a user to view and edit their own information
 """
 @view_config(route_name='user_profile', renderer='templates/user_profile.pt', permission='view')
 def user_profile(request):
-    #print ('auth user', authenticated_userid(request))
     user = get_user(authenticated_userid(request))
     person = get_person(user.person_id)
    
@@ -284,7 +337,7 @@ def user_profile(request):
             if len(full_fields) == 3:
                 if (password[0] == user.password and
                     password[1] == password[2] and
-                    len(password[1]) >= 6):
+                    len(password[1]) >= MIN_PASS_LEN):
                     user.password = password[1]
                 else:
                     error_message = "Password Fields Must Match"
@@ -312,8 +365,6 @@ Here, a user may log in.
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
 def login(request):
-    print("login")
-    #print ('auth user', authenticated_userid(request))
     login_url = request.route_url('login')
     referrer = request.url
     if referrer == login_url:
@@ -326,14 +377,11 @@ def login(request):
         login = request.params['login']
         password = request.params['password']
         if authenticate(login, password):
-            print ('auth passed')
             headers = remember(request, login)
-            print ('came from:', came_from)
             return HTTPFound(location = came_from,
                              headers = headers)
         else:
-            print('auth failed')
-        message = 'Failed login'
+            message = 'Failed login'
 
     return dict(
         displaysuccess = message,
@@ -369,14 +417,14 @@ def record(request):
         post = request.POST
 
         if post.items() != []:
-            pid = post['pid']
-            did = post['did']
-            rid = post['rid']
-            ttype = post['ttype']
-            pdate = post['pdate']
-            tdate = post['tdate']
-            diag = post['diag']
-            desc = post['desc']
+            pid = clean(post['pid'])
+            did = clean(post['did'])
+            rid = clean(post['rid'])
+            ttype = clean(post['ttype'])
+            pdate = clean(post['pdate'])
+            tdate = clean(post['tdate'])
+            diag = clean(post['diag'])
+            desc = clean(post['desc'])
 
             insert_record(request, pid, did, rid, ttype, pdate, tdate,
                           diagnosis=diag, description=desc)
