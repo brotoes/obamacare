@@ -55,20 +55,6 @@ def clean(to_clean, remove=default_remove, exclude=[]):
 
     return cleaned
 
-"""
-This function takes a message (error, or success) and adds another message,
-accounting for things such as duplicates and whether to add a newline
-TODO: currently, newlines appear to be broken
-"""
-def mess_cat(cur_mess, new_mess, allow_duplicates=False):
-    if not cur_mess:
-        return new_mess
-    if cur_mess == '':
-        return new_mess
-    if new_mess in cur_mess and not allow_duplicates:
-        return cur_mess
-
-    return cur_mess + '\n' + new_mess
 
 """
 This function takes a phone number (a string) and ensures that it is formatted

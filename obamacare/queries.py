@@ -35,7 +35,8 @@ from .models import (
     Person,
     RadiologyRecord,
     PacsImage,
-    FamilyDoctor
+    FamilyDoctor,
+    Role
     )
 
 from .security import (
@@ -51,7 +52,34 @@ def get_roles():
     roles = DBSession.query(
                         Role.role
                     ).all()
+    print roles
     return roles
+
+"""
+returns a datacube that looks like:
+
+cube[time period][patient][testtype]
+    time period has three indicies
+        0: yearly
+        1: montly
+        2: weekly
+    patient's indices correspond to patient_ids
+    testtype has keyed indices corresponding to type types
+
+    for example:
+        cube[1][13]['MRI'] = 3
+        indicates 3 MRI images per month for patient 13
+
+"""
+def get_cube():
+   cube = DBSession.execute(
+"""SELECT patient_id, test_type, test_date, count(image_id)
+FROM radiology_records
+    INNER JOIN pacs_images
+    ON radiology_records.record_id=pacs_images.record_id
+GROUP BY patient_id, test_type, test_date WITH ROLLUP;"""
+                            ).all()
+   return cube
 
 """
 returns a properly formatted name corresponding to person

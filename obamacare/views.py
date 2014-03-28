@@ -146,8 +146,8 @@ in the case of the administrator, this information is edittable
 """
 @view_config(route_name='person_info', renderer='templates/person_profile.pt', permission='view')
 def person_info(request):
-    error_message = None
-    success_message = None
+    error_message = []
+    success_message = []
 
     uid = authenticated_userid(request)
     if not uid:
@@ -184,14 +184,14 @@ def person_info(request):
             new_email = format_email(clean(post['email']))
             if new_email == 'BAD FORMAT':
                 new_email = None
-                error_message = 'Incorrect Email Format'
+                error_message.append('Incorrect Email Format')
         else:
             new_email = None
         if 'phone' in post:
             new_phone = format_phone(clean(post['phone']))
             if new_phone == 'BAD FORMAT':
                 new_phone = None
-                error_message = 'Incorrect Phone Format'
+                error_message.append('Incorrect Phone Format')
         else:
             new_phone = None
 
@@ -208,38 +208,23 @@ def person_info(request):
         if new_fname and new_fname != person.first_name \
             and new_fname != '':
             person.first_name = new_fname
-            success_message = mess_cat(
-                            success_message,
-                            'First Name Updated Successfully'
-                                      )
+            success_message.append('First Name Updated Successfully')
         if new_lname and new_lname != person.last_name \
             and new_lname != '':
             person.last_name = new_lname
-            success_message = mess_cat(
-                            success_message,
-                            'Last Name Updated Successfully'
-                                      )
+            success_message.append('Last Name Updated Successfully')
         if new_address and new_address != person.address \
             and new_address != '':
             person.address = new_address
-            success_message = mess_cat(
-                            success_message,
-                            'Address Updated Successfully'
-                                      )
+            success_message.append('Address Updated Successfully')
         if new_email and new_email != person.email \
             and new_email != '':
             person.email = new_email
-            success_message = mess_cat(
-                            success_message,
-                            'Email Updated Successfully'
-                                      )
+            success_message.append('Email Updated Successfully')
         if new_phone and new_phone != person.phone \
             and new_phone != '':
             person.phone = new_phone
-            success_message = mess_cat(
-                            success_message,
-                            'Phone Updated Successfully'
-                                      )
+            success_message.append('Phone Updated Successfully')
 
         for i in range(len(uid_to_up)):
             user = get_user(uid_to_up[i])
@@ -248,40 +233,32 @@ def person_info(request):
             con = data[i][1]
             new_role = data[i][2]
 
-            if new_role in get_roles():
+            if (new_role,) in get_roles():
                 if new_role != user.role:
                     user.role = new_role
-                    success_message = mess_cat(
-                        success_message,
-                        'Role Updated For ' + uid_to_up[i]
-                                              )
+                    success_message.append('Role Updated For ' + uid_to_up[i])
             else:
-                error_message = mess_cat(
-                    error_message,
-                    'Invalid Role For '+ uid_to_up[i]
-                                        )
+                error_message.append('Invalid Role For '+ uid_to_up[i])
             if not 'New Password' in new or not 'Confirm New Password' in con:
                 if new != con:
                     print con
-                    error_message = mess_cat(
-                        error_message,
-                        'Passwords Do Not Match For ' + uid_to_up[i]
-                                            )
+                    error_message.append(
+                        'Passwords Do Not Match For ' + uid_to_up[i])
                 elif len(new) < MIN_PASS_LEN:
-                    error_message = mess_cat(
-                        error_message,
-                        'Password Too Short For ' + uid_to_up[i]
-                                            )
+                    error_message.append(
+                        'Password Too Short For ' + uid_to_up[i])
                 elif user.password != new:
                     user.password = new
-                    success_message = mess_cat(
-                        success_message,
-                        'Password Updated For ' + uid_to_up[i]
-                                              )
+                    success_message.append(
+                        'Password Updated For ' + uid_to_up[i])
 
+        if success_message == [] and error_message == []:
+            error_message = 'Nothing to Update'
 
-        if not success_message and not error_message:
-            error_message = 'Nothing Updated'
+    if success_message == []:
+        success_message = None
+    if error_message == []:
+        success_message = None
 
     keys = dict(
         role = role[0],
@@ -417,8 +394,8 @@ View a records, corresponding to {id}  information and associated images
 def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
-        err_mess = None
-        succ_mess = None
+        err_mess = []
+        succ_mess = []
         post = request.POST
 
         if post.items() != []:
@@ -435,28 +412,22 @@ def record(request):
 
             if pid == '':
                 is_null = True
-                err_mess = mess_cat(err_mess,
-                                    "No Patient ID Provided")
+                err_mess.append("No Patient ID Provided")
             if did == '':
                 is_null = True
-                err_mess = mess_cat(err_mess,
-                                    "No Doctor ID Provided")
+                err_mess.append("No Doctor ID Provided")
             if rid == '':
                 is_null = True
-                err_mess = mess_cat(err_mess,
-                                    "No Radiologist ID Provided")
+                err_mess.append("No Radiologist ID Provided")
             if ttype == '':
                 is_null = True
-                err_mess = mess_cat(err_mess,
-                                    "No Test Type Provided")
+                err_mess.append("No Test Type Provided")
             if pdate == '':
                 is_null = True
-                err_mess = mess_cat(err_mess,
-                                    "No Prescribing Date Provided")
+                err_mess.append("No Prescribing Date Provided")
             if tdate == '':
                 is_null = True
-                err_mess = mess_cat(err_mess,
-                                    "No Test Date Provided")
+                err_mess.append("No Test Date Provided")
 
             if not is_null:
                 insert_record(request,
@@ -470,6 +441,12 @@ def record(request):
                               description=desc,
                               image=image
                               )
+                succ_mess.append("Record Inserted")
+
+                if err_mess == []:
+                    err_mess = None
+                if succ_mess == []:
+                    succ_mess = None
         
         return render_to_response('templates/new_record.pt', 
             getModules(request,  people_list(request, 
@@ -487,7 +464,6 @@ def record(request):
     else:
         return HTTPForbidden()
 
-      
     keys = dict(
         displaysuccess = None,
         displayerror = None,
@@ -565,7 +541,7 @@ returns a json list of images belonging to the record corresponding to 'id'
 
 /images/{id}
 """
-@view_config(route_name="image_list", renderer='json')
+@view_config(route_name="image_list", renderer='json', permission='view')
 def image_list(request):
     rec_id = request.matchdict['id']
     if not rec_id:
@@ -574,6 +550,20 @@ def image_list(request):
     if not images:
         return None
     return images
+
+"""
+returns a count of images per patient, test type, or over a period of time
+
+/olap
+
+'p' -- patient id
+'t' -- test type
+'i' -- time interval (w (weekly), m (monthly), y (yearly))
+"""
+@view_config(route_name='olap', renderer='json', permission='view')
+def olap(request):
+    cube = get_cube()
+    return Response(cube)
 
 """
 Allows the user to get a list of patients who, between the time of start and end

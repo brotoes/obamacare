@@ -46,6 +46,8 @@ def main(global_config, **settings):
         # ---> HTML page with the logged in user's editable info displayed
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
+    config.add_route('add_familydoctor', '/afd/{id}')
+    config.add_route('family', '/fam')
 
 # Search Module
     config.add_route('home', '/home')
@@ -63,17 +65,14 @@ def main(global_config, **settings):
     config.add_route('user_list', '/users')   
     config.add_route('user', '/user/{user_name}')
     config.add_route('get', '/get/{type}')
-
-
+# OLAP Module:
+    config.add_route('olap', '/olap')
 # Report Module:
     config.add_route('report', '/report')    
 
 
     config.add_route('people_list', '/p')
 
-    config.add_route('add_familydoctor', '/afd/{id}')
-
-    config.add_route('family', '/fam')
 
     config.add_route('TESTING', '/test') # This is so I can quickly throw up stuff to test
     config.add_route('help', '/help') #this is a fake page :P It's from the scaffold I just use it for reference 
