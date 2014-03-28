@@ -252,7 +252,7 @@ def get_records(request, start=None, end=None, search_filter=None, method='freq'
 #TODO discuss the extent of permissions necessary here
 def insert_record(request, patient_id, doctor_id, radiologist_id, test_type,
                   prescribing_date, test_date, diagnosis='', description='',
-                  images=[]):
+                  image=None):
     user = get_user(authenticated_userid(request))
     person = user.person_id
     role = getRole(user.user_name, request)
@@ -268,7 +268,7 @@ def insert_record(request, patient_id, doctor_id, radiologist_id, test_type,
 
     if permission:
         with transaction.manager:
-            DBSession.add(RadiologyRecord(
+            new_record = RadiologyRecord(
                 patient_id,
                 doctor_id,
                 radiologist_id,
@@ -277,8 +277,35 @@ def insert_record(request, patient_id, doctor_id, radiologist_id, test_type,
                 test_date,
                 diagnosis,
                 description
-            ))
+            )
+            DBSession.add(new_record)
+            DBSession.flush()
+            
+            new_recid = new_record.record_id
+
             transaction.manager.commit()
+        
+        if image != None:
+            fd = image.file
+            img = Image.open(fd)
+            thumb = img.copy()
+            reg = img.copy()
+            
+            thumb.thumbnail((60,60), Image.ANTIALIAS)
+            reg.thumbnail((200,200), Image.ANTIALIAS)
+
+            img.thumbnail = jpeg_toBinary(thumb)
+            img.regular = jpeg_toBinary(reg)
+            img.full_size = jpeg_toBinary(img)
+            with transaction.manager:
+                print img.thumbnail
+                DBSession.add(PacsImage(new_recid,
+                                        img.thumbnail,
+                                        img.regular,
+                                        img.full_size
+                                        ))
+                transaction.manager.commit()
+            
 
 def insert_image(request, record_id):
     user = get_user(authenticated_userid(request))

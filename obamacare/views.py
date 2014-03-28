@@ -417,10 +417,12 @@ View a records, corresponding to {id}  information and associated images
 def record(request):
     rec_id = request.matchdict['id']
     if (rec_id == 'new'):
-       
+        err_mess = None
+        succ_mess = None
         post = request.POST
 
         if post.items() != []:
+            is_null = False
             pid = clean(post['pid'])
             did = clean(post['did'])
             rid = clean(post['rid'])
@@ -429,12 +431,51 @@ def record(request):
             tdate = clean(post['tdate'])
             diag = clean(post['diag'])
             desc = clean(post['desc'])
+            image = post['file']
 
-            insert_record(request, pid, did, rid, ttype, pdate, tdate,
-                          diagnosis=diag, description=desc)
+            if pid == '':
+                is_null = True
+                err_mess = mess_cat(err_mess,
+                                    "No Patient ID Provided")
+            if did == '':
+                is_null = True
+                err_mess = mess_cat(err_mess,
+                                    "No Doctor ID Provided")
+            if rid == '':
+                is_null = True
+                err_mess = mess_cat(err_mess,
+                                    "No Radiologist ID Provided")
+            if ttype == '':
+                is_null = True
+                err_mess = mess_cat(err_mess,
+                                    "No Test Type Provided")
+            if pdate == '':
+                is_null = True
+                err_mess = mess_cat(err_mess,
+                                    "No Prescribing Date Provided")
+            if tdate == '':
+                is_null = True
+                err_mess = mess_cat(err_mess,
+                                    "No Test Date Provided")
+
+            if not is_null:
+                insert_record(request,
+                              pid,
+                              did,
+                              rid,
+                              ttype,
+                              pdate,
+                              tdate,
+                              diagnosis=diag,
+                              description=desc,
+                              image=image
+                              )
         
         return render_to_response('templates/new_record.pt', 
-            getModules(request,  people_list(request, dict(request=request, displaysuccess = None,displayerror = None)))
+            getModules(request,  people_list(request, 
+                                             dict(request=request,
+                                                  displaysuccess = succ_mess,
+                                                  displayerror = err_mess)))
             )
 
     record = get_record(request, rec_id)
