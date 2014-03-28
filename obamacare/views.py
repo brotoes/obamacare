@@ -191,12 +191,13 @@ def person_info(request):
             new_phone = None
 
         uid_to_up = [i.split(':')[0] for i in post if 'newpass' in i]
-        passes = []
+        data = []
         for i in uid_to_up:
-            left = post[i + ':newpass']
-            right = post[i + ':confirmpass']
-
-            passes.append((left, right))
+            temp_list = []
+            temp_list.append(post[i + ':newpass'])
+            temp_list.append(post[i + ':confirmpass'])
+            temp_list.append(post[i + ':role'])
+            data.append(temp_list)
 
         #verify post args
         if new_fname and new_fname != person.first_name \
@@ -238,26 +239,40 @@ def person_info(request):
         for i in range(len(uid_to_up)):
             user = get_user(uid_to_up[i])
 
-            new = passes[i][0]
-            con = passes[i][1]
+            new = data[i][0]
+            con = data[i][1]
+            role = data[i][2]
 
-            if new != con:
-                print con
+            if role in get_roles():
+                if role != user.role:
+                    user.role = role
+                    success_message = mess_cat(
+                        success_message,
+                        'Role Updated For ' + uid_to_up[i]
+                                              )
+            else:
                 error_message = mess_cat(
                     error_message,
-                    'Passwords Do Not Match For ' + uid_to_up[i]
+                    'Invalid Role For '+ uid_to_up[i]
                                         )
-            elif len(new) < MIN_PASS_LEN:
-                error_message = mess_cat(
-                    error_message,
-                    'Password Too Short For ' + uid_to_up[i]
-                                        )
-            elif user.password != new:
-                user.password = new
-                success_message = mess_cat(
-                    success_message,
-                    'Password Updated For ' + uid_to_up[i]
-                                          )
+            if not 'New Password' in new or not 'Confirm New Password' in con:
+                if new != con:
+                    print con
+                    error_message = mess_cat(
+                        error_message,
+                        'Passwords Do Not Match For ' + uid_to_up[i]
+                                            )
+                elif len(new) < MIN_PASS_LEN:
+                    error_message = mess_cat(
+                        error_message,
+                        'Password Too Short For ' + uid_to_up[i]
+                                            )
+                elif user.password != new:
+                    user.password = new
+                    success_message = mess_cat(
+                        success_message,
+                        'Password Updated For ' + uid_to_up[i]
+                                              )
 
 
         if not success_message and not error_message:

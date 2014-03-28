@@ -43,6 +43,13 @@ from .security import (
 
 from utilities import *
 
+"""
+returns a list of all valid roles for a user
+"""
+def get_roles():
+#TODO actually query the database
+    return ['d','r','p','a']
+
 def get_name(person):
     return format_name(person.first_name, person.last_name)
 
