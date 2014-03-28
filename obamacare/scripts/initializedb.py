@@ -60,6 +60,7 @@ def get_usernames():
     return names
 
 def gen_people():
+    NUM_PEOPLE = 70
     people =[
         ('john', 'fisher', 'p', 'john'), ('wilson', 'roberts', 'd', 'wilson'), 
         ('george', 'washington', 'r', 'admin'), ('lisa', 'brigs', 'pd', 'wilson'),
@@ -70,10 +71,20 @@ def gen_people():
         ('James', 'Davidson', 'p', 'james')
         ]
 
-    names = get_names()
-    users = get_usernames()
+    names = random.sample(get_names(), NUM_PEOPLE)
+    users = random.sample(get_usernames(), NUM_PEOPLE*5)
+   
+
+    for i in range(0, len(names)):
+        name = names.pop()
+        sample = random.sample(users, random.randint(1,5))
+        for username in sample:
+            people.append((name[0], name[1], 'p', username))
+            users.remove(username)
+    print people
 
     pdb.set_trace()
+
 
     admin = ('Admin', 'Obamacare', 'a', 'admin')
     with transaction.manager:
