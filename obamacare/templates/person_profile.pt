@@ -27,7 +27,7 @@
 					</tr>
 					
 				</table>
-				
+				<span tal:condition="role">Role ${role}</span>
 				<form tal:condition="role=='group:a'" method="POST" action="">
 				
 				<table style='margin: 0 auto;border 2px solid black;'>
