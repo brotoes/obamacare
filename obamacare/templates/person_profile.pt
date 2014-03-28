@@ -63,7 +63,7 @@
 							<input class="name" type="text" name="${user[0]}" value="${user[0]}"/>
 							<input class="role"  type="text" name="${user[0]}:role" value="${user[1]}"/>
 							<input class="password" type="text" name="${user[0]}:newpass" value="New Password"/> 
-							<input class="password" type="text" name="${user[0]}:confirmpass" value="Confirm New Pasword" />
+							<input class="password" type="text" name="${user[0]}:confirmpass" value="Confirm New Password" />
 						</div>
 						</td>
 					</tr>
