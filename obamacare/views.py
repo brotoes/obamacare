@@ -258,7 +258,7 @@ def person_info(request):
     if success_message == []:
         success_message = None
     if error_message == []:
-        success_message = None
+        error_message = None
 
     keys = dict(
         role = role[0],
