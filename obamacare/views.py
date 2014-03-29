@@ -162,7 +162,6 @@ def person_info(request):
     if not Person:
         return HTTPNotFound()
 
-    user_list = get_attached_users(person.person_id)
 
     post = request.POST
     #process post for admin
@@ -259,7 +258,8 @@ def person_info(request):
         success_message = None
     if error_message == []:
         error_message = None
-
+    user_list = get_attached_users(person.person_id)
+    
     keys = dict(
         role = role[0],
         displaysuccess = success_message,
