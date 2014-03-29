@@ -557,14 +557,32 @@ returns a count of images per patient, test type, or over a period of time
 
 /olap
 
-'p' -- patient id
-'t' -- test type
-'i' -- time interval (w (weekly), m (monthly), y (yearly))
+
 """
-@view_config(route_name='olap', renderer='json', permission='view')
+@view_config(route_name='olap', renderer='templates/user_home.pt', permission='view')
 def olap(request):
+    user = get_user(authenticated_userid(request))
+    person = get_person(user.person_id)
+    
     cube = get_cube()
-    return Response(cube)
+
+    keys = dict(
+        filter_text = "Diagnosis",      # this changes what is displayed to user 
+        base_url = '/person/',
+        displayerror = None,
+        displaysuccess = None,
+        headers= (
+                 'Patient ID',
+                 'Year',
+                 'Month',
+                 'Week',
+                 'Test Type',
+                 'Image Count'
+                 ),
+       data=cube, 
+       name=format_name(person.first_name, person.last_name),
+    )
+    return getModules(request, keys)
 
 """
 Allows the user to get a list of patients who, between the time of start and end

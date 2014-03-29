@@ -224,3 +224,18 @@ def apply_filter(filter_str, items, cols, method='freq', delimit=' '):
         result = None
 
     return result
+
+"""
+takes a cube returned by get_cube and returns the count column corresponding to
+arguments
+"""
+def cube_select(cube, pid=None, year=None, month=None, week=None, ttype=None):
+    for row in cube:
+        if (pid == row[0] and
+            year == row[1] and
+            month == row[2] and
+            week == row[3] and
+            ttype == row[4]):
+            return row[5]
+
+    return None
