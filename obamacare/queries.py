@@ -94,11 +94,9 @@ def get_person(person_id):
 takes a person_id and returns a list of ids relating to doctors
 """
 def get_fdoctors(pid):
-    dids = DBSession.query(
-                        FamilyDoctor.doctor_id
-                    ).filter(
+    dids = DBSession.query( FamilyDoctor.doctor_id).filter(
                         FamilyDoctor.patient_id==pid
-                    ).all()
+            ).all()
 
     return dids
 

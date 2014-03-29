@@ -339,6 +339,7 @@ def user_profile(request):
         error_message = None
 
     keys = dict(
+        doctors = get_doctors(user),
         displaysuccess = None,
         displayerror = error_message,
         fname = person.first_name, lname = person.last_name, 
