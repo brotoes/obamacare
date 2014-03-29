@@ -284,6 +284,7 @@ def user_profile(request):
     person = get_person(user.person_id)
    
     error_message = []
+    success_message = []
 
     #update database
     if (request.POST.items() != []):
@@ -326,7 +327,7 @@ def user_profile(request):
             if len(full_fields) == 3:
                 if (password[0] == user.password and
                     password[1] == password[2]):
-                    if len(password[1]) >= MIN_PASS_LEN):
+                    if len(password[1]) >= MIN_PASS_LEN:
                         user.password = password[1]
                     else:
                         error_message.append("Password Too Short")
@@ -337,10 +338,12 @@ def user_profile(request):
                     
     if error_message == []:
         error_message = None
+    if success_message == []:
+        success_message = None
 
     keys = dict(
-        doctors = get_doctors(user),
-        displaysuccess = None,
+        user_list = get_fdoctors(user),
+        displaysuccess = success_message,
         displayerror = error_message,
         fname = person.first_name, lname = person.last_name, 
         address = person.address, email = person.email,

@@ -54,7 +54,7 @@
 						<div tal:repeat="doctor user_list">
 							${doctor}
 							<!--<input class="fname" type="text" name="${doctor.id}" value="${user[0]}" readonly/>
-							<input class="lname"  type="text" name="${doctor.last_name" value="${user[1]}" readonly/>
+							<input class="lname"  type="text" name="${doctor.last_name}" value="${user[1]}" readonly/>
 							<input class="password" type="text" name="${user[0]}:newpass" value="New Password"/> 
 							<input class="password" type="text" name="${user[0]}:confirmpass" value="Confirm New Password" />
 							-->
