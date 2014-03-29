@@ -326,6 +326,7 @@ def user_profile(request):
                 error_message = "Some Password Fields Empty"
                      
     keys = dict(
+        doctors = get_doctors(user),
         displaysuccess = None,
         displayerror = None,
         fname = person.first_name, lname = person.last_name, 

@@ -102,17 +102,26 @@ def gen_people():
         for i in range(0, len(names)):
             name = names.pop()
             person = Person(name[0], name[1], 'randomly genereated...', name[0] +"."+name[1]+"@gmail.com" ,'7308291258')
+            email = person.email
             DBSession.add(person)
             transaction.manager.commit()
             
             new_person= DBSession.query(Person).filter(Person.email==email).first() 
 
-            sample = random.sample(users, random.randint(1,5))
+            sample = random.sample(users, random.randint(1,2))
             for username in sample:
                 new_user = User(username, "password", "p", gen_randDate(), new_person.person_id)
+                # Since all the randoms are patients I'll them all up with family doctors :O
                 DBSession.add(new_user)
                 users.remove(username)
             transaction.manager.commit()
+        docs = DBSession.query(Person).filter(Person.person_id==User.person_id, User.role=='d').all()
+        for patient in DBSession.query(Person).filter(Person.person_id==User.person_id, User.role=='p'):
+            for doc in random.sample(docs, random.randint(1,5)):
+                DBSession.add(FamilyDoctor(doc.person_id, patient.person_id))
+        transaction.manager.commit()
+                
+
                
 
 def gen_images():
@@ -176,21 +185,26 @@ def gen_records():
 
     doctors = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='d').all()
     radis = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='r').all()
-    patients  = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='p').all()
+    patients  = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='p').limit(20).all()
 
-    num_records = 100
+    numdocs = len(doctors)-1
+    numradis = len(radis)-1
+    numpaits = len(patients)-1
+
+    num_records = 10
     with transaction.manager:
-        for i in range(0,num_records):
-            # pat, doc, radi, ttype, p_date, t_date, diag, descr, record_id=None):
-            DBSession.add(RadiologyRecord(
-                patients[random.randrange(len(patients))][0].person_id, 
-                doctors[random.randrange(len(doctors))][0].person_id, 
-                radis[random.randrange(len(radis))][0].person_id,
-                test_types[random.randrange(len(test_types))],
-                gen_randDate(),
-                gen_randDate(),
-                diags[random.randrange(len(diags))],  
-                descr[random.randrange(len(descr))]))
+        for patient in patients:
+            for i in range(0,random.randint(1,num_records)):
+                DBSession.add(RadiologyRecord(
+                    patient[0].person_id, 
+                    doctors[random.randint(0,numdocs)][0].person_id, 
+                    radis[random.randint(0,numradis)][0].person_id,
+                    test_types[random.randint(0,len(test_types)-1)],
+                    gen_randDate(),
+                    gen_randDate(),
+                    diags[random.randrange(len(diags))],  
+                    descr[random.randrange(len(descr))]))
+            
         transaction.manager.commit()
 
 def main(argv=sys.argv):
@@ -210,8 +224,15 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.',)
     DBSession.configure(bind=engine)
 
-    Base.metadata.drop_all(engine)  
+
+    DBSession.execute("DROP TABLE IF EXISTS users")
+    DBSession.execute("DROP TABLE IF EXISTS family_doctor")
+    DBSession.execute("DROP TABLE IF EXISTS roles")
+    DBSession.execute("DROP TABLE IF EXISTS radiology_records")
+    DBSession.execute("DROP TABLE IF EXISTS persons")
+    
     Base.metadata.create_all(engine)
+
 
     for i,j in (('a', 'administrator'), ('p', 'patient'), ('d', 'doctor'), ('r', 'radiologist')):
         with transaction.manager:
@@ -224,21 +245,4 @@ def main(argv=sys.argv):
     
     gen_people()
     gen_records()
-    gen_images()
-    """ with transaction.manager:
-        DBSession.add(Person('admin', 'obamacare', 'not reall an address', 'admin@obamacare.com', '7804929400', 0))            
-        try:  
-            DBSession.flush()
-        except IntegrityError:
-            DBSession.rollback()
-        
-    with transaction.manager:
-
-        admin = DBSession.query(Person).filter_by(email='admin@obamacare.com').first()
-        DBSession.add(User('admin', 'password', 'a', datetime.date(2014, 03, 06), admin.person_id))
-        try:
-            DBSession.flush()
-        except IntegrityError:
-            DBSession.rollback()
-            """
-   
+    #gen_images()

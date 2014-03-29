@@ -78,7 +78,7 @@ class Person(Base):
             self.person_id=id
 
     def __repr__ (self):
-        return str(('id: ', self.person_id, ', f_name: ', self.first_name, 
+        return str(('id:', self.person_id, ', f_name: ', self.first_name, 
             ', l_name: ', self.last_name, ', addr: ', self.address, 
             ', email: ', self.email, ', phone: ', self.phone)) 
 
