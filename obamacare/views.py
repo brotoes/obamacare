@@ -134,6 +134,7 @@ def user_home(request):
         ),
         data=data, 
         name=format_name(person.first_name, person.last_name),
+        sortable=True,
     )
 
     return getModules(request, keys)
@@ -162,13 +163,17 @@ def person_info(request):
     if not Person:
         return HTTPNotFound()
 
-    if role == 'a':
-        doc_list = get_fpatients(person.person_id)
-        paitient_list = get_fdoctors(person.person_id)
+    user_list=None
+    if 'group:a' in role:
+        doc_list = get_fdoctors(person.person_id)
         for i in range (0,len(doc_list)):
             doc_list[i] = get_person(doc_list[i][0])
-        for i in range (0, len(paitient_list)):
-            paitient_list[i] = get_person()
+
+        patient_list = get_fpatients(person.person_id)
+        for i in range (0, len(patient_list)):
+            patient_list[i] = get_person(patient_list[i][0])
+        user_list=dict( patients=patient_list, docs=doc_list)
+
     post = request.POST
     #process post for admin
     if 'group:a' in role and post.items() != []:
@@ -263,8 +268,8 @@ def person_info(request):
     if success_message == []:
         success_message = None
     if error_message == []:
-        success_message = None
-
+        error_message = None
+    
     keys = dict(
         role = role[0],
         displaysuccess = success_message,
@@ -276,7 +281,7 @@ def person_info(request):
         phone = person.phone,
         user_list = user_list
     )
-    return  getModules(request, keys)
+    return  people_list(request, getModules(request, keys))
 
 """
 Allows a user to view and edit their own information
@@ -288,7 +293,8 @@ def user_profile(request):
     user = get_user(authenticated_userid(request))
     person = get_person(user.person_id)
    
-    error_message = ""
+    error_message = []
+    success_message = []
 
     #update database
     if (request.POST.items() != []):
@@ -296,8 +302,8 @@ def user_profile(request):
         fname = clean(post['fname'])
         lname = clean(post['lname'])
         address = clean(post['address'])
-        email = clean(post['email'])
-        phone = format_phone(post['phone'])
+        email = format_email(clean(post['email']))
+        phone = format_phone(clean(post['phone']))
 
         password = []
         password.append(clean(post['existing']))
@@ -306,43 +312,66 @@ def user_profile(request):
         
         if fname != '':
             person.first_name = fname
+            success_message.append("First Name Updated Successfully")
         if lname != '':
             person.last_name = lname
+            success_message.append("Last Name Updated Successfully")
         if address != '':
             person.address = address
+            success_message.append("Address Updated Successfully")
         if email != '':
-            person.email = email
+            if email != 'BAD FORMAT':
+                person.email = email
+                success_message.append("Email Updated Successfully")
+            else:
+                error_message.append("Bad Email Format")
         if phone != '':
             if phone != 'BAD FORMAT':
                 person.phone = phone
+                success_message.append("Phone Updated Successfully")
             else:
-                error_message = "Bad Phone Format"
+                error_message.append("Bad Phone Format")
         
         full_fields = [x for x in password if x != '']
         if len(full_fields) > 0:
             if len(full_fields) == 3:
                 if (password[0] == user.password and
-                    password[1] == password[2] and
-                    len(password[1]) >= MIN_PASS_LEN):
-                    user.password = password[1]
+                    password[1] == password[2]):
+                    if len(password[1]) >= MIN_PASS_LEN:
+                        user.password = password[1]
+                    else:
+                        error_message.append("Password Too Short")
                 else:
-                    error_message = "Password Fields Must Match"
+                    error_message.append("Password Fields Must Match")
             else:
-                error_message = "Some Password Fields Empty"
-                     
+                error_message.append("Some Password Fields Empty")
+                    
+    if error_message == []:
+        error_message = None
+    if success_message == []:
+        success_message = None
+
+
+    user_list=None
+    doc_list = get_fdoctors(user.person_id)
+    for i in range (0,len(doc_list)):
+        doc_list[i] = get_person(doc_list[i][0])
+    patient_list = get_fpatients(person.person_id)
+    for i in range (0, len(patient_list)):
+        patient_list[i] = get_person(patient_list[i][0])
+    
+    user_list=dict( patients=patient_list, docs=doc_list)
+
     keys = dict(
-        
-        displaysuccess = None,
-        displayerror = None,
+        user_list = user_list,
+        displaysuccess = success_message,
+        displayerror = error_message,
         fname = person.first_name, lname = person.last_name, 
         address = person.address, email = person.email,
         phone =person.phone
     )
 
-    if error_message != "":
-        keys['displayerror'] = error_message
-
-    return  getModules(request, keys)
+    return  people_list(request, getModules(request, keys))
 
 """
 Here, a user may log in.
@@ -357,9 +386,10 @@ def login(request):
     if referrer == login_url:
         referrer = '/' # never use the login form itself as came_from
     came_from = request.params.get('came_from', referrer)
-    message = ''
     login = ''
     password = ''
+    err_mess = None
+    succ_mess = None
     if 'form.submitted' in request.params:
         login = request.params['login']
         password = request.params['password']
@@ -368,11 +398,11 @@ def login(request):
             return HTTPFound(location = came_from,
                              headers = headers)
         else:
-            message = 'Failed login'
+            err_mess = 'Failed Login'
 
     return dict(
-        displaysuccess = message,
-        displayerror = message,
+        displaysuccess = succ_mess,
+        displayerror = err_mess,
         url = request.application_url + '/login',
         came_from = came_from,
         login = login,
@@ -564,7 +594,8 @@ returns a count of images per patient, test type, or over a period of time
 
 
 """
-@view_config(route_name='olap', renderer='templates/user_home.pt', permission='view')
+@view_config(route_name='olap', renderer='templates/user_home.pt',
+             permission='admin')
 def olap(request):
     user = get_user(authenticated_userid(request))
     person = get_person(user.person_id)
@@ -586,6 +617,7 @@ def olap(request):
                  ),
        data=cube, 
        name=format_name(person.first_name, person.last_name),
+       sortable=False,
     )
     return getModules(request, keys)
 
@@ -657,6 +689,7 @@ def report(request):
                  ),
        data=data, 
        name=format_name(person.first_name, person.last_name),
+       sortable=False,
     )
     return getModules(request, keys)
 

@@ -39,11 +39,14 @@ def getModules(request, keys=None):
 	users = role == 'a'	
 	# Give admins acces to the reports module
 	reports = role == 'a'
+	# Give admins access to the olap module
+	olap = role == 'a'
 	# Give everyone but patients access to the new module
 	new = role!='p'
 
 	keys['users'] = users
 	keys['new'] = new
+	keys['olap'] = olap
 	keys['reports'] = reports
 
 	return keys

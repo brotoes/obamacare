@@ -91,24 +91,22 @@ def get_person(person_id):
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
 """
-takes a person_id and returns a list of ids relating to doctors
+takes a patient person_id and returns a list of doctor person ids who are the family
+doctor of the person
 """
 def get_fdoctors(pid):
-    dids = DBSession.query( FamilyDoctor.doctor_id).filter(
+    dids = DBSession.query(FamilyDoctor.doctor_id).filter(
                         FamilyDoctor.patient_id==pid
             ).all()
 
     return dids
 
 """
-takes a person_id and returns a list of ids relating to patients
-who have the person_id as a family doctor
+takes a doctor person_id and returns a list of patient person_ids who 
 """
 def get_fpatients(did):
-    pids = DBSession.query(
-                        FamilyDoctor.patient_id
-                    ).filter(
-                        FamilyDoctor.patient_id==pid
+    pids = DBSession.query(FamilyDoctor.patient_id).filter(
+                        FamilyDoctor.doctor_id==did
                     ).all()
 
     return pids

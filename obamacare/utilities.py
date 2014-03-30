@@ -86,8 +86,6 @@ def format_email(email):
         return 'BAD FORMAT'
     user = parts[0]
     domain = parts[1]
-    if len(user.split('.')) != 1:
-        return 'BAD FORMAT'
     if len(domain.split('.')) < 2:
         return 'BAD FORMAT'
     return email

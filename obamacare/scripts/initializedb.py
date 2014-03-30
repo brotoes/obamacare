@@ -245,4 +245,4 @@ def main(argv=sys.argv):
     
     gen_people()
     gen_records()
-    #gen_images()
+    gen_images()

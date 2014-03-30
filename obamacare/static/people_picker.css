@@ -1,7 +1,7 @@
 #peoplepicker{
   position: relative;
   width: 30em;
-  max-height: 28em;
+  height: 30em;
   background-color: white;
   padding: 2em;
   margin-left: auto;
@@ -22,22 +22,22 @@
   position: relative;
   height: 85%;
   width: 90%;
- 
-  overflow: auto;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 2em;
+   overflow: auto;
 
 }
 table.picker {
   width: 90%;
-  overflow-x: hidden;
-  
   white-space:nowrap;
   border-collapse: collapse;
 
 }
-
+tbody.picker{
+  height: 28em;
+ 
+}
 th.picker {
   border-right: 4px solid #b2b2b2;
   padding-top: .2em;
@@ -56,7 +56,7 @@ tr.picker:hover{
 td.picker {
   
   border-right: 1px solid #b2b2b2;
-font-size: 12   px;
+  font-size: 12px;
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 15px;
