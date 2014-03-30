@@ -55,22 +55,17 @@ def get_roles():
     return roles
 
 """
-returns a list of tuples
 """
 def get_cube():
-    query = DBSession.execute(
-"""SELECT patient_id, Year(test_date), Month(test_date),
-Week(test_date), test_type, count(*)
-FROM radiology_records JOIN pacs_images
-    ON radiology_records.record_id=pacs_images.record_id
-GROUP BY patient_id, test_type, Year(test_date), Month(test_date),
-         Week(test_date) WITH ROLLUP;"""
-                            )
-    rows = []
-    for row in query:
-        rows.append(row)
-
-    return rows
+    query = DBSession.query().select_from(
+                        RadiologyRecord,
+                        PacsImage,
+                        Person,
+                    ).filter(
+                        RadiologyRecord.record_id==PacsImage.record_id,
+                        RadiologyRecord.patient_id==Person.person_id,
+                    )
+    return query
 
 """
 returns a properly formatted name corresponding to person
@@ -85,7 +80,11 @@ def get_person(person_id):
     if not person_id:
         return None
     try:
-        person = DBSession.query(Person).filter(Person.person_id==person_id).first()
+        person = DBSession.query(
+                            Person
+                        ).filter(
+                            Person.person_id==person_id
+                        ).first()
         return person
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
