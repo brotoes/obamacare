@@ -63,9 +63,30 @@ takes one GET argument
 @view_config(route_name='user_list', renderer='templates/user_list.pt',
              permission='admin')
 def userlist_view(request):
+    get = request.GET
+
+    if 'filter' in get:
+        name_filter = clean(get['filter'])
+    else:
+        name_filter = None
+
+    data = DBSession.query(
+                    Person.person_id,
+                    Person.first_name,
+                    Person.last_name,
+                    Person.email,
+                          )
+
+    if name_filter:
+        data = data.filter(or_(
+                        Person.first_name.like(name_filter),
+                        Person.last_name.like(name_filter),
+                        ))
+
+    data = data.all()
+
     keys = get_standard_keys(request)
-    keys['data'] = DBSession.query(Person.person_id, 
-        Person.first_name, Person.last_name, Person.email).all()
+    keys['data'] = data
     keys['headers'] = ('Person ID', 'First', 'Last', 'Email')
     keys['filter_text'] = 'Filter'
     keys['base_url'] = '/person/'
