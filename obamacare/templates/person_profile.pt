@@ -58,12 +58,13 @@
 						<td><h1>Users:</h1></td>
 					</tr>
 					<tr rowspan="${len(user_list)}">
+						${user_list}
 						<td colspan="4">
 						<div tal:repeat="user user_list">
-							<input class="name" type="text" name="${user[0]}" value="${user[0]}"/>
-							<input class="role"  type="text" name="${user[0]}:role" value="${user[1]}"/>
-							<input class="password" type="text" name="${user[0]}:newpass" value="New Password"/> 
-							<input class="password" type="text" name="${user[0]}:confirmpass" value="Confirm New Password" />
+							<input class="name" type="text" value="${user.first_name}"/>
+							<input class="name"  type="text" value="${user.last_name}"/>
+							<input class="address" type="text" value="${user.address}"/> 
+							<input class="address" type="text"  value="${user.email}" />
 						</div>
 						</td>
 					</tr>

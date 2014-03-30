@@ -162,8 +162,13 @@ def person_info(request):
     if not Person:
         return HTTPNotFound()
 
-    user_list = get_attached_users(person.person_id)
-
+    if role == 'a':
+        doc_list = get_fpatients(person.person_id)
+        paitient_list = get_fdoctors(person.person_id)
+        for i in range (0,len(doc_list)):
+            doc_list[i] = get_person(doc_list[i][0])
+        for i in range (0, len(paitient_list)):
+            paitient_list[i] = get_person()
     post = request.POST
     #process post for admin
     if 'group:a' in role and post.items() != []:
@@ -326,7 +331,7 @@ def user_profile(request):
                 error_message = "Some Password Fields Empty"
                      
     keys = dict(
-        doctors = get_doctors(user),
+        
         displaysuccess = None,
         displayerror = None,
         fname = person.first_name, lname = person.last_name, 
