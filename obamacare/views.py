@@ -774,7 +774,10 @@ def report(request):
     
     [append_(item) for item in duplicates if item[0] not in ids]
 
-
+    if start == '0001-01-01':
+        start = ''
+    if end == '9999-12-31':
+        end = ''
 
     keys = dict(
         filter_text = "Diagnosis",      # this changes what is displayed to user 
@@ -789,6 +792,9 @@ def report(request):
                  'Test Date',
                  ),
        data=data,
+       filter=diag_filter,
+       start=start,
+       end=end,
        name=format_name(person.first_name, person.last_name),
        sortable=False,
     )
