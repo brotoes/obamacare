@@ -36,22 +36,26 @@
 	      							<td class="searchitem">
 		      							 <select name="p">
 		      							 	<span tal:condition="period=='w'">
+		      							 		<option name="yearly" value="">None</option>
 		      							 		<option name="weekly" value="w" selected="">Weekly</option>
 		      							 		<option name="monthly" value="m">Monthly</option>
 										  		<option name="yearly" value="y">Yearly</option>
 
 		      							 	</span>
 		      							 	<span tal:condition="period=='m'">
+		      							 		<option name="yearly" value="">None</option>
 		      							 		<option name="weekly" value="w">Weekly</option>
 		      							 		<option name="monthly" value="m" selected="">Monthly</option>
 										  		<option name="yearly" value="y">Yearly</option>
 		      							 	</span>	
 										 	<span tal:condition="period=='y'">
+										 		<option name="yearly" value="">None</option>
 		      							 		<option name="weekly" value="w">Weekly</option>
 		      							 		<option name="monthly" value="m">Monthly</option>
 										  		<option name="yearly" value="y" selected="">Yearly</option>
 		      							 	</span>
 		      							 	<span tal:condition="not period or period not in 'wmy'">
+		      							 		<option name="yearly" value="" selected="">None</option>
 		      							 		<option name="weekly" value="w">Weekly</option>
 		      							 		<option name="monthly" value="m">Monthly</option>
 										  		<option name="yearly" value="y">Yearly</option>
