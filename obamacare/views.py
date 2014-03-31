@@ -146,6 +146,12 @@ def user_home(request):
                      rec[6],
                      rec[7],
                     ))
+
+    if start == '0001-01-01':
+        start = ''
+    if end == '9999-12-31':
+        end = ''
+
     keys = dict(
         filter_text = "Filter",  # This controls what is displayed to the user
         base_url = '/record/',
@@ -159,7 +165,11 @@ def user_home(request):
                   'Test Date',
                   'Diagnosis'
         ),
-        data=data, 
+        data=data,
+        sort_by=sort_by,
+        start=start,
+        end=end,
+        filter=search_filter, 
         name=format_name(person.first_name, person.last_name),
         sortable=True,
     )
@@ -763,6 +773,9 @@ def report(request):
         ids.append(item[0])
     
     [append_(item) for item in duplicates if item[0] not in ids]
+
+
+
     keys = dict(
         filter_text = "Diagnosis",      # this changes what is displayed to user 
         base_url = '/person/',
@@ -775,7 +788,7 @@ def report(request):
                  'Phone',
                  'Test Date',
                  ),
-       data=data, 
+       data=data,
        name=format_name(person.first_name, person.last_name),
        sortable=False,
     )
