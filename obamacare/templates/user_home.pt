@@ -24,7 +24,7 @@
 	      							<td class="searchitem">Before:</td><td class="searchitem"> <input type="text" name="end"/>
 	      							</td>
 	      							<td tal:condition="sortable">
-		      							 <select name="sory_by">
+		      							 <select name="sort_by">
 										 	<option name="feq" value="freq">Rank</option>
 										  	<option name="new" value="new">Newest</option>
 										  	<option value="old" value="old">Oldest</option>

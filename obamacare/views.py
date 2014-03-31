@@ -133,7 +133,7 @@ def user_home(request):
     else:
         sort_by = 'freq'
     
-    records = get_records(request, start, end, search_filter, method=sort_by)
+    records = get_records(request, start=start, end=end, search_filter=search_filter, method=sort_by)
 
     data = []
     for rec in records:

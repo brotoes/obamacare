@@ -254,6 +254,11 @@ def get_records(request, start=None, end=None, search_filter=None, method='freq'
     if end == None or end == '':
         end = '9999-12-31'
 
+    print start
+    print end
+    print search_filter
+    print method
+
     user = get_user(authenticated_userid(request))
     role = getRole(user.user_name, request)
 
@@ -283,9 +288,8 @@ def get_records(request, start=None, end=None, search_filter=None, method='freq'
         rname = get_name(get_person(i[3]))
         formatted.append((i[:1] + (pname, dname, rname) + i[4:]))
 
-    if search_filter:
-        cols = (None, 'pname', None, None, None, 'tdate', 'diag', 'desc')
-        formatted = apply_filter(search_filter, formatted, cols, method=method)
+    cols = (None, 'pname', None, None, None, 'tdate', 'diag', 'desc')
+    formatted = apply_filter(search_filter, formatted, cols, method=method)
 
     return formatted
 
