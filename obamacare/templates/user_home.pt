@@ -25,9 +25,9 @@
 	      							</td>
 	      							<td tal:condition="sortable">
 		      							 <select name="sory_by">
-										 	<option name="feq">Rank</option>
-										  	<option name="new">Newest</option>
-										  	<option value="old">Oldest</option>
+										 	<option name="feq" value="freq">Rank</option>
+										  	<option name="new" value="new">Newest</option>
+										  	<option value="old" value="old">Oldest</option>
 										</select>
 									</td>
 	      							<td colspan="2" class="searchitem"><input type="submit" value="Search"/>
