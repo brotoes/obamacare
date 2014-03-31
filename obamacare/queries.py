@@ -114,19 +114,20 @@ def get_fpatients(did):
 takes a patient_id and doctor_id and inserts it into the family_doctor table
 """
 def add_fdoctor(request, did, pid):
-    user_name = authenticated_userid(request)
-    role = getRole(user_name, request)
-    person = get_user(user_name).person_id
-
+    
+    user = get_user(authenticated_userid(request))
+    
     permission = False
-
-    if 'group:a' in role:
+    print "add family doctor for patient", pid, "and doctor", did
+    print "role", user.role, "person_id", user.person_id
+    #pdb.set_trace()
+    if user.role == 'a':
         permission = True
-    elif 'group:p' in role and pid == person:
+    elif int(pid) == int(user.person_id):
         permission = True
-    elif 'group:d' in role and did == person:
-        permission = True
-
+    else:
+        print "Failed to get permissions"
+    
     if permission:
         with transaction.manager:
             DBSession.add(FamilyDoctor(
@@ -134,6 +135,33 @@ def add_fdoctor(request, did, pid):
                 pid
             ))
             transaction.manager.commit()
+    else:
+        return None
+
+
+"""
+takes a patient_id and doctor_id and inserts it into the family_doctor table
+"""
+def add_fpatient(request, pid, did):
+    user_name = authenticated_userid(request)
+    person = get_user(user_name)
+    print "add family patient for paitient", pid, "and doctor", did
+
+    permission = False
+    if person.role == 'a':
+        permission = True
+    elif person.role == 'd' and int(did)==int(person.person_id):
+        permission = True
+    
+    if permission:
+        with transaction.manager:
+            DBSession.add(FamilyDoctor(
+                did,
+                pid
+            ))
+            transaction.manager.commit()
+    else:
+        return None
 
 
 """

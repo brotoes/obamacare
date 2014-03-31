@@ -25,7 +25,7 @@ def main(global_config, **settings):
         parser.readfp(open(os.path.expanduser(sqlalchemy_url[1].strip()[2:])))
         settings['sqlalchemy.url'] = parser.get('main', 'db.url')
 
-    engine = engine_from_config(settings, 'sqlalchemy.', echo=True)
+    engine = engine_from_config(settings, 'sqlalchemy.', echo=False)
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
 
@@ -46,7 +46,8 @@ def main(global_config, **settings):
         # ---> HTML page with the logged in user's editable info displayed
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
-    config.add_route('add_familydoctor', '/afd/{id}')
+    config.add_route('add_familydoctor', '/afd/')
+    config.add_route('add_familypatient', '/afp/')
     config.add_route('family', '/fam')
 
 # Search Module

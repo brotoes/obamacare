@@ -379,18 +379,22 @@ def user_profile(request):
     if success_message == []:
         success_message = None
 
+    user_list=dict(users=get_attached_users(person.person_id),)
 
-    user_list=None
+    if user.role == 'd':
+        patient_list = get_fpatients(person.person_id)
+        for i in range (0, len(patient_list)):
+            patient_list[i] = get_person(patient_list[i][0])
+        user_list['patients'] = patient_list
+    
     doc_list = get_fdoctors(user.person_id)
     for i in range (0,len(doc_list)):
         doc_list[i] = get_person(doc_list[i][0])
-    patient_list = get_fpatients(person.person_id)
-    for i in range (0, len(patient_list)):
-        patient_list[i] = get_person(patient_list[i][0])
-    
-    user_list=dict(users=get_attached_users(person.person_id), patients=patient_list, docs=doc_list)
+    user_list['docs'] = doc_list
 
     keys = dict(
+        person_id=user.person_id,
+        role = user.role,
         user_list = user_list,
         displaysuccess = success_message,
         displayerror = error_message,
@@ -829,17 +833,42 @@ Adds a family doctor to the logged in user
 """
 @view_config(route_name='add_familydoctor', permission='view')
 def afd(request):
+    referrer = request.application_url
+    came_from = request.params.get('came_from', referrer)
+
+    args = request.POST
+
+    if 'did' not in args or args['did'] == '':
+        return Response("no doctor chosen")
+    if 'pid' not in args or args['pid'] == '':
+        return Response("no patient chosen")
+    
+    add_fdoctor(request, clean(args['did']), clean(args['pid']))
+        
+
+    return HTTPFound(location = came_from)
+
+"""
+Adds a family patient to the logged in doctor
+"""
+@view_config(route_name='add_familypatient', permission='view')
+def afp(request):
     user = get_user(authenticated_userid(request))
-    patient_id = user.person_id
-    role = getRole(user.user_name, request)
+    if user.role not in 'ad':
+        return HTTPForbidden("Must be a doctor to have family patients")
+    referrer = request.application_url
+    came_from = request.params.get('came_from', referrer)
 
-    did = request.matchdict['id']
+    args = request.POST
 
-    if 'group:p' in role:
-        add_fdoctor(request, did, patient_id)
-        return Response("added")
-    else:
-        return Response("you are not a patient")
+    if 'pid' not in args or args['pid'] == '':
+        return Response("no patient chosen")
+    if 'did' not in args or args['did'] == '':
+        return Response("no doctor chosen")
+    
+    add_fpatient(request, clean(args['pid']), clean(args['did']))
+
+    return HTTPFound(location = came_from)
     
 """
 displays a list of doctors if user is a patient, or a list of patients if user

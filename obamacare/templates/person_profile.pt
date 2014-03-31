@@ -74,33 +74,45 @@
 									</div>
 								</td>
 							</tr>
-					<form method="POST" action="">
-						<tr>
-							<td><h1 class="header">Add Family Doctor</h1></td>
-						</tr>
-						<tr>
-							<td>
-							 	ID: <input id="new_fdoc" type="text"/> 
-							
-								<input type="button" onclick="open_peoplepicker('new_fdoc', 'd')" value="+"/>
-							</td>
-						</tr>
-						<tr>
-							<td><h1 class="header">Add Family Patient</h1></td>
-						</tr>
-						<tr>
-							<td>
-							 	ID: <input id="new_fpatient" type="text"/> 
-							
-								<input type="button" value="+" onclick="open_peoplepicker('new_fpatient', 'p')"/>
-							</td>
-						</tr>
-						<tr>
+			<form method="POST" action="${request.route_url('add_familydoctor')}">
+				<input type="hidden" name="came_from" value="${request.current_route_url()}"/>
+				<input type="hidden" name="pid" value="${request.matchdict['id']}" />
+					<tr>
+						<td><h1 class="header">Add Family Doctor</h1></td>
+					</tr>
+					<tr>
+						<td>
+						 	ID: <input id="new_fdoc" name="did" type="text"/> 
+						
+							<input type="button" onclick="open_peoplepicker('new_fdoc', 'd')" value="+"/>
+						</td>
+					</tr>
+					<tr>
 						<td colspan="2">
 								<input type="submit" value="Submit"/>
 						</td>
 					</tr>
-					</form>
+			</form>
+			<form method="POST" action="${request.route_url('add_familypatient')}">
+				<input type="hidden" name="came_from" value="${request.current_route_url()}"/>
+				<input type="hidden" name="did" value="${request.matchdict['id']}" />
+					<tr>
+						<td><h1 class="header">Add Family Patient</h1></td>
+					</tr>
+					<tr>
+						<td>
+						 	ID: <input id="new_fpatient" type="text" name="pid"/> 
+						
+							<input type="button" value="+" onclick="open_peoplepicker('new_fpatient', 'p')"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+								<input type="submit" value="Submit"/>
+						</td>
+					</tr>
+				</form>
+
 
 					<tr tal:condition="user_list.has_key('docs')" tal:attributes="rowspan len(user_list['docs'])">
 						<td colspan="4">

@@ -65,60 +65,71 @@
 									</div>
 								</td>
 							</tr>
-							<form method="POST" action="">
-									<tr>
-										<td><h1 class="header">Add Family Doctor</h1></td>
-									</tr>
-									<tr>
-										<td>
-										 	ID: <input id="new_fdoc" type="text"/> 
-										
-											<input type="button" onclick="open_peoplepicker('new_fdoc', 'd')" value="+"/>
-										</td>
-									</tr>
-									<tr>
-										<td><h1 class="header">Add Family Patient</h1></td>
-									</tr>
-									<tr>
-										<td>
-										 	ID: <input id="new_fpatient" type="text"/> 
-										
-											<input type="button" value="+" onclick="open_peoplepicker('new_fpatient', 'p')"/>
-										</td>
-									</tr>
-									<tr>
-										<td colspan="2">
-												<input type="submit" value="Submit"/>
-										</td>
-									</tr>
-								</form>
+			<form method="POST" action="${request.route_url('add_familydoctor')}">
+				<input type="hidden" name="came_from" value="${request.route_url('user_profile')}"/>
+				<input type="hidden" name="pid" value="${person_id}" />
+					<tr>
+						<td><h1 class="header">Add Family Doctor</h1></td>
+					</tr>
+					<tr>
+						<td>
+						 	ID: <input id="new_fdoc" name="did" type="text"/> 
+						
+							<input type="button" onclick="open_peoplepicker('new_fdoc', 'd')" value="+"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+								<input type="submit" value="Submit"/>
+						</td>
+					</tr>
+			</form>
+			<form tal:condition="role=='d'" method="POST" action="${request.route_url('add_familypatient')}">
+				<input type="hidden" name="came_from" value="${request.route_url('user_profile')}"/>
+				<input type="hidden" name="did" value="${person_id}" />
+					<tr>
+						<td><h1 class="header">Add Family Patient</h1></td>
+					</tr>
+					<tr>
+						<td>
+						 	ID: <input id="new_fpatient" type="text" name="pid"/> 
+						
+							<input type="button" value="+" onclick="open_peoplepicker('new_fpatient', 'p')"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+								<input type="submit" value="Submit"/>
+						</td>
+					</tr>
+				</form>
 
-								<tr tal:condition="user_list.has_key('docs')" tal:attributes="rowspan len(user_list['docs'])">
-									<td colspan="4">
-										<h1 class="header" tal:condition="len(user_list['docs'])>0">Family Doctors:</h1>
-										
-									
-										<div tal:repeat="user user_list['docs']">
-											<input class="name" type="text" value="${user.first_name}" readonly/>
-											<input class="name"  type="text" value="${user.last_name}" readonly/>
-											<input class="address" type="text" value="${user.address}" readonly/> 
-											<input class="address" type="text"  value="${user.email}" readonly/>
-										</div>
-									</td>
-								</tr>
-								<tr tal:condition="user_list.has_key('patients')" tal:attributes="rowspan len(user_list['patients'])">
-									<td colspan="4">
-										<h1 class="header" tal:condition="len(user_list['patients'])>0">Family Patients:</h1>
-										
-									
-										<div tal:repeat="user user_list['patients']">
-											<input class="name" type="text" value="${user.first_name}" readonly/>
-											<input class="name"  type="text" value="${user.last_name}" readonly/>
-											<input class="address" type="text" value="${user.address}" readonly/> 
-											<input class="address" type="text"  value="${user.email}" readonly/>
-										</div>
-									</td>
-								</tr>
+				<tr tal:condition="user_list.has_key('docs')" tal:attributes="rowspan len(user_list['docs'])">
+					<td colspan="4">
+						<h1 class="header" tal:condition="len(user_list['docs'])>0">Family Doctors:</h1>
+						
+					
+						<div tal:repeat="user user_list['docs']">
+							<input class="name" type="text" value="${user.first_name}" readonly/>
+							<input class="name"  type="text" value="${user.last_name}" readonly/>
+							<input class="address" type="text" value="${user.address}" readonly/> 
+							<input class="address" type="text"  value="${user.email}" readonly/>
+						</div>
+					</td>
+				</tr>
+				<tr tal:condition="user_list.has_key('patients')" tal:attributes="rowspan len(user_list['patients'])">
+					<td colspan="4">
+						<h1 class="header" tal:condition="len(user_list['patients'])>0">Family Patients:</h1>
+						
+					
+						<div tal:repeat="user user_list['patients']">
+							<input class="name" type="text" value="${user.first_name}" readonly/>
+							<input class="name"  type="text" value="${user.last_name}" readonly/>
+							<input class="address" type="text" value="${user.address}" readonly/> 
+							<input class="address" type="text"  value="${user.email}" readonly/>
+						</div>
+					</td>
+				</tr>
 							</table>
 					</div>
 				</div>
