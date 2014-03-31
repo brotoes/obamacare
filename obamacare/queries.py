@@ -55,6 +55,7 @@ def get_roles():
     return roles
 
 """
+returns a query for the join of RadiologyRecord, PacsImage, and Person
 """
 def get_cube():
     query = DBSession.query().select_from(
