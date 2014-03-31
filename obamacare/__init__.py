@@ -63,6 +63,7 @@ def main(global_config, **settings):
         # ---> JSON list of images ids that are related by record_id=id
 
 # User Management Module
+    config.add_route('update_users', '/update_users')
     config.add_route('user_list', '/users')   
     config.add_route('user', '/user/{user_name}')
     config.add_route('get', '/get/{type}')

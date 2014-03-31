@@ -193,7 +193,13 @@ def get_persons(roles=['d','r','p','a']):
                         User.person_id==Person.person_id
                     ).filter(
                         User.role.in_(roles)
-                    ).all()
+                    )
+
+    print "PERSONS============================"
+    print persons
+    print "==================================="
+
+    persons = persons.all()
     
     data = []
     for i in persons:
@@ -241,7 +247,13 @@ def get_record(request, record_id):
                     'group:a' in role
                     )
                 )
-        ).first()
+        )
+
+    print "SINGLE RECORD================="
+    print record
+    print "=============================="
+
+    record = record.first()
 
     return record
 
@@ -279,7 +291,13 @@ def get_records(request, start=None, end=None, search_filter=None, method='freq'
                      RadiologyRecord.radiologist_id==user.person_id,
                      'group:a' in role
                      )
-             ).all()
+             )
+
+    print "RECORDS(HOME):=========================="
+    print records
+    print "========================================"
+
+    records = records.all()
 
     formatted = []
     for i in records:
@@ -419,7 +437,9 @@ def get_images(request, record_id):
             ).filter(
                 PacsImage.record_id==record_id
             )
-
+        print "IMAGES================"
+        print images
+        print "======================"
         return images.all()
     else:
         return None
@@ -447,6 +467,10 @@ def get_report(request, diag_filter, start, end):
                         ).order_by(
                             RadiologyRecord.test_date.desc()
                         )
+
+        print "REPORT==========================="
+        print report
+        print "================================="
         return report
     else:
         return None

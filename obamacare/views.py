@@ -83,6 +83,10 @@ def userlist_view(request):
                         Person.last_name.like(name_filter),
                         ))
 
+    print "USERS:========================="
+    print data
+    print "==============================="
+
     data = data.all()
 
     keys = get_standard_keys(request)
@@ -301,7 +305,7 @@ def person_info(request):
                         'Password Updated For ' + uid_to_up[i])
 
         if success_message == [] and error_message == []:
-            error_message = 'Nothing to Update'
+            error_message = ['Nothing to Update']
 
     if success_message == []:
         success_message = None
@@ -320,6 +324,11 @@ def person_info(request):
         user_list = user_list
     )
     return  people_list(request, getModules(request, keys))
+
+@view_config(route_name='update_users', permission='view')
+def update_users(request):
+    pass
+
 
 """
 Allows a user to view and edit their own information
@@ -702,6 +711,10 @@ def olap(request):
 
     headers.append('Image Count')
     cube = cube.add_columns(func.count(PacsImage.image_id))
+
+    print "CUBE:======================="
+    print cube
+    print "============================"
 
     #Pass Data To Template
     keys = dict(
