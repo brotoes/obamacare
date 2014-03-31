@@ -1,0 +1,81 @@
+Views:
+--- /users
+    
+    Returns a list of persons' id, name and emails
+    filter with 
+        ?filter=
+
+    
+--- /home
+
+    Returns a list of records that can be searched through
+    Applied three styles of ranking (sorting) in the project definition
+
+        These rankings are done with the function 'apply_filter' in utilties.py
+        'apply_filter' is fairly generic and can be applied to any list of
+        tuples.
+
+        First, it takes a filter_str, which is a space separated list of
+        keywords. It then takes a list of tuples. This is the list that is
+        searched through. 
+        
+            Then it takes a list of column titles. These label the
+        indices of each tuple in items. If a column is None, it is not searched
+        through.
+
+            The optional argument 'method' determines which ranking system it
+        will use.
+
+        Finally, it uses a bunch of for loops and python magic to return a
+        list of tuples sorted by rank
+
+--- /person/{id}
+
+    Shows the information of a person corresponding to 'id'
+
+--- /profile
+
+    Allows the user to view and edit their own information
+
+--- /login /logout
+
+    Self explanatory: visit these URLs to log in and out
+
+--- /record/{id}
+
+    view a record's information and images
+
+--- /i/{id}
+
+    view and image of size dictated by GET argument 's=[t,r,f]'
+
+--- /images/{id}
+
+    returns images that are attached to the record if id 'id'
+
+--- /olap
+
+    returns a count of images per patient, test type, and per week
+
+    fields are only considered when they are passed in. if no fields are passed
+    in, the total number of images is returned.
+        if a person is passed in, it shows the number of images related to that
+        patient. if the person field is an asterisk, it shows the images for
+        each person individually
+
+        similarly, if a test type is passed is, it shows the number images taken
+        with that test type. if an asterisk is passed in, it shows the images
+        for each test type. 
+
+        When multiple fields are asterisks, it will show totals for every
+        combination.
+
+        The user may also choose to group by week, month, and year.
+
+        if a field is blank, its corresponding column in the results table will
+        not be shown
+
+--- /report
+
+    Allows the user to get a list of patients who, betwen the time of start an
+    end were diagnosed with a specified diagnosis

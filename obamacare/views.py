@@ -126,8 +126,14 @@ def user_home(request):
         temp = format_date(clean(get['end']))
         if temp != None:
             end = temp
+    if 'sort_by' in get:
+        sort_by = clean(get['sort_by'])
+        if not sort_by in ['freq','old','new']:
+            sort_by = 'freq'
+    else:
+        sort_by = 'freq'
     
-    records = get_records(request, start, end, search_filter)
+    records = get_records(request, start, end, search_filter, method=sort_by)
 
     data = []
     for rec in records:
@@ -623,20 +629,22 @@ def olap(request):
     if pid != '':
         headers.append('First Name')
         headers.append('Last Name')
+        if pid != '*':
+            cube = cube.filter(
+                Person.person_id==pid)
         cube = cube.add_columns(
                 Person.first_name,
                 Person.last_name,
-            ).filter(
-                Person.person_id==pid
             ).group_by(
                 Person.person_id
             )
     if ttype != '':
         headers.append('Test Type')
+        if ttype != '*':
+            cube = cube.filter(
+                    RadiologyRecord.test_type.like(ttype))
         cube = cube.add_columns(
                 RadiologyRecord.test_type
-            ).filter(
-                RadiologyRecord.test_type.like(ttype)
             ).group_by(
                 RadiologyRecord.test_type
             )
