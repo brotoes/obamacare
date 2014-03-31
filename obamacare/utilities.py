@@ -103,8 +103,8 @@ def format_date(date):
     if len(date) != 8:
         return None
     else:
-        return ''.join(date[0:3]) + '-' + ''.join(date[4:5]) + \
-        '-' + ''.join(date[6:7])
+        return ''.join(date[0:4]) + '-' + ''.join(date[4:6]) + \
+        '-' + ''.join(date[6:8])
 
 """
 This function takes a first and last name and formats them into a single string,

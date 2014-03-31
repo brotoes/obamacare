@@ -267,15 +267,13 @@ def get_records(request, start=None, end=None, search_filter=None, method='freq'
                  RadiologyRecord.diagnosis,
                  RadiologyRecord.description 
              ).filter(
-                 and_(RadiologyRecord.test_date.between(
-                    start, end), 
-                    or_(
-                        RadiologyRecord.patient_id==user.person_id,
-                        RadiologyRecord.doctor_id==user.person_id,
-                        RadiologyRecord.radiologist_id==user.person_id,
-                        'group:a' in role
-                        )
-                 )
+                 RadiologyRecord.test_date.between(start, end), 
+                 or_(
+                     RadiologyRecord.patient_id==user.person_id,
+                     RadiologyRecord.doctor_id==user.person_id,
+                     RadiologyRecord.radiologist_id==user.person_id,
+                     'group:a' in role
+                     )
              ).all()
 
     formatted = []
