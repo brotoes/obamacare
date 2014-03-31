@@ -79,3 +79,26 @@ Views:
 
     Allows the user to get a list of patients who, betwen the time of start an
     end were diagnosed with a specified diagnosis
+
+
+Queries.py
+*** Only listing functions whose behaviour is not clear, or clearly defined by
+    its doc strings
+
+--- get_cube()
+    returns a query for the join of RadiologyRecord, PacsImage, and Person.
+    This function is used by the OLAP view to get image counts based on test
+    type, test date, person name and time periods
+
+--- get_records()
+    This function returns a list of tuples, where the tuples are the required
+    information of a record. Its optional arguments are used to search through
+    this list. The search is performed by 'apply_filter'. Leaving optional
+    arguments as None makes the search open ended. for example, only providing
+    start, but not end, will give all results after 'start' date, until the end
+    of time.
+
+--- get_report()
+    This function returns a list of Person and RadiologyRecords for use in the
+    /report view. Where it is filtered by 'start' and 'end' dates and
+    'diag_filter'. 
