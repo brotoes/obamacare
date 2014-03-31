@@ -14,7 +14,7 @@
 						<form method="POST" action="" accept-charset="utf-8" enctype="multipart/form-data">
 							<table style='margin: 0 auto;'>
 								<tr>
-									<td colspan="2"><h1>New Record </h1></td>
+									<td colspan="2"><h1 class="header">New Record </h1></td>
 								</tr>
 								<tr>
 									<td>Patient: </td> 		
@@ -50,7 +50,7 @@
 									<td> <textarea name="desc" cols="50" rows="7" ></textarea></td>
 								</tr>
 								<tr>
-									<td> File: </td> 	<td></td>
+									<td><h1 class="header">File: </h1></td> 	<td></td>
 								</tr>
 								<tr>
 									<td colspan="2">

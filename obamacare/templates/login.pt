@@ -9,7 +9,7 @@
           <input type="hidden" name="came_from" value="${came_from}"/>
           <table style='margin: 0 auto; '>
             <tr>
-              <td colspan="2"><h1>Login</h1></td>
+              <td colspan="2"><h1 class="header">Login</h1></td>
             </tr>
             <tr>
               <td>User: </td>          <td><input type="text" name="login" value="${login}"/></td>

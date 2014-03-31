@@ -91,30 +91,22 @@ def get_person(person_id):
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
 """
-takes a person_id and returns a list of ids relating to doctors
+takes a patient person_id and returns a list of doctor person ids who are the family
+doctor of the person
 """
 def get_fdoctors(pid):
-    doctors = DBSession.query(
-                        Person
-                    ).select_from(
-                        join(Person, FamilyDoctor, FamilyDoctor.doctor_id)
-                    ).filter(
-                        FamilyDoctor.doctor_id==Person.person_id
-                    ).filter(
+    dids = DBSession.query(FamilyDoctor.doctor_id).filter(
                         FamilyDoctor.patient_id==pid
-                    ).all()
+            ).all()
 
-    return doctors
+    return dids
 
 """
-takes a person_id and returns a list of ids relating to patients
-who have the person_id as a family doctor
+takes a doctor person_id and returns a list of patient person_ids who 
 """
 def get_fpatients(did):
-    pids = DBSession.query(
-                        FamilyDoctor.patient_id
-                    ).filter(
-                        FamilyDoctor.patient_id==pid
+    pids = DBSession.query(FamilyDoctor.patient_id).filter(
+                        FamilyDoctor.doctor_id==did
                     ).all()
 
     return pids
@@ -123,19 +115,20 @@ def get_fpatients(did):
 takes a patient_id and doctor_id and inserts it into the family_doctor table
 """
 def add_fdoctor(request, did, pid):
-    user_name = authenticated_userid(request)
-    role = getRole(user_name, request)
-    person = get_user(user_name).person_id
-
+    
+    user = get_user(authenticated_userid(request))
+    
     permission = False
-
-    if 'group:a' in role:
+    print "add family doctor for patient", pid, "and doctor", did
+    print "role", user.role, "person_id", user.person_id
+    #pdb.set_trace()
+    if user.role == 'a':
         permission = True
-    elif 'group:p' in role and pid == person:
+    elif int(pid) == int(user.person_id):
         permission = True
-    elif 'group:d' in role and did == person:
-        permission = True
-
+    else:
+        print "Failed to get permissions"
+    
     if permission:
         with transaction.manager:
             DBSession.add(FamilyDoctor(
@@ -143,6 +136,33 @@ def add_fdoctor(request, did, pid):
                 pid
             ))
             transaction.manager.commit()
+    else:
+        return None
+
+
+"""
+takes a patient_id and doctor_id and inserts it into the family_doctor table
+"""
+def add_fpatient(request, pid, did):
+    user_name = authenticated_userid(request)
+    person = get_user(user_name)
+    print "add family patient for paitient", pid, "and doctor", did
+
+    permission = False
+    if person.role == 'a':
+        permission = True
+    elif person.role == 'd' and int(did)==int(person.person_id):
+        permission = True
+    
+    if permission:
+        with transaction.manager:
+            DBSession.add(FamilyDoctor(
+                did,
+                pid
+            ))
+            transaction.manager.commit()
+    else:
+        return None
 
 
 """

@@ -12,7 +12,7 @@
 				<form method="POST" action="profile">
 					<table style='margin: 0 auto;	'>
 						<tr>
-							<td colspan="2"><h1>Record: ${recid} </h1></td>
+							<td colspan="2"><h1 class="header">Record: ${recid} </h1></td>
 						</tr>
 						<tr>
 							<td>Patient: </td> 
@@ -41,7 +41,7 @@
 
 			</div>
 			<div id="image_viewer">
-				<p><h1>Images:</h1></p>
+				<p><h1 class="header">Images:</h1></p>
 			
 				<span tal:repeat="img imgs" class="viewcont">
 					<a href="${request.route_url('image',id=img.image_id,_query={'s':'f'})}">

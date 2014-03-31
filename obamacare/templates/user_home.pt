@@ -8,8 +8,6 @@
 
    </head>
     
-       
- 
 	<div metal:use-macro="load: master.pt">
      	<div metal:fill-slot="content">
       		<div class="content" >
@@ -21,10 +19,17 @@
 	      						<tr ckass="searchitem">
 	      						 	<td class="searchitem">${filter_text}: </td><td class="searchitem"><input type="text" name="filter"/> 
 	      							</td>
-	      							<td class="searchitem">Before:</td><td class="searchitem"><input type="text" name="start"/>
+	      							<td class="searchitem">After:</td><td class="searchitem"><input type="text" name="start"/>
 	      							</td>
-	      							<td class="searchitem">After:</td><td class="searchitem"> <input type="text" name="end"/>
+	      							<td class="searchitem">Before:</td><td class="searchitem"> <input type="text" name="end"/>
 	      							</td>
+	      							<td tal:condition="sortable">
+		      							 <select name="sory_by">
+										 	<option name="feq" value="freq">Rank</option>
+										  	<option name="new" value="new">Newest</option>
+										  	<option value="old" value="old">Oldest</option>
+										</select>
+									</td>
 	      							<td colspan="2" class="searchitem"><input type="submit" value="Search"/>
 	      							</td>
 	      						</tr>

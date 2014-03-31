@@ -9,22 +9,23 @@
 	<div id="peoplepicker">	  
 		<script type='text/javascript' src="${request.static_url('obamacare:static/people_picker.js')}"></script>    		
 		<div id="pickerheader">
-			<h1> People Picker</h1>
+			<h1 class="header"> People Picker</h1>
 		</div>
 		<div id="pickercontent">
-  		<table id='table1' class='picker' style='margin: 0 auto;'>
-			<thead class="picker"><tr class="picker" tal:condition="headers">
-				<th class='picker' tal:repeat="head range(len(headers))" tal:content="headers[repeat.head.index]">
-				</th>
-			</tr></thead>
-			
-			<tbody class='picker' tal:define="row 0; col 0">
-			<!-- This is now done dynamically by js
-				<tr tal:repeat="row range(len(data))" tal:attributes="class 'even_zebra' if repeat.row.even else 'odd_zebra';onclick 'close_peoplePicker('+str(data[row][0])+')'">
-					<a href="#"><td class='picker' tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td></a>
-				</tr>
-			-->
-			</tbody>
-		</table>
+	  		<table id='table1' class='picker' style='margin: 0 auto;'>
+				<thead class="picker"><tr class="picker" tal:condition="headers">
+					<th class='picker' tal:repeat="head range(len(headers))" tal:content="headers[repeat.head.index]">
+					</th>
+				</tr></thead> 
+				<div class="scroll">
+					<tbody class='picker' tal:define="row 0; col 0">
+					<!-- This is now done dynamically by js
+						<tr tal:repeat="row range(len(data))" tal:attributes="class 'even_zebra' if repeat.row.even else 'odd_zebra';onclick 'close_peoplePicker('+str(data[row][0])+')'">
+							<a href="#"><td class='picker' tal:repeat="col range(len(headers))" tal:content="data[row][col]"> </td></a>
+						</tr>
+					-->
+					</tbody>
+				</div>
+			</table>
 	</div>
 </div></html>

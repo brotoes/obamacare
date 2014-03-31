@@ -24,10 +24,18 @@
 		
 		
 		<div id='content'>
-			<div tal:condition="displaysuccess" class="display-success" tal:content="displaysuccess">
-		</div>
-		<div tal:condition="displayerror" class="display-error" tal:content="displayerror">
-		</div>
+			<div tal:condition="displaysuccess" tal:repeat="message displaysuccess">
+				<div class="display-success" onclick="this.parentNode.removeChild(this);">
+					${message}
+				</div>
+			</div>
+			<div tal:condition="displayerror"  tal:repeat="message displayerror"> 
+				<div class="display-error" onclick="this.parentNode.removeChild(this);">
+					ERROR: ${message}
+				</div>
+
+			</div>
+		
 	   		<div metal:define-slot="content"></div>
 	   	</div>
 		

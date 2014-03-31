@@ -161,6 +161,7 @@ def user_home(request):
         ),
         data=data, 
         name=format_name(person.first_name, person.last_name),
+        sortable=True,
     )
 
     return getModules(request, keys)
@@ -189,6 +190,17 @@ def person_info(request):
     if not Person:
         return HTTPNotFound()
 
+    user_list= dict (users=get_attached_users(person.person_id))
+    if 'group:a' in role:
+        doc_list = get_fdoctors(person.person_id)
+        for i in range (0,len(doc_list)):
+            doc_list[i] = get_person(doc_list[i][0])
+
+        patient_list = get_fpatients(person.person_id)
+        for i in range (0, len(patient_list)):
+            patient_list[i] = get_person(patient_list[i][0])
+        user_list['patients']=patient_list
+        user_list['docs'] =doc_list
 
     post = request.POST
     #process post for admin
@@ -285,7 +297,6 @@ def person_info(request):
         success_message = None
     if error_message == []:
         error_message = None
-    user_list = get_attached_users(person.person_id)
     
     keys = dict(
         role = role[0],
@@ -298,7 +309,7 @@ def person_info(request):
         phone = person.phone,
         user_list = user_list
     )
-    return  getModules(request, keys)
+    return  people_list(request, getModules(request, keys))
 
 """
 Allows a user to view and edit their own information
@@ -368,8 +379,23 @@ def user_profile(request):
     if success_message == []:
         success_message = None
 
+    user_list=dict(users=get_attached_users(person.person_id),)
+
+    if user.role == 'd':
+        patient_list = get_fpatients(person.person_id)
+        for i in range (0, len(patient_list)):
+            patient_list[i] = get_person(patient_list[i][0])
+        user_list['patients'] = patient_list
+    
+    doc_list = get_fdoctors(user.person_id)
+    for i in range (0,len(doc_list)):
+        doc_list[i] = get_person(doc_list[i][0])
+    user_list['docs'] = doc_list
+
     keys = dict(
-        user_list = get_fdoctors(user),
+        person_id=user.person_id,
+        role = user.role,
+        user_list = user_list,
         displaysuccess = success_message,
         displayerror = error_message,
         fname = person.first_name, lname = person.last_name, 
@@ -377,7 +403,7 @@ def user_profile(request):
         phone =person.phone
     )
 
-    return  getModules(request, keys)
+    return  people_list(request, getModules(request, keys))
 
 """
 Here, a user may log in.
@@ -600,7 +626,7 @@ returns a count of images per patient, test type, or over a period of time
 
 
 """
-@view_config(route_name='olap', renderer='templates/user_home.pt',
+@view_config(route_name='olap', renderer='templates/olap.pt',
              permission='admin')
 def olap(request):
     cube = get_cube()
@@ -669,12 +695,17 @@ def olap(request):
 
     #Pass Data To Template
     keys = dict(
+        pid= pid,
+        ttype = ttype,
+        period = period,
         filter_text = "Patient ID",      # this changes what is displayed to user 
         base_url = '/person/',
         displayerror = None,
         displaysuccess = None,
         headers= headers,
-       data=cube.all(), 
+       data=cube.all(),
+       sortable=False, 
+
     )
     return getModules(request, keys)
 
@@ -746,6 +777,7 @@ def report(request):
                  ),
        data=data, 
        name=format_name(person.first_name, person.last_name),
+       sortable=False,
     )
     return getModules(request, keys)
 
@@ -801,17 +833,42 @@ Adds a family doctor to the logged in user
 """
 @view_config(route_name='add_familydoctor', permission='view')
 def afd(request):
+    referrer = request.application_url
+    came_from = request.params.get('came_from', referrer)
+
+    args = request.POST
+
+    if 'did' not in args or args['did'] == '':
+        return Response("no doctor chosen")
+    if 'pid' not in args or args['pid'] == '':
+        return Response("no patient chosen")
+    
+    add_fdoctor(request, clean(args['did']), clean(args['pid']))
+        
+
+    return HTTPFound(location = came_from)
+
+"""
+Adds a family patient to the logged in doctor
+"""
+@view_config(route_name='add_familypatient', permission='view')
+def afp(request):
     user = get_user(authenticated_userid(request))
-    patient_id = user.person_id
-    role = getRole(user.user_name, request)
+    if user.role not in 'ad':
+        return HTTPForbidden("Must be a doctor to have family patients")
+    referrer = request.application_url
+    came_from = request.params.get('came_from', referrer)
 
-    did = request.matchdict['id']
+    args = request.POST
 
-    if 'group:p' in role:
-        add_fdoctor(request, did, patient_id)
-        return Response("added")
-    else:
-        return Response("you are not a patient")
+    if 'pid' not in args or args['pid'] == '':
+        return Response("no patient chosen")
+    if 'did' not in args or args['did'] == '':
+        return Response("no doctor chosen")
+    
+    add_fpatient(request, clean(args['pid']), clean(args['did']))
+
+    return HTTPFound(location = came_from)
     
 """
 displays a list of doctors if user is a patient, or a list of patients if user

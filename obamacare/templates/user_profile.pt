@@ -5,31 +5,36 @@
  
     <div metal:use-macro="load: master.pt">
       <div metal:fill-slot="content">
+      		<div id="overlay" class="overlay">/
+	      		<div metal:use-macro="load: people_picker.pt"></div>
+			</div>
       	<div class="content">
 	        <div class="align-left">
-						<form method="POST" action="profile">
-							<table style='margin: 0 auto;' cellspacing="10">
+						
+						<table style='margin: 0 auto;' cellspacing="10">
+							<form method="POST" action="profile">
 								<tr>
-									<td colspan="2"><h1>Edit Profile</h1></td>
+									<td colspan="2"><h1 class="header">Edit Profile</h1></td>
 								</tr>
 									<tr>
-									<td>First Name:</td>		<td class="align-right"><input type="text" name="fname" value="${fname}"/></td>
+									<td>First Name:</td>		
+									<td ><input type="text" name="fname" value="${fname}"/></td>
 								</tr>
 								<tr>
 									<td>Last Name: </td>		
-									<td class="align-right"><input type="text" name="lname" value="${lname}"/></td>
+									<td><input type="text" name="lname" value="${lname}"/></td>
 								</tr>
 								<tr>
 									<td>Address:</td>		
-									<td class="align-right"><input type="text" name="address" value="${address}"/></td>
+									<td><input type="text" name="address" value="${address}"/></td>
 								</tr>
 								<tr>
 									<td>Email:</td>		
-									<td class="align-right"> <input type="text" name="email" value="${email}"/></td>
+									<td> <input type="text" name="email" value="${email}"/></td>
 								</tr>
 								<tr>
 									<td>Phone:</td>		
-									<td class="align-right"> <input type="text" name="phone" value="${phone}"/></td>
+									<td> <input type="text" name="phone" value="${phone}"/></td>
 								</tr>
 								<tr>
 									<td colspan="2">Change Password:</td>
@@ -48,23 +53,84 @@
 											<input type="submit" value="Submit"/>
 									</td>
 								</tr>
-
-								<tr rowspan="${len(user_list)}">
-						<td colspan="4">
-						<div tal:repeat="doctor user_list">
-							${doctor}
-							<!--<input class="fname" type="text" name="${doctor.id}" value="${user[0]}" readonly/>
-							<input class="lname"  type="text" name="${doctor.last_name}" value="${user[1]}" readonly/>
-							<input class="password" type="text" name="${user[0]}:newpass" value="New Password"/> 
-							<input class="password" type="text" name="${user[0]}:confirmpass" value="Confirm New Password" />
-							-->
-						</div>
+							</form>
+							<tr tal:condition="user_list.has_key('users')" tal:attributes="rowspan len(user_list['users'])">
+								<td colspan="4">
+									<h1 class="header" tal:condition="len(user_list['users'])>0">Users:</h1>
+									
+								
+									<div tal:repeat="user user_list['users']">
+										<input class="name" type="text" value="${user[0]}" readonly/>
+										<input class="role" type="text" value="${user[1]}" readonly/> 
+									</div>
+								</td>
+							</tr>
+			<form method="POST" action="${request.route_url('add_familydoctor')}">
+				<input type="hidden" name="came_from" value="${request.route_url('user_profile')}"/>
+				<input type="hidden" name="pid" value="${person_id}" />
+					<tr>
+						<td><h1 class="header">Add Family Doctor</h1></td>
+					</tr>
+					<tr>
+						<td>
+						 	ID: <input id="new_fdoc" name="did" type="text"/> 
+						
+							<input type="button" onclick="open_peoplepicker('new_fdoc', 'd')" value="+"/>
 						</td>
 					</tr>
-								</table>
-							
-							
-						</form>
+					<tr>
+						<td colspan="2">
+								<input type="submit" value="Submit"/>
+						</td>
+					</tr>
+			</form>
+			<form tal:condition="role=='d'" method="POST" action="${request.route_url('add_familypatient')}">
+				<input type="hidden" name="came_from" value="${request.route_url('user_profile')}"/>
+				<input type="hidden" name="did" value="${person_id}" />
+					<tr>
+						<td><h1 class="header">Add Family Patient</h1></td>
+					</tr>
+					<tr>
+						<td>
+						 	ID: <input id="new_fpatient" type="text" name="pid"/> 
+						
+							<input type="button" value="+" onclick="open_peoplepicker('new_fpatient', 'p')"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+								<input type="submit" value="Submit"/>
+						</td>
+					</tr>
+				</form>
+
+				<tr tal:condition="user_list.has_key('docs')" tal:attributes="rowspan len(user_list['docs'])">
+					<td colspan="4">
+						<h1 class="header" tal:condition="len(user_list['docs'])>0">Family Doctors:</h1>
+						
+					
+						<div tal:repeat="user user_list['docs']">
+							<input class="name" type="text" value="${user.first_name}" readonly/>
+							<input class="name"  type="text" value="${user.last_name}" readonly/>
+							<input class="address" type="text" value="${user.address}" readonly/> 
+							<input class="address" type="text"  value="${user.email}" readonly/>
+						</div>
+					</td>
+				</tr>
+				<tr tal:condition="user_list.has_key('patients')" tal:attributes="rowspan len(user_list['patients'])">
+					<td colspan="4">
+						<h1 class="header" tal:condition="len(user_list['patients'])>0">Family Patients:</h1>
+						
+					
+						<div tal:repeat="user user_list['patients']">
+							<input class="name" type="text" value="${user.first_name}" readonly/>
+							<input class="name"  type="text" value="${user.last_name}" readonly/>
+							<input class="address" type="text" value="${user.address}" readonly/> 
+							<input class="address" type="text"  value="${user.email}" readonly/>
+						</div>
+					</td>
+				</tr>
+							</table>
 					</div>
 				</div>
 			</div>
