@@ -163,7 +163,7 @@ def person_info(request):
     if not Person:
         return HTTPNotFound()
 
-    user_list=None
+    user_list= dict (users=get_attached_users(person.person_id))
     if 'group:a' in role:
         doc_list = get_fdoctors(person.person_id)
         for i in range (0,len(doc_list)):
@@ -172,7 +172,8 @@ def person_info(request):
         patient_list = get_fpatients(person.person_id)
         for i in range (0, len(patient_list)):
             patient_list[i] = get_person(patient_list[i][0])
-        user_list=dict( patients=patient_list, docs=doc_list)
+        user_list['patients']=patient_list
+        user_list['docs'] =doc_list
 
     post = request.POST
     #process post for admin
@@ -360,7 +361,7 @@ def user_profile(request):
     for i in range (0, len(patient_list)):
         patient_list[i] = get_person(patient_list[i][0])
     
-    user_list=dict( patients=patient_list, docs=doc_list)
+    user_list=dict(users=get_attached_users(person.person_id), patients=patient_list, docs=doc_list)
 
     keys = dict(
         user_list = user_list,

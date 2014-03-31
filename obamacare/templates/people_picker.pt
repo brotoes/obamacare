@@ -9,7 +9,7 @@
 	<div id="peoplepicker">	  
 		<script type='text/javascript' src="${request.static_url('obamacare:static/people_picker.js')}"></script>    		
 		<div id="pickerheader">
-			<h1> People Picker</h1>
+			<h1 class="header"> People Picker</h1>
 		</div>
 		<div id="pickercontent">
 	  		<table id='table1' class='picker' style='margin: 0 auto;'>

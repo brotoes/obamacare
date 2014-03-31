@@ -10,12 +10,26 @@ body{
   font: 16px/24px NobileRegular, "Lucida Grande", Lucida, Verdana, sans-serif;
 }
 
-h1{
-  font-size: 26px;
+h1.header{
+  font-size: 20px;
   font-weight:  bold;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: .5em;
+  margin-bottom: .5em;
 }
+.display-success, .display-error{
+  text-align: center;
+  margin-bottom: .4em;
+
+}
+.display-success{
+  background-color: #9FF781;
+  border: 2px solid #088A08;
+}
+.display-error{
+  background-color: #FF5050;
+  border: 2px solid #990000;
+}
+
 .overlay {
   position: fixed;
   display: none;
