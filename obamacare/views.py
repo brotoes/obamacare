@@ -622,7 +622,7 @@ returns a count of images per patient, test type, or over a period of time
 
 
 """
-@view_config(route_name='olap', renderer='templates/user_home.pt',
+@view_config(route_name='olap', renderer='templates/olap.pt',
              permission='admin')
 def olap(request):
     cube = get_cube()
@@ -691,6 +691,9 @@ def olap(request):
 
     #Pass Data To Template
     keys = dict(
+        pid= pid,
+        ttype = ttype,
+        period = period,
         filter_text = "Patient ID",      # this changes what is displayed to user 
         base_url = '/person/',
         displayerror = None,
