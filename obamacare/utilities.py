@@ -173,6 +173,7 @@ if method='new', newest records will be listed first
 for the above, the column index in date_col will be removed from the tuple for
     purposes of searching and used for date-based sorting
 """
+#the most awesome function evar
 def apply_filter(filter_str, items, cols, method='freq', delimit=' '):
     terms = filter_str.split(delimit)
     result = []
