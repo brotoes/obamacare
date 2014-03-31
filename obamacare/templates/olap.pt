@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:tal="http://xml.zope.org/namespaces/tal"
+       xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <head>
+      
+    	 <link rel="stylesheet" href="${request.static_url('obamacare:static/style.css')}" type="text/css" media="screen" charset="utf-8" />
+
+   </head>
+    
+	<div metal:use-macro="load: master.pt">
+     	<div metal:fill-slot="content">
+     		<div id="overlay" class="overlay">
+	      		<div metal:use-macro="load: people_picker.pt"></div>
+			</div>
+      		<div class="content" >
+
+      			<div id="searchpane">
+	      			<form method="GET" action="">
+	      				<table class="searchitem">
+	      					<tbody class="searchitem">
+	      						<tr ckass="searchitem">
+	      						 	<td class="searchitem">
+	      						 		Patient ID: 
+	      						 	</td>
+	      						 	<td class="searchitem">
+	      						 		<input id="pid" class="id" type="text" name="pid" value="${pid}"/> 
+	      							</td>
+	      							<td class="searchitem">
+	      						 		<input type="button" value=".." onclick="open_peoplepicker('pid', 'p')" /> 
+	      							</td>
+	      							<td class="searchitem">Test Type:</td>
+	      							<td class="searchitem">
+	      								<input type="text" name="tt" value="${ttype}"/>
+	      							</td>
+	      							<td class="searchitem">
+		      							 <select name="p">
+		      							 	<span tal:condition="period=='w'">
+		      							 		<option name="weekly" value="w" selected="">Weekly</option>
+		      							 		<option name="monthly" value="m">Monthly</option>
+										  		<option name="yearly" value="y">Yearly</option>
+
+		      							 	</span>
+		      							 	<span tal:condition="period=='m'">
+		      							 		<option name="weekly" value="w">Weekly</option>
+		      							 		<option name="monthly" value="m" selected="">Monthly</option>
+										  		<option name="yearly" value="y">Yearly</option>
+		      							 	</span>	
+										 	<span tal:condition="period=='y'">
+		      							 		<option name="weekly" value="w">Weekly</option>
+		      							 		<option name="monthly" value="m">Monthly</option>
+										  		<option name="yearly" value="y" selected="">Yearly</option>
+		      							 	</span>
+		      							 	<span tal:condition="not period or period not in 'wmy'">
+		      							 		<option name="weekly" value="w">Weekly</option>
+		      							 		<option name="monthly" value="m">Monthly</option>
+										  		<option name="yearly" value="y">Yearly</option>
+		      							 	</span>	
+										  	
+										</select>
+									</td>
+	      							<td colspan="2" class="searchitem"><input type="submit" value="Search"/>
+	      							</td>
+	      						</tr>
+	      					</tbody>
+	      				</table>
+	      				
+	      			</form>
+      			</div>
+				
+      			<div metal:use-macro="load: zebra_list.pt"></div>
+      		</div>
+      	</div>
+	</div>
+</html>
