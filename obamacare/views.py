@@ -63,9 +63,30 @@ takes one GET argument
 @view_config(route_name='user_list', renderer='templates/user_list.pt',
              permission='admin')
 def userlist_view(request):
+    get = request.GET
+
+    if 'filter' in get:
+        name_filter = clean(get['filter'])
+    else:
+        name_filter = None
+
+    data = DBSession.query(
+                    Person.person_id,
+                    Person.first_name,
+                    Person.last_name,
+                    Person.email,
+                          )
+
+    if name_filter:
+        data = data.filter(or_(
+                        Person.first_name.like(name_filter),
+                        Person.last_name.like(name_filter),
+                        ))
+
+    data = data.all()
+
     keys = get_standard_keys(request)
-    keys['data'] = DBSession.query(Person.person_id, 
-        Person.first_name, Person.last_name, Person.email).all()
+    keys['data'] = data
     keys['headers'] = ('Person ID', 'First', 'Last', 'Email')
     keys['filter_text'] = 'Filter'
     keys['base_url'] = '/person/'
@@ -105,8 +126,14 @@ def user_home(request):
         temp = format_date(clean(get['end']))
         if temp != None:
             end = temp
+    if 'sort_by' in get:
+        sort_by = clean(get['sort_by'])
+        if not sort_by in ['freq','old','new']:
+            sort_by = 'freq'
+    else:
+        sort_by = 'freq'
     
-    records = get_records(request, start, end, search_filter)
+    records = get_records(request, start, end, search_filter, method=sort_by)
 
     data = []
     for rec in records:
@@ -598,27 +625,80 @@ returns a count of images per patient, test type, or over a period of time
 @view_config(route_name='olap', renderer='templates/user_home.pt',
              permission='admin')
 def olap(request):
-    user = get_user(authenticated_userid(request))
-    person = get_person(user.person_id)
-    
     cube = get_cube()
 
+    get = request.GET
+
+    headers = []
+
+    #Get Arguments
+    if 'pid' in get:
+        pid = get['pid']
+    else:
+        pid = ''
+
+    if 'tt' in get:
+        ttype = get['tt']
+    else:
+        ttype = ''
+
+    if 'p' in get:
+        period = get['p']
+    else:
+        period = ''
+
+    #Process Arguments
+    if pid != '':
+        headers.append('First Name')
+        headers.append('Last Name')
+        if pid != '*':
+            cube = cube.filter(
+                Person.person_id==pid)
+        cube = cube.add_columns(
+                Person.first_name,
+                Person.last_name,
+            ).group_by(
+                Person.person_id
+            )
+    if ttype != '':
+        headers.append('Test Type')
+        if ttype != '*':
+            cube = cube.filter(
+                    RadiologyRecord.test_type.like(ttype))
+        cube = cube.add_columns(
+                RadiologyRecord.test_type
+            ).group_by(
+                RadiologyRecord.test_type
+            )
+    if period == 'w':
+        headers.append('Test Date')
+        cube = cube.add_columns(
+                    RadiologyRecord.test_date
+                ).group_by(func.week(RadiologyRecord.test_date))
+    elif period == 'm':
+        headers.append('Test Date')
+        cube = cube.add_columns(
+                    RadiologyRecord.test_date
+                ).group_by(func.month(RadiologyRecord.test_date))
+    elif period == 'y':
+        headers.append('Test Date')
+        cube = cube.add_columns(
+                    RadiologyRecord.test_date
+                ).group_by(func.year(RadiologyRecord.test_date))
+
+    headers.append('Image Count')
+    cube = cube.add_columns(func.count(PacsImage.image_id))
+
+    #Pass Data To Template
     keys = dict(
-        filter_text = "Diagnosis",      # this changes what is displayed to user 
+        filter_text = "Patient ID",      # this changes what is displayed to user 
         base_url = '/person/',
         displayerror = None,
         displaysuccess = None,
-        headers= (
-                 'Patient ID',
-                 'Year',
-                 'Month',
-                 'Week',
-                 'Test Type',
-                 'Image Count'
-                 ),
-       data=cube, 
-       name=format_name(person.first_name, person.last_name),
-       sortable=False,
+        headers= headers,
+       data=cube.all(),
+       sortable=False, 
+
     )
     return getModules(request, keys)
 
