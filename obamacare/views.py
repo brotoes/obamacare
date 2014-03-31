@@ -707,7 +707,7 @@ def olap(request):
        sortable=False, 
 
     )
-    return getModules(request, keys)
+    return people_list(request, getModules(request, keys))
 
 """
 Allows the user to get a list of patients who, between the time of start and end
@@ -802,8 +802,8 @@ def people_list(request, keys=None):
     
     data = get_persons(roles=roles)
     
-    keys['data'] = data
-    keys['headers'] = ('ID', 'Name', 'Email')
+    keys['ppl_data'] = data
+    keys['ppl_headers'] = ('ID', 'Name', 'Email')
     
     return keys 
 
