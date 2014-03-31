@@ -60,7 +60,7 @@ def get_usernames():
     return names
 
 def gen_people():
-    NUM_PEOPLE = 70
+    NUM_PEOPLE = 30
     people =[
         ('john', 'fisher','p'), ('wilson', 'roberts','d'), 
         ('george', 'washington', 'd'), ('lisa', 'brigs','r'),
@@ -116,6 +116,7 @@ def gen_people():
                 users.remove(username)
             transaction.manager.commit()
         docs = DBSession.query(Person).filter(Person.person_id==User.person_id, User.role=='d').all()
+        
         for patient in DBSession.query(Person).filter(Person.person_id==User.person_id, User.role=='p'):
             for doc in random.sample(docs, random.randint(1,5)):
                 DBSession.add(FamilyDoctor(doc.person_id, patient.person_id))
@@ -185,7 +186,7 @@ def gen_records():
 
     doctors = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='d').all()
     radis = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='r').all()
-    patients  = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='p').limit(20).all()
+    patients  = DBSession.query(Person, User).filter(Person.person_id==User.person_id).filter(User.role=='p').all()
 
     numdocs = len(doctors)-1
     numradis = len(radis)-1
@@ -230,6 +231,7 @@ def main(argv=sys.argv):
     DBSession.execute("DROP TABLE IF EXISTS roles")
     DBSession.execute("DROP TABLE IF EXISTS radiology_records")
     DBSession.execute("DROP TABLE IF EXISTS persons")
+    DBSession.execute("DROP TABLE IF EXISTS pacs_images")
     
     Base.metadata.create_all(engine)
 

@@ -13,8 +13,8 @@
 		</div>
 		<div id="pickercontent">
 	  		<table id='table1' class='picker' style='margin: 0 auto;'>
-				<thead class="picker"><tr class="picker" tal:condition="headers">
-					<th class='picker' tal:repeat="head range(len(headers))" tal:content="headers[repeat.head.index]">
+				<thead class="picker"><tr class="picker" tal:condition="ppl_headers">
+					<th class='picker' tal:repeat="head range(len(ppl_headers))" tal:content="ppl_headers[repeat.head.index]">
 					</th>
 				</tr></thead> 
 				<div class="scroll">

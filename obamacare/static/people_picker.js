@@ -19,7 +19,7 @@ function open_peoplepicker(elmid, role){
 
 function populate(data){
 	console.log(data);
-	people_data = eval("("+data+")").data;
+	people_data = eval("("+data+")").ppl_data;
 	
 	body = document.getElementById("table1").getElementsByTagName('tbody')[0]
 	body.innerHTML="";
