@@ -288,6 +288,8 @@ def get_records(request, start=None, end=None, search_filter=None, method='freq'
         rname = get_name(get_person(i[3]))
         formatted.append((i[:1] + (pname, dname, rname) + i[4:]))
 
+    if method == 'freq' and (search_filter == '' or search_filter == None):
+        method = 'new'
     cols = (None, 'pname', None, None, None, 'tdate', 'diag', 'desc')
     formatted = apply_filter(search_filter, formatted, cols, method=method)
 
