@@ -219,9 +219,6 @@ def get_persons(roles=['d','r','p','a']):
                         User.role.in_(roles)
                     )
 
-    print "PERSONS============================"
-    print persons
-    print "==================================="
 
     persons = persons.all()
     
@@ -293,9 +290,6 @@ def get_record(request, record_id):
                 )
         )
 
-    print "SINGLE RECORD================="
-    print record
-    print "=============================="
 
     record = record.first()
 
@@ -309,11 +303,6 @@ def get_records(request, start=None, end=None, search_filter=None, method='freq'
         start = '0001-01-01'
     if end == None or end == '':
         end = '9999-12-31'
-
-    print start
-    print end
-    print search_filter
-    print method
 
     user = get_user(authenticated_userid(request))
     role = getRole(user.user_name, request)
@@ -481,9 +470,6 @@ def get_images(request, record_id):
             ).filter(
                 PacsImage.record_id==record_id
             )
-        print "IMAGES================"
-        print images
-        print "======================"
         return images.all()
     else:
         return None
@@ -500,10 +486,7 @@ def get_report(request, diag_filter, start, end):
                         ).select_from(
                             join(RadiologyRecord, Person, RadiologyRecord.patient_id)
                         ).filter(
-                            or_(
-                                RadiologyRecord.test_date.between(start, end),
-                                RadiologyRecord.prescribing_date.between(start, end)
-                               )
+                            RadiologyRecord.test_date.between(start, end)
                         ).filter(
                             RadiologyRecord.patient_id==Person.person_id
                         ).filter(
@@ -512,9 +495,6 @@ def get_report(request, diag_filter, start, end):
                             RadiologyRecord.test_date.desc()
                         )
 
-        print "REPORT==========================="
-        print report
-        print "================================="
         return report
     else:
         return None
