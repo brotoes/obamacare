@@ -451,7 +451,7 @@ def login(request):
             return HTTPFound(location = came_from,
                              headers = headers)
         else:
-            err_mess = 'Failed Login'
+            err_mess = ['Login Failed']
 
     return dict(
         displaysuccess = succ_mess,
