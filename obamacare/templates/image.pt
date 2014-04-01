@@ -1,0 +1,34 @@
+ <html xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:tal="http://xml.zope.org/namespaces/tal"
+       xmlns:metal="http://xml.zope.org/namespaces/metal">
+
+    <div metal:use-macro="load: master.pt">
+     	<div metal:fill-slot="content">
+     	<script>
+     		document.imgsize = "t"
+    		document.image = ${img.image_id};
+    		
+    		function change_pic(elm){
+    			console.log(elm);
+    			console.log(document.imgsize);
+    			if (document.imgsize == "t"){
+    				document.imgsize = "r";
+    			}
+    			else if (document.imgsize =="r"){
+    				document.imgsize="f";
+    			}else{
+    				document.imgsize = "t";
+    			}
+    			elm.src = "/i/" + document.image + "?s=" + document.imgsize;
+    			console.log(elm.src);
+    		}
+    	</script>
+     		<div class="align-center">
+     			<img src="/i/${img.image_id}?s=t" onclick="change_pic(this);" style="cursor: pointer;"/>
+     		</div>
+            <div class="align-center">
+                Click image to re size
+            </div>
+		</div>
+	</div>
+</html>
