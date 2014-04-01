@@ -63,6 +63,8 @@ def main(global_config, **settings):
         # ---> JPEG matching id and optionally ?s=[t,r,f]
     config.add_route('image_list', '/images/{id}')
         # ---> JSON list of images ids that are related by record_id=id
+    config.add_route('view_image', '/image/{id}')
+    
 
 # User Management Module
     config.add_route('update_users', '/update_users')

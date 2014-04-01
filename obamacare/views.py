@@ -50,7 +50,16 @@ For testing use only: to be removed for production release
 @view_config(route_name='TESTING', renderer='templates/test.pt', permission='view')
 def test_view(request):
     imgs = DBSession.query(PacsImage.image_id).all()
-    return getModules(request, dict(imgs=imgs))
+    return getModules(request, dict(displaysuccess=None, displayerror=None, imgs=imgs))
+
+
+@view_config(route_name='view_image', renderer='templates/image.pt', permission='view')
+def view_image(request):
+    img = DBSession.query(PacsImage.image_id).filter(
+        PacsImage.image_id==request.matchdict['id']).first()
+
+    return getModules(request, dict(displaysuccess=None, displayerror=None, img=img))
+
 
 """
 Renders a list of people for the administrator to view an edit
@@ -800,7 +809,6 @@ def report(request):
                     i[0].address,
                     i[0].phone,
                     i[1].test_date,
-                    i[1].diagnosis,
                     ))
     def append_(item):
         data.append(item)
@@ -824,7 +832,6 @@ def report(request):
                  'Address',
                  'Phone',
                  'Test Date',
-                 'Diagnosis',
                  ),
        data=data,
        filter=diag_filter,

@@ -44,7 +44,7 @@
 				<p><h1 class="header">Images:</h1></p>
 			
 				<span tal:repeat="img imgs" class="viewcont">
-					<a href="${request.route_url('image',id=img.image_id,_query={'s':'f'})}">
+					<a href="${request.route_url('view_image',id=img.image_id)}" target="_blank">
 						<img class="viewimg" src="${request.route_url('image',id=img.image_id)}"/>
 					</a>
 				</span>
