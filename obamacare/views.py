@@ -357,22 +357,22 @@ def user_profile(request):
         password.append(clean(post['newpass']))
         password.append(clean(post['newconfirm']))
         
-        if fname != '':
+        if fname != '' and fname != person.first_name:
             person.first_name = fname
             success_message.append("First Name Updated Successfully")
-        if lname != '':
+        if lname != '' and lname != person.last_name:
             person.last_name = lname
             success_message.append("Last Name Updated Successfully")
-        if address != '':
+        if address != '' and address != person.address:
             person.address = address
             success_message.append("Address Updated Successfully")
-        if email != '':
+        if email != '' and email != person.email:
             if email != 'BAD FORMAT':
                 person.email = email
                 success_message.append("Email Updated Successfully")
             else:
                 error_message.append("Bad Email Format")
-        if phone != '':
+        if phone != '' and phone != person.phone:
             if phone != 'BAD FORMAT':
                 person.phone = phone
                 success_message.append("Phone Updated Successfully")
@@ -393,10 +393,12 @@ def user_profile(request):
             else:
                 error_message.append("Some Password Fields Empty")
                     
-    if error_message == []:
-        error_message = None
+        if success_message == []:
+            error_message.append('Nothing To Update')
     if success_message == []:
         success_message = None
+    if error_message == []:
+        error_message = None
 
     user_list=dict(users=get_attached_users(person.person_id),)
 
@@ -899,7 +901,9 @@ def afp(request):
     if 'did' not in args or args['did'] == '':
         return Response("no doctor chosen")
     
-    add_fpatient(request, clean(args['pid']), clean(args['did']))
+    rval = add_fpatient(request, clean(args['pid']), clean(args['did']))
+    if rval:
+        return rval
 
     return HTTPFound(location = came_from)
     
