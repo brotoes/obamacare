@@ -48,6 +48,8 @@ def main(global_config, **settings):
     config.add_route('logout', '/logout')
     config.add_route('add_familydoctor', '/afd/')
     config.add_route('add_familypatient', '/afp/')
+    config.add_route('remove_familydoctor', '/rfd')
+    config.add_route('remove_familypatient', '/rfp')
     config.add_route('family', '/fam')
 
 # Search Module

@@ -54,17 +54,6 @@
 									</td>
 								</tr>
 							</form>
-							<tr tal:condition="user_list.has_key('users')" tal:attributes="rowspan len(user_list['users'])">
-								<td colspan="4">
-									<h1 class="header" tal:condition="len(user_list['users'])>0">Users:</h1>
-									
-								
-									<div tal:repeat="user user_list['users']">
-										<input class="name" type="text" value="${user[0]}" readonly/>
-										<input class="role" type="text" value="${user[1]}" readonly/> 
-									</div>
-								</td>
-							</tr>
 			<form method="POST" action="${request.route_url('add_familydoctor')}">
 				<input type="hidden" name="came_from" value="${request.route_url('user_profile')}"/>
 				<input type="hidden" name="pid" value="${person_id}" />
@@ -84,7 +73,7 @@
 						</td>
 					</tr>
 			</form>
-			<form tal:condition="role=='d'" method="POST" action="${request.route_url('add_familypatient')}">
+			<form tal:condition="role=='d' or role=='a'" method="POST" action="${request.route_url('add_familypatient')}">
 				<input type="hidden" name="came_from" value="${request.route_url('user_profile')}"/>
 				<input type="hidden" name="did" value="${person_id}" />
 					<tr>
@@ -114,6 +103,7 @@
 							<input class="name"  type="text" value="${user.last_name}" readonly/>
 							<input class="address" type="text" value="${user.address}" readonly/> 
 							<input class="address" type="text"  value="${user.email}" readonly/>
+							<input class="role" type="button" value="-" onclick="window.location='/rfd?pid=${person_id}&did=${user.person_id}&came_from=${request.current_route_url()}'"/>
 						</div>
 					</td>
 				</tr>
@@ -127,6 +117,7 @@
 							<input class="name"  type="text" value="${user.last_name}" readonly/>
 							<input class="address" type="text" value="${user.address}" readonly/> 
 							<input class="address" type="text"  value="${user.email}" readonly/>
+							<input class="role" type="button" value="-" onclick="window.location='/rfp?pid=${user.person_id}&did=${person_id}&came_from=${request.current_route_url()}'"/>
 						</div>
 					</td>
 				</tr>

@@ -111,6 +111,16 @@ def get_fpatients(did):
 
     return pids
 
+def remove_fdoctor(request, did, pid):
+    relation = DBSession.query(FamilyDoctor).filter(FamilyDoctor.patient_id==pid, FamilyDoctor.doctor_id==did).first()
+    DBSession.delete(relation)
+
+def remove_fpatient(request, did, pid):
+    relation = DBSession.query(FamilyDoctor).filter(FamilyDoctor.patient_id==pid, FamilyDoctor.doctor_id==did).first()
+    DBSession.delete(relation)
+
+
+
 """
 takes a patient_id and doctor_id and inserts it into the family_doctor table
 """
@@ -227,7 +237,27 @@ def get_user(user_name):
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     
     return user
-
+def update_userslist(user_list):
+    if not user_list:
+        return None
+    
+    for user in user_list:
+        with transaction.manager:
+            current = DBSession.query(User).filter(User.user_name == user).first()
+            if not current:
+                print user, "not found"
+                continue
+            if ('newpass' in user_list[user].keys() and 'newconfirm' in user_list[user].keys()):
+                if (len ( user_list[user]["newpass"]) > 4):
+                    print "updating password for", user, "to", user_list[user]["newpass"]
+                    current.password = user_list[user]["newpass"]
+            if ('role' in user_list[user].keys()):
+                print "updating role for", user, "to", user_list[user]["role"]
+                current.role = user_list[user]["role"]
+            print current
+            transaction.manager.commit()
+     
+    
 """
 returns a record object corresponding to record_id if user in 'request' has
 permission to view that record

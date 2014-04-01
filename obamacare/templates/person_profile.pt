@@ -63,17 +63,29 @@
 							</td>
 						</tr>
 					</form>
+			<form method="POST" action="${request.route_url('update_users')}">
+				<input type="hidden" name="came_from" value="${request.route_url('person_info', id=person_id)}"/>
+				<tr tal:condition="user_list.has_key('users')" tal:attributes="rowspan len(user_list['users'])">
+					<td colspan="4">
+						<h1 class="header" tal:condition="len(user_list['users'])>0">Users:</h1>
+						
+	
+						<div tal:repeat="user user_list['users']">
+							<input class="name" type="text" value="${user[0]}" readonly/>
+							<input class="role" type="text" name="${user[0]}:role" value="${user[1]}" />
+							<input class="password" type="text" name="${user[0]}:newpass"/> 
+							<input class="password" type="text" name="${user[0]}:newconfirm"/>  
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+							<input type="submit" value="Submit"/>
+					</td>
+				</tr>
+			</form>
 					<tr tal:condition="user_list.has_key('users')" tal:attributes="rowspan len(user_list['users'])">
-								<td colspan="4">
-									<h1 class="header" tal:condition="len(user_list['users'])>0">Users:</h1>
-									
 								
-									<div tal:repeat="user user_list['users']">
-										<input class="name" type="text" value="${user[0]}" readonly/>
-										<input class="role" type="text" value="${user[1]}" readonly/> 
-									</div>
-								</td>
-							</tr>
 			<form method="POST" action="${request.route_url('add_familydoctor')}">
 				<input type="hidden" name="came_from" value="${request.current_route_url()}"/>
 				<input type="hidden" name="pid" value="${request.matchdict['id']}" />
@@ -120,10 +132,12 @@
 							
 						
 							<div tal:repeat="user user_list['docs']">
+
 								<input class="name" type="text" value="${user.first_name}" readonly/>
 								<input class="name"  type="text" value="${user.last_name}" readonly/>
 								<input class="address" type="text" value="${user.address}" readonly/> 
 								<input class="address" type="text"  value="${user.email}" readonly/>
+								<input class="role" type="button" value="-" onclick="window.location='/rfd?pid=${request.matchdict['id']}&did=${user.person_id}&came_from=${request.current_route_url()}'"/>
 							</div>
 						</td>
 					</tr>
@@ -137,6 +151,7 @@
 								<input class="name"  type="text" value="${user.last_name}" readonly/>
 								<input class="address" type="text" value="${user.address}" readonly/> 
 								<input class="address" type="text"  value="${user.email}" readonly/>
+								<input class="role" type="button" value="-" onclick="window.location='/rfp?pid=${user.person_id}&did=${request.matchdict['id']}&came_from=${request.current_route_url()}'"/>
 							</div>
 						</td>
 					</tr>
