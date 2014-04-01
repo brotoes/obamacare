@@ -18,6 +18,12 @@ from sqlalchemy.exc import (
     DBAPIError
     )
 
+from pyramid.httpexceptions import (
+    HTTPForbidden,
+    HTTPFound,
+    HTTPNotFound,
+    )
+
 from pyramid.security import (
     remember,
     forget,
@@ -140,14 +146,18 @@ def add_fdoctor(request, did, pid):
         print "Failed to get permissions"
     
     if permission:
-        with transaction.manager:
-            DBSession.add(FamilyDoctor(
-                did,
-                pid
-            ))
-            transaction.manager.commit()
+        try:
+            with transaction.manager:
+                DBSession.add(FamilyDoctor(
+                    did,
+                    pid
+                ))
+                transaction.manager.commit()
+                return None
+        except:
+            return HTTPForbidden()
     else:
-        return None
+        return HTTPForbidden() 
 
 
 """
@@ -165,14 +175,18 @@ def add_fpatient(request, pid, did):
         permission = True
     
     if permission:
-        with transaction.manager:
-            DBSession.add(FamilyDoctor(
-                did,
-                pid
-            ))
-            transaction.manager.commit()
+        try:
+            with transaction.manager:
+                DBSession.add(FamilyDoctor(
+                    did,
+                    pid
+                ))
+                transaction.manager.commit()
+                return None
+        except:
+            return HTTPForbidden()
     else:
-        return None
+        return HTTPForbidden()
 
 
 """

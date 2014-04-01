@@ -313,7 +313,6 @@ def person_info(request):
         error_message = None
     
     keys = dict(
-        person_id = person.person_id,
         role = role[0],
         displaysuccess = success_message,
         displayerror = error_message,
@@ -328,27 +327,7 @@ def person_info(request):
 
 @view_config(route_name='update_users', permission='view')
 def update_users(request):
-    if not request.POST:
-        return Response("No users supplied")
-    args = request.POST
-    referrer = request.application_url
-    came_from = request.params.get('came_from', referrer)
-    new_users = {}
-    resp = ""
-    for i in args:
-        if not i or ':' not in i:
-            continue
-        key, value = i.split(':')
-        if (key not in new_users.keys()):
-            new_users[key] = {}
-        if (value not in new_users[key].keys()):
-            new_users[key][value] = {}
-        new_users[key][value] = args[key+":"+value] 
-
-    update_userslist(new_users)
-
-    resp = new_users.__str__()
-    return HTTPFound(location = came_from)
+    pass
 
 
 """
@@ -666,7 +645,8 @@ returns a count of images per patient, test type, or over a period of time
 
 
 """
-@view_config(route_name='olap', renderer='templates/olap.pt', permission='admin')
+@view_config(route_name='olap', renderer='templates/olap.pt',
+             permission='admin')
 def olap(request):
     cube = get_cube()
 
@@ -881,34 +861,6 @@ def my_view(request):
 
 
 """
-Remmoves a family doctor
-"""
-@view_config(route_name='remove_familydoctor', permission='view')
-def rfd(request):
-    referrer = request.application_url
-    came_from = request.params.get('came_from', referrer)
-
-    args = request.params
-
-    remove_fdoctor(request, clean(args['did']), clean(args['pid']))
-
-    return HTTPFound(location = came_from)
-
-
-
-
-@view_config(route_name='remove_familypatient', permission='view')
-def rfp(request):
-    referrer = request.application_url
-    came_from = request.params.get('came_from', referrer)
-
-    args = request.params
-
-    remove_fpatient(request, clean(args['did']), clean(args['pid']))
-
-    return HTTPFound(location = came_from)
-
-"""
 Adds a family doctor to the logged in user
 """
 @view_config(route_name='add_familydoctor', permission='view')
@@ -923,8 +875,9 @@ def afd(request):
     if 'pid' not in args or args['pid'] == '':
         return Response("no patient chosen")
     
-    add_fdoctor(request, clean(args['did']), clean(args['pid']))
-        
+    rval = add_fdoctor(request, clean(args['did']), clean(args['pid']))
+    if rval:
+        return rval
 
     return HTTPFound(location = came_from)
 
