@@ -800,6 +800,7 @@ def report(request):
                     i[0].address,
                     i[0].phone,
                     i[1].test_date,
+                    i[1].diagnosis,
                     ))
     def append_(item):
         data.append(item)
@@ -823,6 +824,7 @@ def report(request):
                  'Address',
                  'Phone',
                  'Test Date',
+                 'Diagnosis',
                  ),
        data=data,
        filter=diag_filter,
