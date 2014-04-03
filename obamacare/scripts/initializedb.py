@@ -24,6 +24,7 @@ from ..models import (
     Base,
     RadiologyRecord,
     PacsImage,
+    HelpFile,
     )
 
 from PIL import Image
@@ -169,6 +170,29 @@ def gen_randDate(start=datetime.datetime(1962,1,1,0,0,0)):
     ret = datetime.datetime(year,month,day,hour,minute,second)
     return ret.date().isoformat()
 
+def gen_helpfiles():
+    helpdocs = { "Install Instructions" : """Install pyramid version 1.4.5. It works on various platforms and the specific instructions can be found here: http://docs.pylonsproject.org/projects/pyramid/en/1.4-branch/narr/install.html\n\n
+Setup a mysql database obamacare with the user obamacare.  The password can be found in the connection string. 
+Using pip in the virtual env created during the install issue pip install pillow mysql-python
+Extract the project source in the virtual env created during the pyramid install
+run bin/python setup.py develop to setup the project dependencies
+run bin/initialize_obamacare_db development.ini to set up the tables and fill the database with images
+run bin/pserve development.ini to start up the webapp
+Navigate to 0.0.0.0:5656/home in your browser to get started
+""",
+    "Search Module" : """Upon logging in, you will be taken to this page. Here you will see all records that you have permission to access. These results may be filtered using the forms at the top.-The 'filter' form will yield only results containing all provided keyworks-The 'fter' form will yield only records where the test date is after this date-Similarly, the 'before' form will yield only records where the test date is before this date.-Finally, the dropdown menu will allow you to choose how the results are sorted. Newest and         Oldest sort by the test date, and 'Rank' will sort by the frequency of the keywordsTo view the entire record, simply click on the row and you will be taken to that record's page.""",
+    "Login Module" : """After logging in, you may click on the 'Profile' tab to see all of your information as a user. This information is all editable. At the top of the page, you will see your personal information, such as your name and address. Below this, you may update your password. Next, you'll see a list of users you can log in as. Finally, you can see a list of your family doctors or patients. The'plus' button will bring up a list of doctors you can add.""",
+    "Reports Module" : """The 'Reports' tab, by default, will show you all patients along with a selection of their information. If you wish to view the patient's page and information, you may click on their respective rows.This list of users can be narrowed down with the fields at the top, by diagnosis and date.""",
+    "Olap Module" : """The 'OLAP' tab shows you a list of patients and every type of test they have undergone in each year, and how many images there are under each of these entries. The results of this page may be fine-tuned using the fields at the top.If you wish to only see the results for one particular user, use the people picker (the button with an ellipsis). If you wish to not have results grouped by user, and instead see totals, remove the asterisk from the search field. To see results for a single test type, enter it into the test type field. To not group by any test type, remove the asterisk from the field. Finally, to group counts by year, month, or week, select the corresponding option from the dropdown menu. If 'None' is selected, it will not group by any time period.For example, leaving all fields blank will give the total count of images in the entire database. Leaving all fields blank, save for patient ID with an asterisk, you will see the number of images each patient has.""",
+    "User Module" : """This shows a list of all users who may access the database, sorted by the ids of the person they are attached to.  To filter this list down, by name, enter a name into the filter field.If you wish to edit a user, simply click on a row in that list, and you are brought to a page allowing you to edit their information.""",
+
+
+    }
+    with transaction.manager:
+        for topic in helpdocs:
+            DBSession.add(HelpFile(topic, helpdocs[topic]))
+        transaction.manager.commit()
+
 def gen_records():
     test_types = ['invasive', 'scary', 'painful', 'harmles...really', 'smelly', 'chronic', 'geo physical',
                 'exothemeric', 'deadly', 'doctor gibberish']
@@ -225,8 +249,11 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.',)
     DBSession.configure(bind=engine)
 
+    DBSession.execute("DROP TABLE IF EXISTS helpfiles")
+    Base.metadata.create_all(engine)
+    gen_helpfiles()
 
-    DBSession.execute("DROP TABLE IF EXISTS users")
+    """ DBSession.execute("DROP TABLE IF EXISTS users")
     DBSession.execute("DROP TABLE IF EXISTS family_doctor")
     DBSession.execute("DROP TABLE IF EXISTS roles")
     DBSession.execute("DROP TABLE IF EXISTS radiology_records")
@@ -248,3 +275,4 @@ def main(argv=sys.argv):
     gen_people()
     gen_records()
     gen_images()
+    """

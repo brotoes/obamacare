@@ -342,12 +342,12 @@ def insert_record(request, patient_id, doctor_id, radiologist_id, test_type,
     role = getRole(user.user_name, request)
 
     permission = True
-    if 'group:r' in role and not person.person_id == radiologist_id:
-        permission = False
-    if 'group:d' in role and not person.person_id == doctor_id:
-        permission = False
-    if 'group:p' in role:
-        permission = False
+    #if 'group:r' in role and not person == radiologist_id:
+    #    permission = False
+    #if 'group:d' in role and not person == doctor_id:
+    #    permission = False
+    #if 'group:p' in role:
+    #    permission = False
     #test if persons have correct roles to be inserted? 
 
     if permission:

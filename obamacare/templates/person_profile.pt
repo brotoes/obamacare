@@ -30,7 +30,7 @@
 					</tr>
 					
 				</table>
-				<span tal:condition="role">Role ${role}</span>
+			
 				<table  tal:condition="role=='group:a'" style='margin: 0 auto;border 2px solid black;'>
 				
 					<form method="POST" action="">

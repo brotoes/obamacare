@@ -27,7 +27,8 @@ from .models import (
     Person,
     User,
     RadiologyRecord,
-    PacsImage
+    PacsImage,
+    HelpFile,
     )
 from .security import(
     authenticate,
@@ -49,8 +50,8 @@ For testing use only: to be removed for production release
 """
 @view_config(route_name='TESTING', renderer='templates/test.pt', permission='view')
 def test_view(request):
-    imgs = DBSession.query(PacsImage.image_id).all()
-    return getModules(request, dict(displaysuccess=None, displayerror=None, imgs=imgs))
+    #imgs = DBSession.query(PacsImage.image_id).all()
+    return HTTPNotFound()
 
 
 @view_config(route_name='view_image', renderer='templates/image.pt', permission='view')
@@ -60,6 +61,12 @@ def view_image(request):
 
     return getModules(request, dict(displaysuccess=None, displayerror=None, img=img))
 
+@view_config(route_name='upload_image', permission='view')
+def upload_image(request):
+    args = request.params
+    referrer = request.application_url
+    came_from = request.params.get('came_from', referrer)
+    return HTTPFound(location = came_from)
 
 """
 Renders a list of people for the administrator to view an edit
@@ -809,6 +816,7 @@ def report(request):
                     i[0].address,
                     i[0].phone,
                     i[1].test_date,
+		    i[1].diagnosis,
                     ))
     def append_(item):
         data.append(item)
@@ -880,14 +888,20 @@ def landing(request):
 """
 Here for more testing -- as a reference
 """
-@view_config(route_name='help', renderer='templates/mytemplate.pt')
-def my_view(request):
-    try:
-        one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    return {'one': one, 'project': 'obamacare', 'logged_in': authenticated_userid(request)!=None}
+@view_config(route_name='help', renderer='templates/help.pt')
+def helpdocs(request):
+    topic = request.matchdict['topic']
+    if topic == 'list':
+        try:
+            topics = DBSession.query(HelpFile.topic).all()
+        except DBAPIError:
+            return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
+        return getModules(request, dict(displayerror=None, displaysuccess=None, topics=topics, list=True))
+        #return Response(str(topics))
+    else:
+        helpdoc = DBSession.query(HelpFile).filter(HelpFile.topic==topic).first()
+        return getModules(request, dict(displayerror=None, displaysuccess=None, list=False, topic = helpdoc))
 
 """
 Remmoves a family doctor

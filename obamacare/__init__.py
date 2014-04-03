@@ -64,7 +64,7 @@ def main(global_config, **settings):
     config.add_route('image_list', '/images/{id}')
         # ---> JSON list of images ids that are related by record_id=id
     config.add_route('view_image', '/image/{id}')
-    
+
 
 # User Management Module
     config.add_route('update_users', '/update_users')
@@ -76,11 +76,11 @@ def main(global_config, **settings):
 # Report Module:
     config.add_route('report', '/report')    
 
-
+    config.add_route('upload_image', '/upload')
     config.add_route('people_list', '/p')
 
 
     config.add_route('TESTING', '/test') # This is so I can quickly throw up stuff to test
-    config.add_route('help', '/help') #this is a fake page :P It's from the scaffold I just use it for reference 
+    config.add_route('help', '/help/{topic}') #this is a fake page :P It's from the scaffold I just use it for reference 
     config.scan()
     return config.make_wsgi_app()

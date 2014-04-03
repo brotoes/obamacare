@@ -37,6 +37,16 @@ class RootFactory(object):
         #print ('root fac', self.__acl__)
         pass
 
+class HelpFile(Base):
+    __tablename__ = 'helpfiles'
+    topic = Column(String(32), primary_key=True)
+    text = Column(String(5000))
+
+    def __init__(self, topic, text):
+        self.topic = topic
+        self.text = text
+
+
 class MyModel(Base):
     __tablename__ = 'models'
     id = Column(Integer, primary_key=True)
