@@ -33,6 +33,9 @@
 	      							<td class="searchitem">
 	      								<input type="text" name="tt" value="${ttype}"/>
 	      							</td>
+	      							<td class="searchitem">After:</td><td class="searchitem"><input type="text" name="start" value="${start}"/>
+					</td>
+					<td class="searchitem">Before:</td><td class="searchitem"> <input type="text" name="end" value="${end}"/>
 	      							<td class="searchitem">
 		      							 <select name="p">
 		      							 	<span tal:condition="period=='w'">
